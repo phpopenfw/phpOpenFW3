@@ -1,0 +1,25 @@
+{
+	"name": "phpopenfw/phpOpenFW3",
+	"version": "3.0.0",
+	"require": {},
+		"require-dev": {},
+		"repositories": [],
+	"dist": {
+		"url": "https://github.com/phpopenfw/phpOpenFW3.git",
+		"type": "zip"
+	},
+	"autoload": {
+		"psr-4": {
+			"phpOpenFW\\": "/src",
+			"phpOpenFW\\Test\\": "tests"
+		}
+	},
+	"scripts-dev": {
+		"post-install-cmd": [
+			"vendor/bin/security-checker security:check"
+		],
+		"post-update-cmd": [
+			"vendor/bin/security-checker security:check"
+		]
+	}
+}
