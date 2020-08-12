@@ -30,5 +30,4 @@ abstract class StaticCore
 	{
 		trigger_error("Error: {$function}(): {$msg}");
 	}
-
 }

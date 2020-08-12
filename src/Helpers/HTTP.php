@@ -25,23 +25,12 @@ class HTTP
 	//=============================================================================
 	//=============================================================================
 	/**
-	 * This method will redirect the user to the given page and also send
-	 * a message with it if wanted
-	 *
-	 * @param string $location The location to send the user, if empty $_SERVER['REDIRECT_URL'] is used
-	 * @param string $message. The message to display once redirected
-	 * @param mixed $message_type The message type. Options are:
-	 * 		'error_message', 'warn_message', 'action_message' (default), 'gen_message', 'page_message'
+	 * This method will redirect the user to the given page
 	 */
 	//=============================================================================
 	//=============================================================================
-	public static function redirect($location=false, $message=false, $message_type='action_message')
+	public static function redirect($location=false)
 	{
-		//-----------------------------------------------------
-		// Set flag to stop page render
-		//-----------------------------------------------------
-		define('POFW_SKIP_RENDER', 1);
-
 		//-----------------------------------------------------
 		// Set the location
 		//-----------------------------------------------------
@@ -55,14 +44,6 @@ class HTTP
 			}
 		}
 
-		//-----------------------------------------------------
-		// Add a Message?
-		//-----------------------------------------------------
-		$message_type = (!$message_type) ? ('action') : (strtolower(str_ireplace('_message', '', $message_type)));
-		if (!empty($message)) {
-			\phpOpenFW\Session\Messages::AddMessage($message, $message_type);
-		}
-	
 		//-----------------------------------------------------
 		// Redirect
 		//-----------------------------------------------------

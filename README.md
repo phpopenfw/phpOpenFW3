@@ -3,7 +3,7 @@
 # phpOpenFW
 -----------------------------------------------------------------------------------------------------------
 -----------------------------------------------------------------------------------------------------------
-phpOpenFW is an open source PHP web development framework released under the MIT License. Version 3.0 changes direction from version 2.x by dropping support for traditional web applications and focusing on APIs and backend systems.
+phpOpenFW is an open source PHP web development framework released under the MIT License. Version 3.0 changes direction from version 2.x by dropping support for traditional web applications and focusing on the development of APIs, batch / backend systems, and command line utilities.
 
 -----------------------------------------------------------------------------------------------------------
 ## Author
@@ -42,6 +42,6 @@ Below is an outline of some of the features offered by phpOpenFW:
 * Cache Abstraction Layer
 * MongoDB Abstraction Layer
 * LDAP Abstraction Layer
-* XML Element Class (abstract)
+* XML Generation and Processing Classes
 * Validation Object
 * Code Benchmark
