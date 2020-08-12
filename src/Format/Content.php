@@ -48,9 +48,20 @@ class Content
 	// Fill If Empty Function
 	//=============================================================================
 	//=============================================================================
-	public static function fill_if_empty(&$data, $empty_val='--')
+	public static function fill_if_empty(&$data, $empty_val='--', $trim_non_empty=false)
 	{
-		$data = (trim((string)$data) == '') ? ($empty_val) : (trim($data));
+            if (is_array($data) || is_resource($data)) {
+                return false;
+            }
+            if (trim((string)$data) == '') {
+                $data = $empty_val;
+                return 1;
+            }
+            else if ($trim_non_empty) {
+                $data = trim($data);
+                return 2;
+            }
+            return 0;
 	}
 
 	//=============================================================================
