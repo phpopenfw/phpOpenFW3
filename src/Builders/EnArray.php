@@ -6,7 +6,7 @@
  *
  * @package		phpOpenFW
  * @author 		Christian J. Clark
- * @copyright	Copyright (c) Christian J. Clark
+ * @copyright		Copyright (c) Christian J. Clark
  * @license		https://mit-license.org
  **/
 //*****************************************************************************
@@ -33,7 +33,7 @@ class EnArray
     //=========================================================================
     public function __construct(Array &$arr)
     {
-        $this->arr = $arr;
+        $this->arr = &$arr;
     }
 
     //=========================================================================
@@ -43,8 +43,8 @@ class EnArray
     //=========================================================================
     public function __toString()
     {
-		return json_encode($this->arr);
-	}
+	return json_encode($this->arr);
+    }
 
     //=========================================================================
     //=========================================================================
@@ -53,8 +53,8 @@ class EnArray
     //=========================================================================
     public function Export()
     {
-		return $this->arr;
-	}
+	return $this->arr;
+    }
 
     //=========================================================================
     //=========================================================================
@@ -63,8 +63,8 @@ class EnArray
     //=========================================================================
     public function Get($path)
     {
-		return \phpOpenFW\Helpers\UPN::Get('array:/' . $path, $this->arr);
-	}
+	return \phpOpenFW\Helpers\UPN::Get('array:/' . $path, $this->arr);
+    }
 
     //=========================================================================
     //=========================================================================
@@ -73,7 +73,7 @@ class EnArray
     //=========================================================================
     public function Set($path, $value, $set_root=false)
     {
-		return \phpOpenFW\Helpers\UPN::Set('array:/' . $path, $value, $this->arr, $set_root);
-	}
+	return \phpOpenFW\Helpers\UPN::Set('array:/' . $path, $value, $this->arr, $set_root);
+    }
 
 }
