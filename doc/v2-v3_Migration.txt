@@ -4,9 +4,9 @@
 
 1. [ i ] Core Code Migration
 
-    [ - ] Builders
+    [ c ] Builders
     [ c ] Cache
-    [ - ] Content
+    [ c ] Content
     [ c ] Cores
     [ - ] Database
     [ - ] Form
