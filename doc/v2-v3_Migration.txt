@@ -12,7 +12,7 @@
     [ - ] Form
     [ - ] Format
     [ - ] Framework
-    [ - ] Helpers
+    [ c ] Helpers
     [ c ] Traits
     [ c ] Utility
     [ c ] Validate
@@ -21,7 +21,3 @@
 2. [ - ] v2.x to v3.x Alias Bridge
 
 Objective: To build a singularly callable bridge using class aliases for existing common functionality between version 2.x and version 3.x. This functionality will be similar to the globalization functionality that provided a bridge between v1.x and 2.x.
-
-Bridges: 
-
-[ - ] 
