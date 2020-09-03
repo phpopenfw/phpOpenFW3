@@ -32,7 +32,7 @@ class V2_Bridge
 		// Bootstrap the Core?
 		//---------------------------------------------------------------------
 		if (!defined('PHPOPENFW_FRAME_PATH')) {
-			\phpOpenFW\Framework\Core::Bootstrap();
+			\phpOpenFW\Core::Bootstrap();
 		}
 	}
 
@@ -60,6 +60,10 @@ class V2_Bridge
 		extract($args);
 		self::Bootstrap();
 		//include_once(PHPOPENFW_FRAME_PATH . '/src/bridge/Core.php');
+
+        class_alias('\phpOpenFW\Core', '\phpOpenFW\Framework\Core');
+        class_alias('\phpOpenFW\Core\DataSources', '\phpOpenFW\Framework\Core\DataSources');
+
 	}
 
 	//=========================================================================

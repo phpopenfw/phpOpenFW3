@@ -7,11 +7,12 @@
     [ c ] Builders
     [ c ] Cache
     [ c ] Content
+    [ c ] Core (+)
     [ c ] Cores
     [ - ] Database
     [ - ] Form
     [ - ] Format
-    [ - ] Framework
+    [ c ] Framework (-)
     [ c ] Helpers
     [ c ] Traits
     [ c ] Utility

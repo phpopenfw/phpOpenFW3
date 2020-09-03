@@ -723,7 +723,7 @@ abstract class DIO
         // Validate / Set Data Source
 		//===============================================================
 		$this->data_source = (string)$data_source;
-		$ds_data = \phpOpenFW\Framework\Core\DataSources::GetOne($this->data_source);
+		$ds_data = \phpOpenFW\Core\DataSources::GetOne($this->data_source);
 		if (!$ds_data) {
     		$this->trigger_error(__METHOD__, 'Data Source does not exist.');
     		return false;

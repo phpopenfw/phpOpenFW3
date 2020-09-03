@@ -38,7 +38,7 @@ class Table
         //=======================================================================
         // Validate Data Source
         //=======================================================================
-        $ds_data = \phpOpenFW\Framework\Core\DataSources::GetOne($data_source);
+        $ds_data = \phpOpenFW\Core\DataSources::GetOne($data_source);
         if (!$ds_data) {
             trigger_error('Invalid data source.');
             return false;
@@ -93,7 +93,7 @@ class Table
         //=======================================================================
         // Validate Data Source
         //=======================================================================
-        $ds_data = \phpOpenFW\Framework\Core\DataSources::GetOne($data_source);
+        $ds_data = \phpOpenFW\Core\DataSources::GetOne($data_source);
         if (!$ds_data) {
             trigger_error('Invalid data source.');
             return false;
@@ -208,7 +208,7 @@ class Table
         // If not strict mode, try to interpret as data source handle
         //=======================================================================
         if (!$strict) {
-            if ($data_source = \phpOpenFW\Framework\Core\DataSources::GetOne($db_type)) {
+            if ($data_source = \phpOpenFW\Core\DataSources::GetOne($db_type)) {
                 return self::QuotedTypes($data_source['type'], true);
             }
         }

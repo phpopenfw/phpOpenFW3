@@ -36,7 +36,7 @@ trait Core
             trigger_error('Invalid data source handle');
             return false;
         }
-        $ds_data = \phpOpenFW\Framework\Core\DataSources::GetOne($data_source);
+        $ds_data = \phpOpenFW\Core\DataSources::GetOne($data_source);
         if (!$ds_data) {
             trigger_error('Invalid data source.');
             return false;

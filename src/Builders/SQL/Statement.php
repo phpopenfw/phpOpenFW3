@@ -82,7 +82,7 @@ abstract class Statement extends Core
     public function SetDataSource($ds)
     {
         if ($ds != '') {
-            $ds_info = \phpOpenFW\Framework\Core\DataSources::GetOne($ds);
+            $ds_info = \phpOpenFW\Core\DataSources::GetOne($ds);
             if ($ds_info && isset($ds_info['type'])) {
                 if ($this->SetDbType($ds_info['type'])) {
                     $this->data_source = $ds;
