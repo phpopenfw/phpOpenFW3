@@ -10,8 +10,8 @@
     [ c ] Core (+)
     [ c ] Cores
     [ - ] Database
-    [ - ] Form
-    [ - ] Format
+    [ c ] Form
+    [ c ] Format
     [ c ] Framework (-)
     [ c ] Helpers
     [ c ] Traits
