@@ -2,14 +2,14 @@
 * phpOpenFW v2.x to v3.0 Migration Checklist
 --------------------------------------------------------------
 
-1. [ i ] Core Code Migration
+1. [ c ] Core Code Migration
 
     [ c ] Builders
     [ c ] Cache
     [ c ] Content
     [ c ] Core (+)
     [ c ] Cores
-    [ - ] Database
+    [ c ] Database
     [ c ] Form
     [ c ] Format
     [ c ] Framework (-)

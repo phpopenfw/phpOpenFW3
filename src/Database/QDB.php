@@ -23,7 +23,7 @@ use phpOpenFW\Database\DataTrans;
 class QDB
 {
 
-	//*****************************************************************************
+	//*************************************************************************
 	/**
 	* Run a Query or Prepare and execute a query. Return a "DataResult" object.
 	*
@@ -33,7 +33,7 @@ class QDB
 	* @param array Options ('debug')
 	* @return object A "DataResult" object which can be used to get the records.
 	*/
-	//*****************************************************************************
+	//*************************************************************************
 	public static function qdb_result($db_config, $strsql, $bind_params=[], $opts=false)
 	{
 		//------------------------------------------------------------------
@@ -64,7 +64,7 @@ class QDB
 		}
 	}
 
-	//*****************************************************************************
+	//*************************************************************************
 	/**
 	* Execute a query. Return the first row if possible.
 	*
@@ -74,7 +74,7 @@ class QDB
 	* @param array Options ('debug')
 	* @return mixed An array representing the first row or FALSE if that row does not exist.
 	*/
-	//*****************************************************************************
+	//*************************************************************************
 	public static function qdb_first_row($db_config, $strsql, $bind_params=false, $opts=false)
 	{
 		//------------------------------------------------------------------
@@ -111,7 +111,7 @@ class QDB
 		return false;
 	}
 
-	//*****************************************************************************
+	//*************************************************************************
 	/**
 	* Execute a query. Return one row or value if possible.
 	*
@@ -123,7 +123,7 @@ class QDB
 	* @param array Options
 	* @return Mixed Either a record or a value
 	*/
-	//*****************************************************************************
+	//*************************************************************************
 	public static function qdb_row($db_config, $strsql, $row_index=0, $data_format=false, $bind_params=false, $opts=false)
 	{
 		//------------------------------------------------------------------
@@ -188,7 +188,7 @@ class QDB
 		return false;
 	}
 
-	//*****************************************************************************
+	//*************************************************************************
 	/**
 	* Prepare and execute a query. Return results if they exist.
 	*
@@ -199,8 +199,8 @@ class QDB
 	* @param array Options ('debug')
 	* @return Array Record Set
 	*/
-	//*****************************************************************************
-	public static function qdb_exec($db_config, $strsql, $bind_params, $return_format='', Array $opts=[])
+	//*************************************************************************
+	public static function qdb_exec($db_config, $strsql, $bind_params=false, $return_format='', Array $opts=[])
 	{
 		//------------------------------------------------------------------
 		// New Data Transaction
@@ -252,97 +252,7 @@ class QDB
 		}
 	}
 
-	//*****************************************************************************
-	/**
-	* Pull a list of records from a table
-	*
-	* @param string Index of DB config
-	* @param string SQL Statement
-	* @param string Return Format to return ("", "key", "key:value")
-	* @param array Options ('debug')
-	* @return Array Record Set
-	*/
-	//*****************************************************************************
-	public static function qdb_list($db_config, $strsql, $return_format='', $opts=false)
-	{
-		//------------------------------------------------------------------
-		// New Data Transaction
-		//------------------------------------------------------------------
-		$data1 = new DataTrans($db_config);
-		if (!empty($opts['debug'])) { $data1->data_debug(true); }
-
-		if (!empty($opts['charset'])) {
-			$data1->set_opt('charset', $opts['charset']);
-		}
-
-		//------------------------------------------------------------------
-		// Execute Query
-		//------------------------------------------------------------------
-		$query_result = $data1->data_query($strsql);
-
-		//------------------------------------------------------------------
-		// Return Result Set
-		//------------------------------------------------------------------
-		$rf_arr = explode(':', $return_format);
-		if (empty($rf_arr[0])) { unset($rf_arr[0]); }
-		if (count($rf_arr) < 1) {
-			return $data1->data_assoc_result();
-		}
-		else if (count($rf_arr) == 1) {
-			return $data1->data_key_assoc($rf_arr[0]);
-		}
-		else if (count($rf_arr) > 1) {
-			return $data1->data_key_val($rf_arr[0], $rf_arr[1]);
-		}
-	}
-
-	//*****************************************************************************
-	/**
-	* Safe Delete Row or Rows from a table
-	*
-	* @param string Index of DB config
-	* @param string Database Table
-	* @param string Where clause (must not be empty, in order for execution to take place)
-	* @param array Options
-	* @return Array Record Set
-	*/
-	//*****************************************************************************
-	public static function qdb_delete($db_config, $db_table, $where='', $opts=false)
-	{
-		if ($where == '') {
-			trigger_error('Error: QDB::delete(): No where clause specified!');
-			return false;
-		}
-
-		//------------------------------------------------------------------
-		// New Data Transaction
-		//------------------------------------------------------------------
-		$data1 = new DataTrans($db_config);
-		if (!empty($opts['debug'])) { $data1->data_debug(true); }
-		$data1->set_opt('make_bind_params_refs', 1);
-		if (!empty($opts['charset'])) {
-			$data1->set_opt('charset', $opts['charset']);
-		}
-		$where = trim($where);
-
-		//------------------------------------------------------------------
-		// Check for empty Where
-		//------------------------------------------------------------------
-		if (!empty($where)) {
-			$strsql = "delete from {$db_table} where {$where}";
-		}
-
-		//------------------------------------------------------------------
-		// Execute Query
-		//------------------------------------------------------------------
-		if (!empty($where) && isset($strsql)) {
-			return $data1->data_query($strsql);
-		}
-
-		return false;
-	}
-
-	//*****************************************************************************
+	//*************************************************************************
 	/**
 	* Quick Database Field Lookup
 	*
@@ -353,7 +263,7 @@ class QDB
 	* @param array Options
 	* @return mixed The value at the field index or false if it did not exist.
 	*/
-	//*****************************************************************************
+	//*************************************************************************
 	public static function qdb_lookup($data_source, $sql, $fields='', $bind_params=false, $opts=false)
 	{
 		//------------------------------------------------------------------
@@ -440,7 +350,7 @@ class QDB
 		}
 	}
 
-	//*****************************************************************************
+	//*************************************************************************
 	/**
 	* Recordset Trim Function
 	*
@@ -450,7 +360,7 @@ class QDB
 	* @param bool True = Trim the record column keys, False = Do not trim record column keys (default)
 	* @return Array Modified Record Set
 	*/
-	//*****************************************************************************
+	//*************************************************************************
 	public static function rs_trim($rs, $trim_data=true, $trim_row_keys=false, $trim_col_keys=false)
 	{
         //------------------------------------------------------------
