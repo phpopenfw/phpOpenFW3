@@ -2,23 +2,23 @@
 * phpOpenFW v2.x to v3.0 Migration Checklist
 --------------------------------------------------------------
 
-1. [ c ] Core Code Migration
 
-    [ c ] Builders
-    [ c ] Cache
-    [ c ] Content
-    [ c ] Core (+)
-    [ c ] Cores
-    [ c ] Database
-    [ c ] Form
-    [ c ] Format
-    [ c ] Framework (-)
-    [ c ] Helpers
-    [ c ] Traits
-    [ c ] Utility
-    [ c ] Validate
-    [ c ] XML
-    
-2. [ - ] v2.x to v3.x Alias Bridge
+--------------------------------------------------------------
 
-Objective: To build a singularly callable bridge using class aliases for existing common functionality between version 2.x and version 3.x. This functionality will be similar to the globalization functionality that provided a bridge between v1.x and 2.x.
+Change:
+
+\phpOpenFW\Framework\LiteFW::Run($base_dir);
+
+To:
+
+\phpOpenFW\Core::Bootstrap($base_dir);
+
+--------------------------------------------------------------
+
+Change:
+
+Anything that starts with "\phpOpenFW\Framework\Core"
+
+To:
+
+To start with "\phpOpenFW\Core"
