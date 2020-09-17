@@ -37,7 +37,7 @@ class Cache
     {
         if (empty($stub) || empty($args)) { return false; }
         if (defined('MC_KEY_STUB')) {
-            trigger_error("The 'MC_KEY_STUB' cache key stub has been deprecated. Please change it to 'CACHE_KEY_STUB'.", E_DEPRECATED);
+            trigger_error("The 'MC_KEY_STUB' cache key stub has been deprecated. Please change it to 'CACHE_KEY_STUB'.", E_USER_DEPRECATED);
             $cache_key = MC_KEY_STUB . ':' . $stub;
         }
         else {
