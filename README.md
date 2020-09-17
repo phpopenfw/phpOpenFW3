@@ -45,3 +45,18 @@ Below is an outline of some of the features offered by phpOpenFW:
 * XML Generation and Processing Classes
 * Validation Object
 * Code Benchmark
+
+-----------------------------------------------------------------------------------------------------------
+## Apache ModRewrite Rules
+-----------------------------------------------------------------------------------------------------------
+
+RewriteEngine On
+RewriteRule  .*favicon\.ico$ - [L]
+RewriteRule ^.*$ index.php [L,qsa]
+
+**If you are using Virtual Document Roots with Apache your rules will most likely need to look something like this:**
+
+RewriteEngine On
+RewriteBase /
+RewriteRule ^.*favicon\.ico$ - [L]
+RewriteRule ^.*$ index.php [L,qsa]
