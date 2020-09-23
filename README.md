@@ -50,13 +50,13 @@ Below is an outline of some of the features offered by phpOpenFW:
 ## Apache ModRewrite Rules
 -----------------------------------------------------------------------------------------------------------
 
-RewriteEngine On
-RewriteRule  .*favicon\.ico$ - [L]
-RewriteRule ^.*$ index.php [L,qsa]
+* RewriteEngine On
+* RewriteRule  .*favicon\.ico$ - [L]
+* RewriteRule ^.*$ index.php [L,qsa]
 
 **If you are using Virtual Document Roots with Apache your rules will most likely need to look something like this:**
 
-RewriteEngine On
-RewriteBase /
-RewriteRule ^.*favicon\.ico$ - [L]
-RewriteRule ^.*$ index.php [L,qsa]
+* RewriteEngine On
+* RewriteBase /
+* RewriteRule ^.*favicon\.ico$ - [L]
+* RewriteRule ^.*$ index.php [L,qsa]
