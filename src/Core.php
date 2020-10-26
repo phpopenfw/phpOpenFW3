@@ -127,7 +127,8 @@ class Core
     public static function CheckBootstrapped(Array $args=[])
     {
         if (!self::IsBootstrapped()) {
-            throw new \Exception('An operation occurred before phpOpenFW has been bootstrapped.');
+            $msg = 'An operation that requires initialization occurred before phpOpenFW was bootstrapped.';
+            throw new \Exception($msg);
         }
     }
 
