@@ -137,7 +137,7 @@ class UPN
         // Is Path Valid?
         //---------------------------------------------------------------------
         if (!$path) {
-            throw new \Exception('Empty UPN path .');
+            throw new \Exception('Empty UPN path.');
         }
 
         //---------------------------------------------------------------------

@@ -28,7 +28,7 @@ class HTTP
 	 */
 	//=========================================================================
 	//=========================================================================
-	public static function redirect($location=false)
+	public static function Redirect($location=false)
 	{
 		//---------------------------------------------------------------------
 		// Set the location
@@ -77,6 +77,83 @@ class HTTP
            }
        }
        return $headers;
+    }
+
+	//=========================================================================
+	//=========================================================================
+    /**
+    * Get URL Path Function
+    */
+	//=========================================================================
+	//=========================================================================
+    public static function GetUrlPath()
+    {
+		//---------------------------------------------------------------------
+    	// If $_SERVER['REDIRECT_URL'] is set
+		//---------------------------------------------------------------------
+    	if (isset($_SERVER['REDIRECT_URL'])) {
+    		return $_SERVER['REDIRECT_URL'];
+    	}
+		//---------------------------------------------------------------------
+    	// If $_SERVER['PATH_INFO'] is set
+		//---------------------------------------------------------------------
+    	else if (isset($_SERVER['PATH_INFO'])) {
+    		return $_SERVER['PATH_INFO'];
+    	}
+		//---------------------------------------------------------------------
+    	// If $_SERVER['REQUEST_URI'] is set
+		//---------------------------------------------------------------------
+    	else if (isset($_SERVER['REQUEST_URI'])) {
+    		$qs_start = strpos($_SERVER['REQUEST_URI'], '?');
+    		if ($qs_start === false) {
+    			return $_SERVER['REQUEST_URI'];
+    		}
+    		else {
+    			return substr($_SERVER['REQUEST_URI'], 0, $qs_start);
+    		}
+    	}
+
+    	return false;
+    }
+
+	//=========================================================================
+	//=========================================================================
+    /**
+    * Get HTML Path Function
+    */
+	//=========================================================================
+	//=========================================================================
+    public static function GetHtmlPath()
+    {
+    	$path = '';
+    	if (isset($_SERVER['DOCUMENT_ROOT']) && isset($_SERVER['SCRIPT_FILENAME'])) {
+    		$doc_root = $_SERVER['DOCUMENT_ROOT'];
+    		$doc_root_parts = explode('/', $doc_root);
+    		$script_file = $_SERVER['SCRIPT_FILENAME'];
+    		$script_file_parts = explode('/', $script_file);
+
+    		foreach ($script_file_parts as $key => $part) {
+    			if (!isset($doc_root_parts[$key])) {
+    				if ($part != 'index.php') {
+        				$path .= '/' . $part;
+                    }
+    			}
+    		}
+    	}
+    	else {
+    		$_SESSION['html_path'] = $path;
+    		$self = $_SERVER['PHP_SELF'];
+    		$self_arr = explode('/', $self);
+    		foreach ($self_arr as $item) {
+    			if (!empty($item) && $item != 'index.php') {
+                    $path .= '/' . $item;
+                }
+    		}
+    		if ($path == '/') {
+                $path = '';
+            }
+    	}
+    	return $path;
     }
 
 }

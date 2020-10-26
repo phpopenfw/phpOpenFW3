@@ -24,12 +24,22 @@ class Core
 	//*************************************************************************
 	//*************************************************************************
     /**
-    * Bootstrap Method
-    */
+     * Bootstrap Method
+     */
 	//*************************************************************************
 	//*************************************************************************
-    public static function Bootstrap($file_path=false)
+    public static function Bootstrap($file_path=false, Array $args=[])
     {
+		//=====================================================================
+        // Default Args / Extract Args
+		//=====================================================================
+		$load_config = false;
+		$config_file = false;
+		$load_data_sources = false;
+		$db_config_file = false;
+		$display_errors = false;
+		extract($args);
+        
 		//=====================================================================
 		// Define Framework Path?
 		//=====================================================================
@@ -56,174 +66,119 @@ class Core
 		//=====================================================================
         self::set_version();
         self::detect_env();
-    }
 
-    //*************************************************************************
-    //*************************************************************************
-    /**
-    * Get URL Path Function
-    */
-    //*************************************************************************
-    //*************************************************************************
-    public static function get_url_path()
-    {
-    	//=====================================================================
-    	// If $_SERVER['REDIRECT_URL'] is set
-    	//=====================================================================
-    	if (isset($_SERVER['REDIRECT_URL'])) {
-    		return $_SERVER['REDIRECT_URL'];
-    	}
-    	//=====================================================================
-    	// If $_SERVER['PATH_INFO'] is set
-    	//=====================================================================
-    	else if (isset($_SERVER['PATH_INFO'])) {
-    		return $_SERVER['PATH_INFO'];
-    	}
-    	//=====================================================================
-    	// If $_SERVER['REQUEST_URI'] is set
-    	//=====================================================================
-    	else if (isset($_SERVER['REQUEST_URI'])) {
-    		$qs_start = strpos($_SERVER['REQUEST_URI'], '?');
-    		if ($qs_start === false) {
-    			return $_SERVER['REQUEST_URI'];
-    		}
-    		else {
-    			return substr($_SERVER['REQUEST_URI'], 0, $qs_start);
-    		}
-    	}
-
-    	return false;
-    }
-
-    //*************************************************************************
-    //*************************************************************************
-    /**
-    * Get HTML Path Function
-    */
-    //*************************************************************************
-    //*************************************************************************
-    public static function get_html_path()
-    {
-    	$path = '';
-    	if (isset($_SERVER['DOCUMENT_ROOT']) && isset($_SERVER['SCRIPT_FILENAME'])) {
-    		$doc_root = $_SERVER['DOCUMENT_ROOT'];
-    		$doc_root_parts = explode('/', $doc_root);
-    		$script_file = $_SERVER['SCRIPT_FILENAME'];
-    		$script_file_parts = explode('/', $script_file);
-
-    		foreach ($script_file_parts as $key => $part) {
-    			if (!isset($doc_root_parts[$key])) {
-    				if ($part != 'index.php') { $path .= '/' . $part; }
-    			}
-    		}
-    	}
-    	else {
-    		$_SESSION['html_path'] = $path;
-    		$self = $_SERVER['PHP_SELF'];
-    		$self_arr = explode('/', $self);
-    		foreach ($self_arr as $item) {
-    			if (!empty($item) && $item != 'index.php') { $path .= "/$item"; }
-    		}
-    		if ($path == '/') { $path = ''; }
-    	}
-    	return $path;
-    }
-
-    //*************************************************************************
-    //*************************************************************************
-    /**
-    * Load Configuration Function
-    */
-    //*************************************************************************
-    //*************************************************************************
-    public static function load_config($config_file=false, Array $args=[])
-    {
-	    extract($args);
-
-    	//=====================================================================
-    	// Initialize the Arrays
-    	//=====================================================================
-    	$config_arr = array();
-    	$config = array();
-    	$data_arr = array();
-
-    	//=====================================================================
-    	// Include the configuration file
-    	//=====================================================================
-        if ($config_file && file_exists($config_file)) {
-            require($config_file);
-        }
-    	else {
-        	require(PHPOPENFW_APP_FILE_PATH . '/config.inc.php');
+		//=====================================================================
+        // Load Configuration?
+		//=====================================================================
+        if ($load_config) {
+            self::LoadConfiguration([
+                'config_file' => $config_file
+            ])
         }
 
-    	//=====================================================================
-    	// Set HTML Path
-    	//=====================================================================
-    	if (isset($config_arr['html_path'])) {
-    		$_SESSION['html_path'] = $config_arr['html_path'];
-    	}
-    	else {
-    		$_SESSION['html_path'] = self::get_html_path();
-    	}
-
-    	//=====================================================================
-    	// *** Configuration Array
-    	//=====================================================================
-    	$key_arr = array_keys($config_arr);
-    	$key_arr2 = array_keys($config);
-    	if (!empty($session_index)) {
-	    	if (!isset($_SESSION[$session_index])) { $_SESSION[$session_index] = []; }
-	    	foreach ($key_arr as $key) { $_SESSION[$session_index][$key] = $config_arr[$key]; }
-	    	foreach ($key_arr2 as $key) { $_SESSION[$session_index][$key] = $config[$key]; }
-    	}
-    	else {
-	    	foreach ($key_arr as $key) { $_SESSION[$key] = $config_arr[$key]; }
-	    	foreach ($key_arr2 as $key) { $_SESSION[$key] = $config[$key]; }
-		}
-
-    	//=====================================================================
-    	// *** Data Source Array
-    	//=====================================================================
-    	if (is_array($data_arr) && !empty($data_arr)) {
-	    	$key_arr = array_keys($data_arr);
-	    	foreach ($key_arr as $key) {
-	    		$reg_code = Core\DataSources::Register($key, $data_arr[$key]);
-	    	}
-		}
+		//=====================================================================
+        // Load Data Sources?
+		//=====================================================================
+        if ($load_data_sources) {
+            self::LoadDataSources([
+                'config_file' => $db_config_file,
+                'display_errors' => $display_errors
+            ])
+        }
     }
 
     //*************************************************************************
     //*************************************************************************
     /**
-    * Load Database Sources Configuration Function
-    * @param string Full file path to data source configuration file
-    * @param bool Force the configuration to be reloaded
-    */
+     * Load Configuration Function
+     * @param Array Arguments / Options
+     */
     //*************************************************************************
     //*************************************************************************
-    public static function load_db_config($db_config, $force_config=false)
+    public static function LoadConfiguration(Array $args=[])
     {
-    	if ((bool)$force_config === true || !empty($_SESSION['PHPOPENFW_DB_CONFIG_SET'])) {
-    		if (file_exists($db_config)) {
+    	//=====================================================================
+        // Defaults / Extract Args
+    	//=====================================================================
+    	$config_file = false;
+        $session_index = 'config';
+        extract($args);
+
+    	//=====================================================================
+        // Configuration File Set?
+    	//=====================================================================
+        if (!$config_file || !file_exists($config_file)) {
+            $config_file = PHPOPENFW_APP_FILE_PATH . '/config.inc.php';
+        }
+        if (file_exists($config_file)) {
+            $config = new Core\Config($config_file);
+            if ($config->IsValid()) {
+                if (!isset($_SESSION[$session_index])) {
+                    $_SESSION[$session_index] = $config->Export();
+                }
+                else {
+                    $_SESSION[$session_index] = array_merge($_SESSION[$session_index], $config->Export());
+                }
+                define('PHPOPENFW_CONFIG_INDEX', $session_index);
+                return $config;
+            }
+        }
+    }
+
+    //*************************************************************************
+    //*************************************************************************
+    /**
+     * Load Database Sources Configuration Function
+     * @param Array Arguments / Options
+     */
+    //*************************************************************************
+    //*************************************************************************
+    public static function LoadDataSources(Array $args=[])
+    {
+    	//=====================================================================
+        // Defaults / Extract Args
+    	//=====================================================================
+    	$config_file = false;
+        $force_reload = false;
+        $display_errors = true;
+        extract($args);
+
+    	//=====================================================================
+    	// Load Data Sources?
+    	//=====================================================================
+    	if ($force_config || !empty($_SESSION['PHPOPENFW_DB_CONFIG_SET'])) {
+            if (!$config_file || !file_exists($config_file)) {
+                $config_file = PHPOPENFW_APP_FILE_PATH . '/config/data_source.php';
+            }
+    		if (file_exists($config_file)) {
     			$data_arr = array();
     			require($db_config);
 
-    			if (isset($data_arr) && count($data_arr) > 0) {
-    				$key_arr = array_keys($data_arr);
-    				foreach ($key_arr as $key){
-    					$reg_code = Core\DataSources::Register($key, $data_arr[$key]);
-    					if (!$reg_code) { $_SESSION[$key]['handle'] = 0; }
+    			if (isset($data_arr) && !isset($data_sources)) {
+        			$data_sources = $data_arr;
+    			}
+
+    			if (!empty($data_sources) && is_array($data_sources)) {
+    				$key_arr = array_keys($data_sources);
+    				foreach ($key_arr as $key) {
+    					$reg_code = Core\DataSources::Register($key, $data_sources[$key]);
+    					if (!$reg_code) {
+        					$_SESSION[$key]['handle'] = 0;
+        				}
     				}
     				$_SESSION['PHPOPENFW_DB_CONFIG_SET'] = true;
     			}
     			else {
-    				trigger_error('Error: load_db_config(): No data sources defined!');
+    				if ($display_errors) {
+        				trigger_error('Error: load_db_config(): No data sources defined!');
+                    }
     				$_SESSION['PHPOPENFW_DB_CONFIG_SET'] = false;
     			}
     		}
     		else {
-    			trigger_error('Error: load_db_config(): Data Source Configuration file does not exist!');
+        		if ($display_errors) {
+        			trigger_error('Error: load_db_config(): Data Source Configuration file does not exist!');
+                }
     			$_SESSION['PHPOPENFW_DB_CONFIG_SET'] = false;
     		}
     	}
@@ -232,8 +187,33 @@ class Core
     //*************************************************************************
     //*************************************************************************
     /**
-    * Kill a Session Function
-    */
+     * Get Configuration Value
+     * @param Index of value to retrieve
+     */
+    //*************************************************************************
+    //*************************************************************************
+    public static function GetConfigValue($index)
+    {
+        if (is_scalar($index)) {
+            if (defined('PHPOPENFW_CONFIG_INDEX') && PHPOPENFW_CONFIG_INDEX) {
+                if (isset($_SESSION[PHPOPENFW_CONFIG_INDEX]) && isset($_SESSION[PHPOPENFW_CONFIG_INDEX][$index])) {
+                    return $_SESSION[PHPOPENFW_CONFIG_INDEX][$index];
+                }
+            }
+            else {
+                if (isset($_SESSION[$index])) {
+                    return $_SESSION[$index];
+                }
+            }
+        }
+        return null;
+    }
+
+    //*************************************************************************
+    //*************************************************************************
+    /**
+     * Kill a Session Function
+     */
     //*************************************************************************
     //*************************************************************************
     public static function session_kill()
@@ -259,8 +239,8 @@ class Core
     //*************************************************************************
     //*************************************************************************
     /**
-    * Passthrough methods to Data Sources Class
-    */
+     * Passthrough methods to Data Sources Class
+     */
     //*************************************************************************
     //*************************************************************************
     public static function reg_data_source($ds_index, $ds_params)
@@ -291,8 +271,8 @@ class Core
     //*************************************************************************
     //*************************************************************************
     /**
-    * Detect Environment Function
-    */
+     * Detect Environment Function
+     */
     //*************************************************************************
     //*************************************************************************
     private static function detect_env()
@@ -307,8 +287,8 @@ class Core
     //*************************************************************************
     //*************************************************************************
     /**
-    * Set Version Function
-    */
+     * Set Version Function
+     */
     //*************************************************************************
     //*************************************************************************
     private static function set_version()
