@@ -143,7 +143,9 @@ class DataSources
     //*************************************************************************
     public static function GetOne($index)
     {
-        if ($index == '') { return false; }
+        if ($index == '') {
+            return false;
+        }
         if (isset($_SESSION[$index])) {
             return $_SESSION[$index];
         }

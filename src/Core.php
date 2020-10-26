@@ -38,6 +38,7 @@ class Core
 		$load_data_sources = false;
 		$db_config_file = false;
 		$display_errors = false;
+		$config_index = 'config';
 		extract($args);
         
 		//=====================================================================
@@ -68,12 +69,21 @@ class Core
         self::detect_env();
 
 		//=====================================================================
+        // Configuration Session Index
+		//=====================================================================
+		if (!$config_index) {
+    		$config_index = 'config';
+		}
+        define('PHPOPENFW_CONFIG_INDEX', $config_index);
+
+		//=====================================================================
         // Load Configuration?
 		//=====================================================================
         if ($load_config) {
             self::LoadConfiguration([
-                'config_file' => $config_file
-            ])
+                'config_file' => $config_file,
+                'display_errors' => $display_errors
+            ]);
         }
 
 		//=====================================================================
@@ -83,7 +93,41 @@ class Core
             self::LoadDataSources([
                 'config_file' => $db_config_file,
                 'display_errors' => $display_errors
-            ])
+            ]);
+        }
+
+		//=====================================================================
+        // Flag phpOpenFW as Bootstrapped
+		//=====================================================================
+        define('PHPOPENFW_BOOTSTRAPPED', true);
+    }
+
+    //*************************************************************************
+    //*************************************************************************
+    /**
+     * Has phpOpenFW been bootsrapped?
+     */
+    //*************************************************************************
+    //*************************************************************************
+    public static function IsBootstrapped()
+    {
+        if (defined('PHPOPENFW_BOOTSTRAPPED') && PHPOPENFW_BOOTSTRAPPED) {
+            return true;
+        }
+        return false;
+    }
+
+    //*************************************************************************
+    //*************************************************************************
+    /**
+     * Check that phpOpenFW been bootstrapped
+     */
+    //*************************************************************************
+    //*************************************************************************
+    public static function CheckBootstrapped(Array $args=[])
+    {
+        if (!self::IsBootsrapped()) {
+            throw new \Exception('An operation occurred before phpOpenFW has been bootstrapped.');
         }
     }
 
@@ -102,6 +146,7 @@ class Core
     	//=====================================================================
     	$config_file = false;
         $session_index = 'config';
+        $display_errors = false;
         extract($args);
 
     	//=====================================================================
@@ -113,16 +158,22 @@ class Core
         if (file_exists($config_file)) {
             $config = new Core\Config($config_file);
             if ($config->IsValid()) {
-                if (!isset($_SESSION[$session_index])) {
-                    $_SESSION[$session_index] = $config->Export();
+                if (!isset($_SESSION[PHPOPENFW_CONFIG_INDEX])) {
+                    $_SESSION[PHPOPENFW_CONFIG_INDEX] = $config->Export();
                 }
                 else {
-                    $_SESSION[$session_index] = array_merge($_SESSION[$session_index], $config->Export());
+                    $_SESSION[PHPOPENFW_CONFIG_INDEX] = array_merge($_SESSION[PHPOPENFW_CONFIG_INDEX], $config->Export());
                 }
-                define('PHPOPENFW_CONFIG_INDEX', $session_index);
-                return $config;
+                $GLOBALS['PHPOPENFW_CONFIG'] =& $_SESSION[PHPOPENFW_CONFIG_INDEX];
+                return $GLOBALS['PHPOPENFW_CONFIG'];
+            }
+            else if ($display_errors) {
+                trigger_error('Error: Invalid configuration.');
             }
         }
+        else if ($display_errors) {
+            trigger_error('Error: Configuration file does not exist.');
+		}
     }
 
     //*************************************************************************
@@ -140,19 +191,19 @@ class Core
     	//=====================================================================
     	$config_file = false;
         $force_reload = false;
-        $display_errors = true;
+        $display_errors = false;
         extract($args);
 
     	//=====================================================================
     	// Load Data Sources?
     	//=====================================================================
-    	if ($force_config || !empty($_SESSION['PHPOPENFW_DB_CONFIG_SET'])) {
+    	if ($force_reload || !defined('PHPOPENFW_DB_CONFIG_SET')) {
             if (!$config_file || !file_exists($config_file)) {
-                $config_file = PHPOPENFW_APP_FILE_PATH . '/config/data_source.php';
+                $config_file = PHPOPENFW_APP_FILE_PATH . '/config/data_sources.php';
             }
     		if (file_exists($config_file)) {
     			$data_arr = array();
-    			require($db_config);
+    			require($config_file);
 
     			if (isset($data_arr) && !isset($data_sources)) {
         			$data_sources = $data_arr;
@@ -162,24 +213,21 @@ class Core
     				$key_arr = array_keys($data_sources);
     				foreach ($key_arr as $key) {
     					$reg_code = Core\DataSources::Register($key, $data_sources[$key]);
-    					if (!$reg_code) {
-        					$_SESSION[$key]['handle'] = 0;
-        				}
     				}
-    				$_SESSION['PHPOPENFW_DB_CONFIG_SET'] = true;
+    				if (!defined('PHPOPENFW_DB_CONFIG_SET')) {
+        				define('PHPOPENFW_DB_CONFIG_SET', true);
+                    }
     			}
     			else {
     				if ($display_errors) {
-        				trigger_error('Error: load_db_config(): No data sources defined!');
+        				trigger_error('Error: No data sources defined.');
                     }
-    				$_SESSION['PHPOPENFW_DB_CONFIG_SET'] = false;
     			}
     		}
     		else {
         		if ($display_errors) {
-        			trigger_error('Error: load_db_config(): Data Source Configuration file does not exist!');
+        			trigger_error('Error: Data Source Configuration file does not exist.');
                 }
-    			$_SESSION['PHPOPENFW_DB_CONFIG_SET'] = false;
     		}
     	}
     }
