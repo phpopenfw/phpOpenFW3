@@ -12,7 +12,7 @@
 //*****************************************************************************
 //*****************************************************************************
 
-namespace phpOpenFW;
+namespace phpOpenFW\CLI;
 
 //*****************************************************************************
 /**
@@ -38,20 +38,18 @@ class CLI
 	//*************************************************************************
 	public static function GetInstance($app_path, $raw_args)
 	{
-		//session_start();
-
     	//=====================================================================
 		// Valid Environment?
     	//=====================================================================
 		if (strtoupper(php_sapi_name()) != 'CLI') {
-			print "\nError: Invalid environment.\n\n";
+			self::PrintError('Invalid environment.');
 			exit;
 		}
     	//=====================================================================
 		// Validate App Path
     	//=====================================================================
 		if (!is_dir($app_path)) {
-			trigger_error('Invalid application path.');
+			self::PrintError('Invalid application path.');
 			return false;
 		}
 
@@ -59,7 +57,7 @@ class CLI
 		// Parse Arguments
     	//=====================================================================
 		if (!$args = self::ParseArgs($raw_args)) {
-			trigger_error('Invalid arguments.');
+			self::PrintError('Invalid arguments.');
 			return false;
 		}
 
