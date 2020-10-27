@@ -65,8 +65,8 @@ class Core
         //=====================================================================
         // Setup Methods
         //=====================================================================
-        self::set_version();
-        self::detect_env();
+        self::SetVersion();
+        self::DetectEnv();
 
         //=====================================================================
         // Configuration Session Index
@@ -317,7 +317,7 @@ class Core
      */
     //*************************************************************************
     //*************************************************************************
-    private static function detect_env()
+    private static function DetectEnv()
     {
         if (!defined('POPOPENFW_IS_CLI')) {
             $env = (php_sapi_name() == 'cli') ? (true) : (false);
@@ -333,7 +333,7 @@ class Core
      */
     //*************************************************************************
     //*************************************************************************
-    private static function set_version()
+    private static function SetVersion()
     {
         if (defined('PHPOPENFW_VERSION')) {
             return PHPOPENFW_VERSION;
