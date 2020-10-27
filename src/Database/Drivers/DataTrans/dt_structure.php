@@ -5,11 +5,11 @@
  * DT Structure Class
  * Abstract Data Transaction Structure Class
  *
- * @package        phpOpenFW
- * @author         Christian J. Clark
- * @copyright    Copyright (c) Christian J. Clark
- * @license        https://mit-license.org
- * @access        private
+ * @package         phpOpenFW
+ * @author          Christian J. Clark
+ * @copyright       Copyright (c) Christian J. Clark
+ * @license         https://mit-license.org
+ * @access          private
  */
 //*****************************************************************************
 //*****************************************************************************

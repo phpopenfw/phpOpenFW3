@@ -69,14 +69,26 @@ class Core
         self::DetectEnv();
 
         //=====================================================================
-        // Configuration Session Index
+        // Configuration Storage Initialization
+        // Configuration Session / Globals Index
         //=====================================================================
         if (!defined('PHPOPENFW_CONFIG_INDEX')) {
             if (!$config_index) {
                 $config_index = 'config';
             }
             define('PHPOPENFW_CONFIG_INDEX', $config_index);
+            $_SESSION[$config_index] = [];
         }
+        $GLOBALS[PHPOPENFW_CONFIG_INDEX] =& $_SESSION[PHPOPENFW_CONFIG_INDEX];
+
+        //=====================================================================
+        // Data Sources Storage Initialization
+        //=====================================================================
+        if (!isset($_SESSION['PHPOPENFW_DATA_SOURCES'])) {
+            $_SESSION['PHPOPENFW_DATA_SOURCES'] = [];
+        }
+        $GLOBALS['PHPOPENFW_DATA_SOURCES'] =& $_SESSION['PHPOPENFW_DATA_SOURCES'];
+        $_SESSION['PHPOPENFW_DEFAULT_DATA_SOURCE'] = false;
 
         //=====================================================================
         // Flag phpOpenFW as Bootstrapped
@@ -153,34 +165,18 @@ class Core
         // Defaults / Extract Args
         //=====================================================================
         $config_file = false;
-        $session_index = 'config';
         $display_errors = false;
         extract($args);
 
         //=====================================================================
         // Configuration File Set?
         //=====================================================================
-        if (!$config_file || !file_exists($config_file)) {
-            $config_file = PHPOPENFW_APP_FILE_PATH . '/config.inc.php';
-        }
-        if (file_exists($config_file)) {
-            $config = new Core\Config($config_file);
-            if ($config->IsValid()) {
-                if (!isset($_SESSION[PHPOPENFW_CONFIG_INDEX])) {
-                    $_SESSION[PHPOPENFW_CONFIG_INDEX] = $config->Export();
-                }
-                else {
-                    $_SESSION[PHPOPENFW_CONFIG_INDEX] = array_merge($_SESSION[PHPOPENFW_CONFIG_INDEX], $config->Export());
-                }
-                $GLOBALS['PHPOPENFW_CONFIG'] =& $_SESSION[PHPOPENFW_CONFIG_INDEX];
-                return $GLOBALS['PHPOPENFW_CONFIG'];
-            }
-            else if ($display_errors) {
-                trigger_error('Error: Invalid configuration.');
-            }
+        $config = new Core\AppConfig($args);
+        if ($config->Load($config_file, $args)) {
+            return true;
         }
         else if ($display_errors) {
-            trigger_error('Error: Configuration file does not exist.');
+            trigger_error('Unable to load configuration.');
         }
 
         return false;
@@ -213,6 +209,8 @@ class Core
         // Load Data Sources?
         //=====================================================================
         if ($force_reload || !defined('PHPOPENFW_DB_CONFIG_SET')) {
+            \phpOpenFW\Core\DataSources::Load($args);
+
             if (!$config_file || !file_exists($config_file)) {
                 $config_file = PHPOPENFW_APP_FILE_PATH . '/config/data_sources.php';
             }
@@ -236,43 +234,18 @@ class Core
                 }
                 else {
                     if ($display_errors) {
-                        trigger_error('Error: No data sources defined.');
+                        trigger_error('No data sources defined.');
                     }
                 }
             }
             else {
                 if ($display_errors) {
-                    trigger_error('Error: Data Source Configuration file does not exist.');
+                    trigger_error('Data Source Configuration file does not exist.');
                 }
             }
         }
 
         return false;
-    }
-
-    //*************************************************************************
-    //*************************************************************************
-    /**
-     * Get Configuration Value
-     * @param Index of value to retrieve
-     */
-    //*************************************************************************
-    //*************************************************************************
-    public static function GetConfigValue($index)
-    {
-        if (is_scalar($index)) {
-            if (defined('PHPOPENFW_CONFIG_INDEX') && PHPOPENFW_CONFIG_INDEX) {
-                if (isset($_SESSION[PHPOPENFW_CONFIG_INDEX]) && isset($_SESSION[PHPOPENFW_CONFIG_INDEX][$index])) {
-                    return $_SESSION[PHPOPENFW_CONFIG_INDEX][$index];
-                }
-            }
-            else {
-                if (isset($_SESSION[$index])) {
-                    return $_SESSION[$index];
-                }
-            }
-        }
-        return null;
     }
 
     //*************************************************************************

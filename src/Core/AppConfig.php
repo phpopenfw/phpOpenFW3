@@ -2,7 +2,7 @@
 //*****************************************************************************
 //*****************************************************************************
 /**
- * Config Class
+ * Application Configuration Class
  *
  * @package		phpOpenFW
  * @author 		Christian J. Clark
@@ -12,40 +12,86 @@
 //*****************************************************************************
 //*****************************************************************************
 
-namespace phpOpenFW;
+namespace phpOpenFW\Core;
 
 //*****************************************************************************
 /**
- * Config Class
+ * AppConfig Class
  */
 //*****************************************************************************
-class Config
+class AppConfig
 {
 	//*************************************************************************
     // Class Members
 	//*************************************************************************
-    protected $config_file = false;
     protected $config = [];
-    protected $is_valid = false;
+    protected $display_errors = false;
+
+	//*************************************************************************
+	//*************************************************************************
+	// Get Instanace
+	//*************************************************************************
+	//*************************************************************************
+	public static function Instance(Array $args=[])
+	{
+    	//=====================================================================
+		// Return New AppConfig Object
+    	//=====================================================================
+		return new static($args);
+	}
 
 	//*************************************************************************
 	//*************************************************************************
 	// Constructor function
 	//*************************************************************************
 	//*************************************************************************
-	public function __construct($config_file)
+	public function __construct(Array $args=[])
 	{
+        //---------------------------------------------------------------------
+        // Check that phpOpenFW has been bootstrapped
+        //---------------------------------------------------------------------
+        \phpOpenFW\Core::CheckBootstrapped();
+
+        //---------------------------------------------------------------------
+        // Set Defaults / Args
+        //---------------------------------------------------------------------
+        $display_errors = false;
+        extract($args);
+        $this->display_errors = $display_errors;
+
+        //---------------------------------------------------------------------
+        // Set Config
+        //---------------------------------------------------------------------
+        $this->config =& $_SESSION[PHPOPENFW_CONFIG_INDEX];
+    }
+
+	//*************************************************************************
+	//*************************************************************************
+	// Load Configuration
+	//*************************************************************************
+	//*************************************************************************
+	public function Load($config_file)
+	{
+        //---------------------------------------------------------------------
+        // No Config File Set? Use default.
+        //---------------------------------------------------------------------
+        if (!$config_file || !file_exists($config_file)) {
+            $config_file = PHPOPENFW_APP_FILE_PATH . '/config.inc.php';
+        }
+
         //---------------------------------------------------------------------
         // Validate Config File
         //---------------------------------------------------------------------
         if (!file_exists($config_file)) {
-            throw new \Exception('Configuration file is invalid or cannot be opened.');
+            if ($display_errors) {
+                throw new \Exception('Configuration file is invalid or cannot be opened.');
+            }
+            return false;
         }
 
         //---------------------------------------------------------------------
         // Include Config File
         //---------------------------------------------------------------------
-        $this->config_file = $config_file;
         include($config_file);
 
         //---------------------------------------------------------------------
@@ -53,40 +99,32 @@ class Config
         //---------------------------------------------------------------------
         if (isset($config) && is_array($config)) {
             $this->config = $config;
-            $is_valid = true;
         }
         else if (isset($config_arr) && is_array($config_arr)) {
             $this->config = $config_arr;
-            $is_valid = true;
         }
         else {
-            throw new \Exception('Configuration not set. $config not found.');
+            if ($display_errors) {
+                throw new \Exception('Configuration not set. $config not found.');
+            }
+            return false;
         }
 
         //---------------------------------------------------------------------
-        // 
+        // Set Config in Session
         //---------------------------------------------------------------------
+        if (!isset($_SESSION[PHPOPENFW_CONFIG_INDEX])) {
+            $_SESSION[PHPOPENFW_CONFIG_INDEX] = $config->Export();
+        }
+        else {
+            $_SESSION[PHPOPENFW_CONFIG_INDEX] = array_merge($_SESSION[PHPOPENFW_CONFIG_INDEX], $config->Export());
+        }
+        $GLOBALS[PHPOPENFW_CONFIG_INDEX] =& $_SESSION[PHPOPENFW_CONFIG_INDEX];
 
-    }
-
-	//*************************************************************************
-	//*************************************************************************
-    // Is Configuration Valid?
-	//*************************************************************************
-	//*************************************************************************
-	public function IsValid()
-	{
-        return $this->is_valid;
-    }
-
-	//*************************************************************************
-	//*************************************************************************
-    // Export
-	//*************************************************************************
-	//*************************************************************************
-	public function Export()
-    {
-        return $this->config;
+        //---------------------------------------------------------------------
+        // Configuration Loaded Successfully
+        //---------------------------------------------------------------------
+        return true;
     }
 
 	//*************************************************************************
@@ -97,7 +135,7 @@ class Config
     public function __set($index, $value)
     {
         if (is_scalar($index) && $index != '') {
-            $this->config[$index] = $value;
+            $this->config->$index = $value;
         }
         else {
             throw new \Exception('Invalid index used to set value.');
@@ -112,8 +150,8 @@ class Config
     public function &__get($index)
     {
         if (is_scalar($index) && $index != '') {
-            if (array_key_exists($index, $this->config)) {
-                return $this->config[$index];
+            if (isset($this->config->$index)) {
+                return $this->config->$index;
             }
             return null;
         }
@@ -130,7 +168,7 @@ class Config
     public function __isset($index)
     {
         if (is_scalar($index) && $index != '') {
-            return isset($this->config[$index]);
+            return isset($this->config->$index);
         }
         return null;
     }
@@ -143,7 +181,7 @@ class Config
     public function __unset($index)
     {
         if (is_scalar($index) && $index != '') {
-            unset($this->config[$index]);
+            unset($this->config->$index);
         }
     }
 }
