@@ -180,6 +180,8 @@ class Core
         else if ($display_errors) {
             trigger_error('Error: Configuration file does not exist.');
         }
+
+        return false;
     }
 
     //*************************************************************************
@@ -228,6 +230,7 @@ class Core
                     if (!defined('PHPOPENFW_DB_CONFIG_SET')) {
                         define('PHPOPENFW_DB_CONFIG_SET', true);
                     }
+                    return true;
                 }
                 else {
                     if ($display_errors) {
@@ -241,6 +244,8 @@ class Core
                 }
             }
         }
+
+        return false;
     }
 
     //*************************************************************************
@@ -293,30 +298,6 @@ class Core
             return true;
         }
         return false;
-    }
-
-    //*************************************************************************
-    //*************************************************************************
-    /**
-     * Passthrough methods to Data Sources Class
-     */
-    //*************************************************************************
-    //*************************************************************************
-    public static function reg_data_source($ds_index, $ds_params)
-    {
-        return Core\DataSources::Register($ds_index, $ds_params);
-    }
-    public static function default_data_source($index)
-    {
-        return Core\DataSources::SetDefault($index);
-    }
-    public static function get_default_data_source()
-    {
-        return Core\DataSources::GetDefault();
-    }
-    public static function get_data_source($index)
-    {
-        return Core\DataSources::GetOne($index);
     }
 
     //%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
