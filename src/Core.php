@@ -40,14 +40,14 @@ class Core
         $display_errors = false;
         $config_index = 'config';
         extract($args);
-        
+
         //=====================================================================
         // Define Framework Path?
         //=====================================================================
         if (!defined('PHPOPENFW_FRAME_PATH')) {
             $frame_path = realpath(__DIR__ . '/../../');
             define('PHPOPENFW_FRAME_PATH', $frame_path);
-            $_SESSION['frame_path'] = PHPOPENFW_FRAME_PATH;
+            $_SESSION['PHPOPENFW_FRAME_PATH'] = PHPOPENFW_FRAME_PATH;
         }
 
         //=====================================================================
@@ -59,7 +59,7 @@ class Core
                 return false;
             }
             define('PHPOPENFW_APP_FILE_PATH', $file_path);
-            $_SESSION['file_path'] = PHPOPENFW_APP_FILE_PATH;
+            $_SESSION['PHPOPENFW_APP_FILE_PATH'] = PHPOPENFW_APP_FILE_PATH;
         }
 
         //=====================================================================
@@ -71,10 +71,12 @@ class Core
         //=====================================================================
         // Configuration Session Index
         //=====================================================================
-        if (!$config_index) {
-            $config_index = 'config';
+        if (!defined('PHPOPENFW_CONFIG_INDEX')) {
+            if (!$config_index) {
+                $config_index = 'config';
+            }
+            define('PHPOPENFW_CONFIG_INDEX', $config_index);
         }
-        define('PHPOPENFW_CONFIG_INDEX', $config_index);
 
         //=====================================================================
         // Load Configuration?

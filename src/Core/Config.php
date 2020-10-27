@@ -35,22 +35,38 @@ class Config
 	//*************************************************************************
 	public function __construct($config_file)
 	{
+        //---------------------------------------------------------------------
+        // Validate Config File
+        //---------------------------------------------------------------------
         if (!file_exists($config_file)) {
             throw new \Exception('Configuration file is invalid or cannot be opened.');
         }
+
+        //---------------------------------------------------------------------
+        // Include Config File
+        //---------------------------------------------------------------------
         $this->config_file = $config_file;
         include($config_file);
-        if (isset($config)) {
+
+        //---------------------------------------------------------------------
+        // Check for Configuration Data
+        //---------------------------------------------------------------------
+        if (isset($config) && is_array($config)) {
             $this->config = $config;
             $is_valid = true;
         }
-        else if (isset($config_arr)) {
+        else if (isset($config_arr) && is_array($config_arr)) {
             $this->config = $config_arr;
             $is_valid = true;
         }
         else {
             throw new \Exception('Configuration not set. $config not found.');
         }
+
+        //---------------------------------------------------------------------
+        // 
+        //---------------------------------------------------------------------
+
     }
 
 	//*************************************************************************
@@ -93,7 +109,7 @@ class Config
     // Get
 	//*************************************************************************
 	//*************************************************************************
-    public function __get($index)
+    public function &__get($index)
     {
         if (is_scalar($index) && $index != '') {
             if (array_key_exists($index, $this->config)) {
