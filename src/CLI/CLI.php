@@ -74,24 +74,30 @@ class CLI
 	//*************************************************************************
 	public function __construct($app_path, Array $args=[])
 	{
+		//=====================================================================
+        // Initialize App
+		//=====================================================================
 		$this->app_path = $app_path;
 		define('CLI_APP_ROOT', $app_path);
 		$this->args = $args;
 
 		//=====================================================================
+		// Initialize phpOpenFW
+		//=====================================================================
+		\phpOpenFW\Core::Bootstrap($app_path);
+
+		//=====================================================================
         // Load Configuration
 		//=====================================================================
 		$config = \phpOpenFW\Core::LoadConfiguration();
-		if ($config->IsValid()) {
+		if ($config && $config->IsValid()) {
 			$this->config = $config->Export();
 		}
 
     	//=====================================================================
     	// Load Data Sources
     	//=====================================================================
-    	\phpOpenFW\Core::LoadDataSources([
-        	'display_errors' => false
-    	]);
+    	\phpOpenFW\Core::LoadDataSources();
 	}
 
 	//*************************************************************************
@@ -101,102 +107,7 @@ class CLI
 	//*************************************************************************
 	public function Run()
 	{
-		//=============================================================
-		// Extract Arguments
-		//=============================================================
-		extract($this->args , EXTR_PREFIX_ALL, 'arg');
-
-		//=============================================================
-		// Check Parameters
-		//=============================================================
-		if (empty($this->args['j'])) {
-			self::PrintErrorExit('No job specified (Use -j option).');
-		}
-		else {
-			$mod_title = $this->args['j'];
-			$this->mod_title = $mod_title;
-		}
-
-		//====================================================================
-		// Include Job
-		//====================================================================
-		$job = (isset($this->args['j'])) ? ($this->args['j']) : (false);
-		$job_dir = "{$this->app_path}/controllers/{$job}";
-		if ($job && is_dir($job_dir)) {
-
-			//=============================================================
-			// Job Controller
-			//=============================================================
-			$job_controller = "{$job_dir}/controller.php";
-			if (!file_exists($job_controller)) {
-				self::PrintErrorExit('Unable to find job controller.');
-			}
-		
-			//=============================================================
-			// Job local.inc.php
-			//=============================================================
-			$job_local = "{$job_dir}/local.var.php";
-			if (file_exists($job_local)) {
-				include($job_local);
-				if (!empty($mod_title)) {
-					$this->mod_title = $mod_title;
-				}
-			}
-
-			//=============================================================
-			// Job Title
-			//=============================================================
-			$this->PrintTitle($mod_title);
-
-			//=============================================================
-			// Application CLI Pre-Script File
-			//=============================================================
-			$pre_script = "{$this->app_path}/pre_cli.inc.php";
-			if (file_exists($pre_script)) { include($pre_script); }
-
-			//=============================================================
-			// Environment
-			//=============================================================
-            $this->SetEnv();
-		
-			//=============================================================
-			// Run Mode
-			//=============================================================
-			$run_mode = false;
-			if (isset($this->args['run_mode'])) {
-				$run_mode = $this->args['run_mode'];
-				define('RUN_MODE', $run_mode);
-				$tmp_msg = "Run Mode is '{$run_mode}'";
-				self::PrintMessage($tmp_msg, 0, '*');
-			}
-			define('RUN_MODE', $run_mode);
-
-			//=============================================================
-			// Verbose
-			//=============================================================
-			$verbose = (isset($this->args['v'])) ? (true) : (false);
-			define('VERBOSE', $verbose);
-			if ($verbose) {
-				$tmp_msg = "Verbose output is ON";
-				self::PrintMessage($tmp_msg, 0, '*');
-			}
-		
-			//=============================================================
-			// Call Controller
-			//=============================================================
-            $this->PrintOutputHeader();
-			include($job_controller);
-		
-			//=============================================================
-			// Application CLI Post-Script File
-			//=============================================================
-			$post_script = "{$this->app_path}/post_cli.inc.php";
-			if (file_exists($post_script)) { include($post_script); }
-		
-		}
-		else {
-			self::PrintErrorExit('Invalid job.');
-		}		
+        self::PrintWarning('No Run method.');
 	}
 
 	//*************************************************************************

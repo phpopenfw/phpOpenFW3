@@ -2,7 +2,7 @@
 //*****************************************************************************
 //*****************************************************************************
 /**
- * Batch Job Class
+ * Command Line App Class
  *
  * @package		phpOpenFW
  * @author 		Christian J. Clark
@@ -16,10 +16,10 @@ namespace phpOpenFW\CLI;
 
 //*****************************************************************************
 /**
- * BatchJob Class
+ * App Class
  */
 //*****************************************************************************
-class BatchJob extends CLI
+class App extends CLI
 {
 	//*************************************************************************
 	//*************************************************************************
@@ -29,7 +29,7 @@ class BatchJob extends CLI
 
 	//*************************************************************************
 	//*************************************************************************
-	// Run Batch Job
+	// Run App
 	//*************************************************************************
 	//*************************************************************************
 	public function Run()
@@ -82,9 +82,9 @@ class BatchJob extends CLI
 			$this->PrintTitle($mod_title);
 
 			//=============================================================
-			// Batch Job Pre-Script File
+			// Application Pre-Script File
 			//=============================================================
-			$pre_script = "{$this->app_path}/pre_batch.inc.php";
+			$pre_script = "{$this->app_path}/pre_app.inc.php";
 			if (file_exists($pre_script)) { include($pre_script); }
 
 			//=============================================================
@@ -121,9 +121,9 @@ class BatchJob extends CLI
 			include($job_controller);
 		
 			//=============================================================
-			// Batch Job Post-Script File
+			// Application Post-Script File
 			//=============================================================
-			$post_script = "{$this->app_path}/post_batch.inc.php";
+			$post_script = "{$this->app_path}/post_app.inc.php";
 			if (file_exists($post_script)) { include($post_script); }
 		
 		}
