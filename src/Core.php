@@ -169,7 +169,7 @@ class Core
         extract($args);
 
         //=====================================================================
-        // Configuration File Set?
+        // Load Configuration
         //=====================================================================
         $config = new Core\AppConfig($args);
         if ($config->Load($config_file, $args)) {
@@ -209,39 +209,11 @@ class Core
         // Load Data Sources?
         //=====================================================================
         if ($force_reload || !defined('PHPOPENFW_DB_CONFIG_SET')) {
-            \phpOpenFW\Core\DataSources::Load($args);
-
-            if (!$config_file || !file_exists($config_file)) {
-                $config_file = PHPOPENFW_APP_FILE_PATH . '/config/data_sources.php';
+            if (\phpOpenFW\Core\DataSources::Load($args)) {
+                return true;
             }
-            if (file_exists($config_file)) {
-                $data_arr = array();
-                require($config_file);
-
-                if (isset($data_arr) && !isset($data_sources)) {
-                    $data_sources = $data_arr;
-                }
-
-                if (!empty($data_sources) && is_array($data_sources)) {
-                    $key_arr = array_keys($data_sources);
-                    foreach ($key_arr as $key) {
-                        $reg_code = Core\DataSources::Register($key, $data_sources[$key]);
-                    }
-                    if (!defined('PHPOPENFW_DB_CONFIG_SET')) {
-                        define('PHPOPENFW_DB_CONFIG_SET', true);
-                    }
-                    return true;
-                }
-                else {
-                    if ($display_errors) {
-                        trigger_error('No data sources defined.');
-                    }
-                }
-            }
-            else {
-                if ($display_errors) {
-                    trigger_error('Data Source Configuration file does not exist.');
-                }
+            else if ($display_errors) {
+                trigger_error('Unable to load data sources.');
             }
         }
 
@@ -272,6 +244,7 @@ class Core
             session_destroy();
             return true;
         }
+
         return false;
     }
 
