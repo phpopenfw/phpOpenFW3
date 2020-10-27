@@ -100,7 +100,7 @@ class Config
             $this->config[$index] = $value;
         }
         else {
-            throw new \Exception('Invalid index used to set configuration value.');
+            throw new \Exception('Invalid index used to set value.');
         }
     }
 
@@ -118,7 +118,7 @@ class Config
             return null;
         }
         else {
-            throw new \Exception('Invalid index used to get configuration value.');
+            throw new \Exception('Invalid index used to get value.');
         }
     }
 
