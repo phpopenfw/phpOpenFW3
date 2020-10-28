@@ -55,22 +55,8 @@ class DataTrans
         //=====================================================================
         // Data Source
         //=====================================================================
-        if ($data_src != '') {
-            if (!isset($_SESSION[$data_src])) {
-                trigger_error("Error: [DataTrans]::__construct(): Invalid Data Source '{$data_src}'.");
-                return false;
-            }
-        }
-        else {
-            if (isset($_SESSION['default_data_source'])) {
-                $data_src = $_SESSION['default_data_source'];
-            }
-            else {
-                trigger_error('Error: [DataTrans]::__construct(): Data Source not given and default data source is not set.');
-                return false;
-            }
-        }
-        $this->data_src = $data_src;
+        $ds_obj = \phpOpenFW\Core\DataSources::GetOneOrDefault($data_src);
+        $this->data_src = $ds_obj->index;
 
         //=====================================================================
         // Convert MySQL to MySQLi Database Driver

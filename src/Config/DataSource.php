@@ -119,7 +119,7 @@ class DataSource
         }
 
         //---------------------------------------------------------------------
-        // Register data aource in atorage
+        // Register data source in storage
         //---------------------------------------------------------------------
         $this->data_sources[$key] = $this->params;
         $this->params['index'] = $key;
@@ -146,7 +146,7 @@ class DataSource
         }
 
         //---------------------------------------------------------------------
-        // Register data aource in atorage
+        // Unregister data source in storage
         //---------------------------------------------------------------------
         unset($this->data_sources[$key]);
         $this->is_existing = false;
@@ -260,8 +260,8 @@ class DataSource
         // Load data source
         //---------------------------------------------------------------------
         $this->ds_index = $key;
-        $this->params['index'] = $key;
         $this->params = $this->data_sources[$key];
+        $this->params['index'] = $key;
         $this->registered = true;
         $this->is_existing = true;
 

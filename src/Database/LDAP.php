@@ -4,10 +4,10 @@
 /**
  * LDAP Class
  *
- * @package        phpOpenFW
- * @author         Christian J. Clark
- * @copyright        Copyright (c) Christian J. Clark
- * @license        https://mit-license.org
+ * @package         phpOpenFW
+ * @author          Christian J. Clark
+ * @copyright       Copyright (c) Christian J. Clark
+ * @license         https://mit-license.org
  */
 //*****************************************************************************
 //*****************************************************************************
@@ -41,11 +41,14 @@ class LDAP {
     //*************************************************************************
     public function __construct($data_src='')
     {
-        $this->data_src_data = $this->GetDataSource($data_src);
-        if (!$this->data_src_data) {
-            throw new \Exception("Invalid Data Source '{$data_src}'.");
+        //---------------------------------------------------------------------
+        // Get Data Source or Default if empty
+        //---------------------------------------------------------------------
+        $ds_obj = \phpOpenFW\Core\DataSources::GetOneOrDefault($data_src);
+        if ($ds_obj->type != 'ldap') {
+            throw new \Exception("Invalid data source type. Type 'ldap' expected'.");
         }
-        $this->data_src = $data_src;
+        $this->data_src = $ds_obj->index;
 
         //---------------------------------------------------------------------
         // Set Connection Parameters

@@ -31,6 +31,11 @@ abstract class dr_structure {
 	**/
 	protected $data_src;
 
+    /**
+     * @var object Data source object
+     **/
+    protected $ds_obj;
+
 	/**
 	* @var string Data source type (mysql, mysqli, pgsql, oracle, mssql, db2, sqlsrv, sqlite)
 	**/
@@ -92,27 +97,13 @@ abstract class dr_structure {
 		//=====================================================================
 		// Data Source
 		//=====================================================================
-		if ($data_src != '') {
-			if (!isset($_SESSION[$data_src])) {
-				$this->display_error(__FUNCTION__, "Invalid Data Source '{$data_src}'.");
-				return false;
-			}
-		}
-		else {
-			if (isset($_SESSION['default_data_source'])) {
-				$data_src = $_SESSION['default_data_source'];
-			}
-			else {
-				$this->display_error(__FUNCTION__, 'Data Source not given and default data source is not set.');
-				return false;
-			}
-		}
-		$this->data_src = $data_src;
+        $this->ds_obj = \phpOpenFW\Core\DataSources::GetOneOrDefault($data_src);
+        $this->data_src = $this->ds_obj->index;
 
 		//=====================================================================
 		// Data Type
 		//=====================================================================
-        $this->data_type = $_SESSION[$this->data_src]['type'];
+        $this->data_type = $this->ds_obj->type;
         $this->disp_dt = '[' . strtoupper('dr_' . $this->data_type) . ']';
 
 		//=====================================================================

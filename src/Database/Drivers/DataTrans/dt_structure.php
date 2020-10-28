@@ -34,7 +34,7 @@ abstract class dt_structure
     protected $data_src;
 
     /**
-     * @var string Data source object
+     * @var object Data source object
      **/
     protected $ds_obj;
 
