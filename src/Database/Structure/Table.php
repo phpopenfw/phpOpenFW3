@@ -45,7 +45,7 @@ class Table
         //=====================================================================
         // Get Table Structure Based on Database Type
         //=====================================================================
-        switch ($ds_data['type']) {
+        switch ($ds_obj->type) {
             case 'mysql':
             case 'mysqli':
                 return DatabaseType\MySQL::TableStructure($data_source, $table, $schema);
@@ -89,16 +89,14 @@ class Table
 	public static function DetermineSchema($data_source, $table)
 	{
         //=====================================================================
-        // Validate Data Source
+        // Get Data Source
         //=====================================================================
-        if (!\phpOpenFW\Core\DataSources::Exists($data_source)) {
-            throw new \Exception('Invalid data source.');
-        }
+        $ds_obj = \phpOpenFW\Core\DataSources::GetOneOrDefault($data_source);
 
         //=====================================================================
         // Get Table and Schema Based on Database Type
         //=====================================================================
-        switch ($ds_data['type']) {
+        switch ($ds_obj->type) {
             case 'mysql':
             case 'mysqli':
                 return DatabaseType\MySQL::DetermineSchema($data_source, $table);

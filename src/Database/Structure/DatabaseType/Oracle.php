@@ -40,11 +40,8 @@ class Oracle
 	public static function TableStructure($data_source, $table, $schema=false)
 	{
         //=====================================================================
-        // Validate Data Source and Table
+        // Validate Table Name
         //=====================================================================
-        if (!$ds_data = self::ValidateDataSource($data_source)) {
-            return false;
-        }
         if ($table == '') {
             trigger_error('Invalid table name.');
             return false;

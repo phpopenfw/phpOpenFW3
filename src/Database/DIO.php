@@ -702,6 +702,22 @@ abstract class DIO
 	protected function set_data_source($data_source, $table)
 	{
 		//=====================================================================
+        // Get Data Source
+		//=====================================================================
+    	if (\phpOpenFW\Core\DataSources::IsDataSource($data_src)) {
+        	
+        }
+
+		//=====================================================================
+        // Validate / Set Data Source
+		//=====================================================================
+		$ds_obj = \phpOpenFW\Core\DataSources::GetOne($this->data_source);
+		if (!$ds_obj) {
+    		$this->trigger_error(__METHOD__, 'Data Source does not exist.');
+    		return false;
+		}
+
+		//=====================================================================
 		// Set Class Name
 		//=====================================================================
 		$this->class_name = get_class($this);
@@ -720,20 +736,10 @@ abstract class DIO
         $this->save_default_types = array();
 
 		//=====================================================================
-        // Validate / Set Data Source
-		//=====================================================================
-		$this->data_source = (string)$data_source;
-		$ds_data = \phpOpenFW\Core\DataSources::GetOne($this->data_source);
-		if (!$ds_data) {
-    		$this->trigger_error(__METHOD__, 'Data Source does not exist.');
-    		return false;
-		}
-
-		//=====================================================================
         // Set Database / Database Type
 		//=====================================================================
-        $this->database = $ds_data['source'];
-        $this->db_type = $ds_data['type'];
+        $this->database = $ds_obj->source;
+        $this->db_type = $ds_obj->type;
 
 		//=====================================================================
         // Set Quoted Types

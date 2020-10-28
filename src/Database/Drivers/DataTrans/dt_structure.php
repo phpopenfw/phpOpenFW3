@@ -205,34 +205,37 @@ abstract class dt_structure
     //*************************************************************************
     public function __construct($data_src)
     {
+        //---------------------------------------------------------------------
+        // Data Source Object Passed
+        //---------------------------------------------------------------------
         if (\phpOpenFW\Core\DataSources::IsDataSource($data_src)) {
             $this->ds_obj = $data_src;
-            if (empty($ds_obj->index)) {
-                $ds_obj->index = com_create_guid();
-            }
             $this->data_src = $ds_obj->index;
         }
+        //---------------------------------------------------------------------
+        // Data Source Handle Passed
+        //---------------------------------------------------------------------
         else {
-            $this->ds_obj = \phpOpenFW\Core\DataSources::GetOne($data_src);
+            $this->ds_obj = \phpOpenFW\Core\DataSources::GetOneOrDefault($data_src);
             $this->data_src = $data_src;
         }
 
-        //----------------------------------------------------------
+        //---------------------------------------------------------------------
         // Stored Data Source Specific Parameters
         // First Use
-        //----------------------------------------------------------
+        //---------------------------------------------------------------------
         if (!isset($GLOBALS['PHPOPENFW_DATASOURCE_PARAMS'][$this->data_src])) {
             $GLOBALS['PHPOPENFW_DATASOURCE_PARAMS'][$this->data_src] = [];
-            $this->global_ds_params =& $GLOBALS['PHPOPENFW_DATASOURCE_PARAMS'][$this->data_src];
             $this->first_use = true;
         }
         else {
             $this->first_use = false;
         }
+        $this->global_ds_params =& $GLOBALS['PHPOPENFW_DATASOURCE_PARAMS'][$this->data_src];
 
-        //----------------------------------------------------------
+        //---------------------------------------------------------------------
         // Set Data Source Variables
-        //----------------------------------------------------------
+        //---------------------------------------------------------------------
         $this->data_type = $this->ds_obj->type;
         $this->server = $this->ds_obj->server;
         $this->port = $this->ds_obj->port;
@@ -258,18 +261,18 @@ abstract class dt_structure
         $this->inst_opts = array();
         $this->data_result = false;
 
-        //----------------------------------------------------------
+        //---------------------------------------------------------------------
         // Connection Persistent?
-        //----------------------------------------------------------
+        //---------------------------------------------------------------------
         if (isset($this->ds_obj->persistent)) {
             $p = $this->ds_obj->persistent;
             $this->persistent = (empty($p) || strtolower($p) == 'no') ? (false) : (true);
         }
         else { $this->persistent = false; }
 
-        //----------------------------------------------------------
+        //---------------------------------------------------------------------
         // Reuse One Connetion?
-        //----------------------------------------------------------
+        //---------------------------------------------------------------------
         if (in_array($this->data_type, array('db2', 'oracle', 'sqlsrv'))) {
             $this->reuse_connection = true;
         }
@@ -284,9 +287,9 @@ abstract class dt_structure
             $this->reuse_connection = false;
         }
 
-        //----------------------------------------------------------
+        //---------------------------------------------------------------------
         // Database Handle
-        //----------------------------------------------------------
+        //---------------------------------------------------------------------
         if ($this->reuse_connection) {
             if (empty($this->global_ds_params['handle'])) {
                 $this->global_ds_params['handle'] = false;
@@ -294,9 +297,9 @@ abstract class dt_structure
             $this->handle =& $this->global_ds_params['handle'];
         }
 
-        //----------------------------------------------------------
+        //---------------------------------------------------------------------
         // Auto Commit
-        //----------------------------------------------------------
+        //---------------------------------------------------------------------
         if ($this->reuse_connection) {
             if ($this->first_use) {
                 $this->global_ds_params['auto_commit'] = true;
@@ -307,9 +310,9 @@ abstract class dt_structure
             $this->auto_commit = true;
         }
 
-        //----------------------------------------------------------
+        //---------------------------------------------------------------------
         // Transaction Started?
-        //----------------------------------------------------------
+        //---------------------------------------------------------------------
         if ($this->reuse_connection) {
             if ($this->first_use) {
                 $this->global_ds_params['trans_started'] = false;
@@ -320,16 +323,16 @@ abstract class dt_structure
             $this->trans_started = false;
         }
 
-        //----------------------------------------------------------
+        //---------------------------------------------------------------------
         // Character Set
-        //----------------------------------------------------------
+        //---------------------------------------------------------------------
         if ($this->charset) {
             $this->set_opt('charset', $this->charset);
         }
 
-        //----------------------------------------------------------
+        //---------------------------------------------------------------------
         // Open Connection
-        //----------------------------------------------------------
+        //---------------------------------------------------------------------
         $this->open();
     }
 
@@ -791,11 +794,6 @@ abstract class dt_structure
         }
         $GLOBALS[$tmp_index]++;
 
-if ($GLOBALS[$tmp_index] > 1) {
-    var_dump('More than 1 connection.');
-    var_dump($this->handle);
-    
-}
         //---------------------------------------------------------------------
         // Data source specific connection count
         //---------------------------------------------------------------------

@@ -55,8 +55,14 @@ class DataTrans
         //=====================================================================
         // Data Source
         //=====================================================================
-        $ds_obj = \phpOpenFW\Core\DataSources::GetOneOrDefault($data_src);
-        $this->data_src = $ds_obj->index;
+        if (\phpOpenFW\Core\DataSources::IsDataSource($data_src)) {
+            $ds_obj = $data_src;
+            $this->data_src = '';
+        }
+        else {
+            $ds_obj = \phpOpenFW\Core\DataSources::GetOneOrDefault($data_src);
+            $this->data_src = $ds_obj->index;
+        }
 
         //=====================================================================
         // Create Object based on Data Source Type

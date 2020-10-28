@@ -198,6 +198,20 @@ class DataSources
     public static function GetOne($index)
     {
         //---------------------------------------------------------------------
+        // Is this already a Data Source Object? Return it.
+        //---------------------------------------------------------------------
+        if (self::IsDataSource($index)) {
+            return $index;
+        }
+
+        //---------------------------------------------------------------------
+        // Validate Index
+        //---------------------------------------------------------------------
+        if (!is_scalar($index) || $index == '') {
+            throw new \Exception('Data source index not given.');
+        }
+
+        //---------------------------------------------------------------------
         // Return DataSource Object Instance
         //---------------------------------------------------------------------
         return \phpOpenFW\Config\DataSource::Instance($index);
@@ -216,7 +230,16 @@ class DataSources
         // Return DataSource Object Instance
         //---------------------------------------------------------------------
         if ($index != '') {
-            return \phpOpenFW\Config\DataSource::Instance($index);
+
+            //-----------------------------------------------------------------
+            // Is this already a Data Source Object? Return it.
+            //-----------------------------------------------------------------
+            if (self::IsDataSource($index)) {
+                return $index;
+            }
+            else {
+                return \phpOpenFW\Config\DataSource::Instance($index);
+            }
         }
         //---------------------------------------------------------------------
         // Return Default DataSource Object Instance

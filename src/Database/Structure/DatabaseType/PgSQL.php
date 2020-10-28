@@ -40,11 +40,10 @@ class PgSQL
 	public static function TableStructure($data_source, $table, $schema=false)
 	{
         //=====================================================================
-        // Validate Data Source and Table
+        // Get Data Source
+        // Validate Table Name
         //=====================================================================
-        if (!$ds_data = self::ValidateDataSource($data_source)) {
-            return false;
-        }
+        $ds_obj = self::GetDataSource($data_source);
         if ($table == '') {
             trigger_error('Invalid table name.');
             return false;
@@ -56,9 +55,9 @@ class PgSQL
     	$table_info = [];
 
         //=====================================================================
-        // Set Table and Schema
+        // Determine Table and Schema
         //=====================================================================
-        $database = $ds_data['source'];
+        $database = $ds_obj->source;
         $tmp = Structure\Table::DetermineSchema($data_source, $table);
         $table = $tmp['table'];
         $schema = (!$tmp['schema'] && $schema) ? ($schema) : ($tmp['schema']);
