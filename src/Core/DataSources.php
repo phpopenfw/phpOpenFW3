@@ -226,6 +226,7 @@ class DataSources
             if (!$ds_obj) {
                 throw new \Exception('Data source not given and default data source is not set.');
             }
+            return $ds_obj;
         }
     }
 

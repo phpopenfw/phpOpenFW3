@@ -207,6 +207,9 @@ abstract class dt_structure
     {
         if (\phpOpenFW\Core\DataSources::IsDataSource($data_src)) {
             $this->ds_obj = $data_src;
+            if (empty($ds_obj->index)) {
+                $ds_obj->index = com_create_guid();
+            }
             $this->data_src = $ds_obj->index;
         }
         else {
@@ -218,9 +221,9 @@ abstract class dt_structure
         // Stored Data Source Specific Parameters
         // First Use
         //----------------------------------------------------------
-        if (!isset($GLOBALS['PHPOPENFW_DATASOURCE_PARAMS'][$data_src])) {
-            $GLOBALS['PHPOPENFW_DATASOURCE_PARAMS'][$data_src] = [];
-            $global_ds_params =& $GLOBALS['PHPOPENFW_DATASOURCE_PARAMS'][$data_src];
+        if (!isset($GLOBALS['PHPOPENFW_DATASOURCE_PARAMS'][$this->data_src])) {
+            $GLOBALS['PHPOPENFW_DATASOURCE_PARAMS'][$this->data_src] = [];
+            $this->global_ds_params =& $GLOBALS['PHPOPENFW_DATASOURCE_PARAMS'][$this->data_src];
             $this->first_use = true;
         }
         else {
@@ -240,7 +243,7 @@ abstract class dt_structure
         $this->conn_str = $this->ds_obj->conn_str;
         $this->options = $this->ds_obj->options;
         $this->charset = $this->ds_obj->charset;
-        $this->handle = false;
+        $this->handle = $this->ds_obj->handle;
         $this->result = array();
         $this->results_set = false;
         $this->num_rows = false;
@@ -285,10 +288,10 @@ abstract class dt_structure
         // Database Handle
         //----------------------------------------------------------
         if ($this->reuse_connection) {
-            if (empty($global_ds_params['handle'])) {
-                $global_ds_params['handle'] = false;
+            if (empty($this->global_ds_params['handle'])) {
+                $this->global_ds_params['handle'] = false;
             }
-            $this->handle =& $global_ds_params['handle'];
+            $this->handle =& $this->global_ds_params['handle'];
         }
 
         //----------------------------------------------------------
@@ -296,9 +299,9 @@ abstract class dt_structure
         //----------------------------------------------------------
         if ($this->reuse_connection) {
             if ($this->first_use) {
-                $global_ds_params['auto_commit'] = true;
+                $this->global_ds_params['auto_commit'] = true;
             }
-            $this->auto_commit =& $global_ds_params['auto_commit'];
+            $this->auto_commit =& $this->global_ds_params['auto_commit'];
         }
         else {
             $this->auto_commit = true;
@@ -309,9 +312,9 @@ abstract class dt_structure
         //----------------------------------------------------------
         if ($this->reuse_connection) {
             if ($this->first_use) {
-                $global_ds_params['trans_started'] = false;
+                $this->global_ds_params['trans_started'] = false;
             }
-            $this->trans_started =& $global_ds_params['trans_started'];
+            $this->trans_started =& $this->global_ds_params['trans_started'];
         }
         else {
             $this->trans_started = false;
@@ -788,13 +791,18 @@ abstract class dt_structure
         }
         $GLOBALS[$tmp_index]++;
 
+if ($GLOBALS[$tmp_index] > 1) {
+    var_dump('More than 1 connection.');
+    var_dump($this->handle);
+    
+}
         //---------------------------------------------------------------------
         // Data source specific connection count
         //---------------------------------------------------------------------
-        if (!isset($global_ds_params['connections'])) {
-            $global_ds_params['connections'] = 0;
+        if (!isset($this->global_ds_params['connections'])) {
+            $this->global_ds_params['connections'] = 0;
         }
-        $global_ds_params['connections']++;
+        $this->global_ds_params['connections']++;
     }
 
 }

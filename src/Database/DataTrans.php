@@ -59,26 +59,23 @@ class DataTrans
         $this->data_src = $ds_obj->index;
 
         //=====================================================================
-        // Convert MySQL to MySQLi Database Driver
-        //=====================================================================
-        if ($_SESSION[$this->data_src]['type'] == 'mysql') {
-            $_SESSION[$this->data_src]['type'] = 'mysqli';
-        }
-
-        //=====================================================================
         // Create Object based on Data Source Type
         //=====================================================================
-        $this->data_type = $_SESSION[$this->data_src]['type'];
+        $this->data_type = $ds_obj->type;
         $dt_class = '\phpOpenFW\Database\Drivers\DataTrans\dt_' . $this->data_type;
         $this->data_object = new $dt_class($this->data_src);
 
         //=====================================================================
         // Check if we are setting the character set
         //=====================================================================
-        if (!empty($_SESSION[$this->data_src]['charset'])) {
-            $this->data_object->set_opt('charset', $_SESSION[$this->data_src]['charset']);
+        if (!empty($ds_obj->charset)) {
+            $this->data_object->set_opt('charset', $ds_obj->charset);
         }
-        
+
+		//=====================================================================
+        // Return newly created object
+		//=====================================================================
+        return $this->data_object;
         return $this->data_object;
     }
 

@@ -53,40 +53,29 @@ class DataResult
 	//*************************************************************************
 	public function __construct($resource, $data_src='', $opts=false)
 	{
-		//=====================================================================
-		// Data Source
-		//=====================================================================
-		if ($data_src != '') {
-			if (!isset($_SESSION[$data_src])) {
-				$this->display_error(__FUNCTION__, "Invalid Data Source '{$data_src}'.");
-				return false;
-			}
-		}
-		else {
-			if (isset($_SESSION['default_data_source'])) {
-				$data_src = $_SESSION['default_data_source'];
-			}
-			else {
-				$this->display_error(__FUNCTION__, 'Data Source not given and default data source is not set.');
-				return false;
-			}
-		}
-		$this->data_src = $data_src;
-
-		//=====================================================================
-		// Convert MySQL to MySQLi Database Driver
-		//=====================================================================
-        if ($_SESSION[$this->data_src]['type'] == 'mysql') {
-            $_SESSION[$this->data_src]['type'] = 'mysqli';
-        }
+        //=====================================================================
+        // Data Source
+        //=====================================================================
+        $ds_obj = \phpOpenFW\Core\DataSources::GetOneOrDefault($data_src);
+        $this->data_src = $ds_obj->index;
 
 		//=====================================================================
         // Create Object based on Data Source Type
 		//=====================================================================
-        $this->data_type = $_SESSION[$this->data_src]['type'];
+        $this->data_type = $ds_obj->type;
         $dr_class = '\phpOpenFW\Database\Drivers\DataResult\dr_' . $this->data_type;
-        $this->data_object = new $dr_class($resource, $data_src, $opts);
+        $this->data_object = new $dr_class($resource, $this->data_src, $opts);
 
+        //=====================================================================
+        // Check if we are setting the character set
+        //=====================================================================
+        if (!empty($ds_obj->charset)) {
+            $this->data_object->set_opt('charset', $ds_obj->charset);
+        }
+
+		//=====================================================================
+        // Return newly created object
+		//=====================================================================
         return $this->data_object;
 	}
 

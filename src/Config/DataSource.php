@@ -212,12 +212,28 @@ class DataSource
         ];
 
         //---------------------------------------------------------------------
-        // Count Valid Parameters 
+        // Count / Validate Parameters
         //---------------------------------------------------------------------
         $param_count = 0;
         $new_data_source = [];
         foreach ($known_params as $index) {
+            $index = strtolower($index);
             if (array_key_exists($index, $params)) {
+
+                //-------------------------------------------------------------
+                // Type
+                //-------------------------------------------------------------
+                if ($index == 'type') {
+                    $params[$index] = strtolower($params[$index]);
+                    if ($params[$index] == 'mysql') {
+                        $params[$index] = 'mysqli';
+                    }
+                }
+
+                //-------------------------------------------------------------
+                // Set Value
+                // Increment Parameter Count
+                //-------------------------------------------------------------
                 $new_data_source[$index] = $params[$index];
                 $param_count++;
             }
