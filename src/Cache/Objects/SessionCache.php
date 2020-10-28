@@ -32,11 +32,11 @@ class SessionCache extends Core
     	}
     	$this->key = (string)$key;
     	$this->existed = true;
-    	if (!isset($_SESSION['dco'][$this->key])) {
-    		$_SESSION['dco'][$this->key] = array();
+    	if (!isset($_SESSION['PHPOPENFW_DCO'][$this->key])) {
+    		$_SESSION['PHPOPENFW_DCO'][$this->key] = array();
     		$this->existed = false;
     	}
-        $this->container =& $_SESSION['dco'][$this->key];
+        $this->container =& $_SESSION['PHPOPENFW_DCO'][$this->key];
         $this->scope = 'session';
     }
 }

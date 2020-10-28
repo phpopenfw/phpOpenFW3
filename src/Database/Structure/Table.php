@@ -38,10 +38,8 @@ class Table
         //=====================================================================
         // Validate Data Source
         //=====================================================================
-        $ds_data = \phpOpenFW\Core\DataSources::GetOne($data_source);
-        if (!$ds_data) {
-            trigger_error('Invalid data source.');
-            return false;
+        if (!\phpOpenFW\Core\DataSources::Exists($data_source)) {
+            throw new \Exception('Invalid data source.');
         }
 
         //=====================================================================
@@ -93,10 +91,8 @@ class Table
         //=====================================================================
         // Validate Data Source
         //=====================================================================
-        $ds_data = \phpOpenFW\Core\DataSources::GetOne($data_source);
-        if (!$ds_data) {
-            trigger_error('Invalid data source.');
-            return false;
+        if (!\phpOpenFW\Core\DataSources::Exists($data_source)) {
+            throw new \Exception('Invalid data source.');
         }
 
         //=====================================================================
@@ -200,17 +196,6 @@ class Table
         	    return DatabaseType\DB2::QuotedTypes();
                 break;
 
-        }
-
-        //=====================================================================
-        // Unknown Database Type
-        //=====================================================================
-        // If not strict mode, try to interpret as data source handle
-        //=====================================================================
-        if (!$strict) {
-            if ($data_source = \phpOpenFW\Core\DataSources::GetOne($db_type)) {
-                return self::QuotedTypes($data_source['type'], true);
-            }
         }
 
         return false;
