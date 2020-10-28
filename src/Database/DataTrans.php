@@ -53,23 +53,16 @@ class DataTrans
     public function __construct($data_src='')
     {
         //=====================================================================
-        // Data Source
+        // Get Data Source
         //=====================================================================
-        if (\phpOpenFW\Core\DataSources::IsDataSource($data_src)) {
-            $ds_obj = $data_src;
-            $this->data_src = '';
-        }
-        else {
-            $ds_obj = \phpOpenFW\Core\DataSources::GetOneOrDefault($data_src);
-            $this->data_src = $ds_obj->index;
-        }
+        $ds_obj = \phpOpenFW\Core\DataSources::GetOneOrDefault($data_src);
 
         //=====================================================================
         // Create Object based on Data Source Type
         //=====================================================================
         $this->data_type = $ds_obj->type;
         $dt_class = '\phpOpenFW\Database\Drivers\DataTrans\dt_' . $this->data_type;
-        $this->data_object = new $dt_class($this->data_src);
+        $this->data_object = new $dt_class($ds_obj);
 
         //=====================================================================
         // Check if we are setting the character set

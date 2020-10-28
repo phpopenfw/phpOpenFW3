@@ -27,12 +27,6 @@ abstract class dt_structure
     //*************************************************************************    
     // Class variables
     //*************************************************************************
-
-    /**
-     * @var string Data source index/name
-     **/
-    protected $data_src;
-
     /**
      * @var object Data source object
      **/
@@ -208,30 +202,21 @@ abstract class dt_structure
         //---------------------------------------------------------------------
         // Data Source Object Passed
         //---------------------------------------------------------------------
-        if (\phpOpenFW\Core\DataSources::IsDataSource($data_src)) {
-            $this->ds_obj = $data_src;
-            $this->data_src = $ds_obj->index;
-        }
-        //---------------------------------------------------------------------
-        // Data Source Handle Passed
-        //---------------------------------------------------------------------
-        else {
-            $this->ds_obj = \phpOpenFW\Core\DataSources::GetOneOrDefault($data_src);
-            $this->data_src = $data_src;
-        }
+        $this->ds_obj = \phpOpenFW\Core\DataSources::GetOneOrDefault($data_src);
 
         //---------------------------------------------------------------------
         // Stored Data Source Specific Parameters
         // First Use
         //---------------------------------------------------------------------
-        if (!isset($GLOBALS['PHPOPENFW_DATASOURCE_PARAMS'][$this->data_src])) {
-            $GLOBALS['PHPOPENFW_DATASOURCE_PARAMS'][$this->data_src] = [];
+        $global_id = (!empty($this->ds_obj->index)) ? ($this->ds_obj->index) : ($this->ds_obj->internal_id);
+        if (!isset($GLOBALS['PHPOPENFW_DATASOURCE_PARAMS'][$global_id])) {
+            $GLOBALS['PHPOPENFW_DATASOURCE_PARAMS'][$global_id] = [];
             $this->first_use = true;
         }
         else {
             $this->first_use = false;
         }
-        $this->global_ds_params =& $GLOBALS['PHPOPENFW_DATASOURCE_PARAMS'][$this->data_src];
+        $this->global_ds_params =& $GLOBALS['PHPOPENFW_DATASOURCE_PARAMS'][$global_id];
 
         //---------------------------------------------------------------------
         // Set Data Source Variables

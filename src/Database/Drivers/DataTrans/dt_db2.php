@@ -174,7 +174,7 @@ class dt_db2 extends dt_structure
             //----------------------------------------------
             // Create Data Result Object
             //----------------------------------------------
-            $this->data_result = new DataResult($this->stmt, $this->data_src);
+            $this->data_result = new DataResult($this->stmt, $this->ds_obj);
 
             //----------------------------------------------
             // Last Insert ID
@@ -347,7 +347,7 @@ class dt_db2 extends dt_structure
             //----------------------------------------------
             // Create Data Result Object
             //----------------------------------------------
-            $this->data_result = new DataResult($this->stmt, $this->data_src);
+            $this->data_result = new DataResult($this->stmt, $this->ds_obj);
 
             //----------------------------------------------
             // Last Insert ID

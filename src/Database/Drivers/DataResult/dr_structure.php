@@ -26,11 +26,6 @@ abstract class dr_structure {
 	//*************************************************************************
 	// Class variables
 	//*************************************************************************
-	/**
-	* @var string Data source index as specified in the configuration
-	**/
-	protected $data_src;
-
     /**
      * @var object Data source object
      **/
@@ -97,17 +92,7 @@ abstract class dr_structure {
         //---------------------------------------------------------------------
         // Data Source Object Passed
         //---------------------------------------------------------------------
-        if (\phpOpenFW\Core\DataSources::IsDataSource($data_src)) {
-            $this->ds_obj = $data_src;
-            $this->data_src = $ds_obj->index;
-        }
-        //---------------------------------------------------------------------
-        // Data Source Handle Passed
-        //---------------------------------------------------------------------
-        else {
-            $this->ds_obj = \phpOpenFW\Core\DataSources::GetOneOrDefault($data_src);
-            $this->data_src = $data_src;
-        }
+        $this->ds_obj = \phpOpenFW\Core\DataSources::GetOneOrDefault($data_src);
 
         //---------------------------------------------------------------------
 		// Data Type

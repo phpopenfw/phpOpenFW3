@@ -129,7 +129,7 @@ class dt_oracle extends dt_structure
 		// Fetch Associative Record Set
         if ($this->rsrc_id) {
         	if (gettype($this->rsrc_id) != 'boolean') {
-        		$this->data_result = new DataResult($this->rsrc_id, $this->data_src);
+        		$this->data_result = new DataResult($this->rsrc_id, $this->ds_obj);
 	        	$this->num_rows = $this->data_result->num_rows();
 	        	$this->num_fields = $this->data_result->num_fields();
 	            $this->affected_rows = oci_num_rows($this->rsrc_id);
@@ -286,7 +286,7 @@ class dt_oracle extends dt_structure
 		// Fetch Associative Record Set
         if ($this->stmt) {
         	if (gettype($this->stmt) != 'boolean') {
-        		$this->data_result = new DataResult($this->stmt, $this->data_src);
+        		$this->data_result = new DataResult($this->stmt, $this->ds_obj);
 	        	$this->num_rows = $this->data_result->num_rows();
 	        	$this->num_fields = $this->data_result->num_fields();
 	            $this->affected_rows = oci_num_rows($this->stmt);

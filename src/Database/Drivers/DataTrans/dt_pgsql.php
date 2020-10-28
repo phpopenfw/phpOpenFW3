@@ -113,7 +113,7 @@ class dt_pgsql extends dt_structure
 		// Create Data Result Object if Necessary
 		//----------------------------------------------
     	if ($this->rsrc_id && gettype($this->rsrc_id) != 'boolean') {
-        	$this->data_result = new DataResult($this->rsrc_id, $this->data_src);
+        	$this->data_result = new DataResult($this->rsrc_id, $this->ds_obj);
         }
 
 		//----------------------------------------------
@@ -251,7 +251,7 @@ class dt_pgsql extends dt_structure
 			// Create Data Result Object if Necessary
 			//----------------------------------------------
         	if ($this->rsrc_id && gettype($this->rsrc_id) != 'boolean') {
-	        	$this->data_result = new DataResult($this->rsrc_id, $this->data_src);
+	        	$this->data_result = new DataResult($this->rsrc_id, $this->ds_obj);
 	        }
         }
 

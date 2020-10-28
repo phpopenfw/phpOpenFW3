@@ -122,7 +122,7 @@ class dt_mysqli extends dt_structure
 		// Create Data Result Object if Necessary
 		//----------------------------------------------
     	if ($this->rsrc_id && gettype($this->rsrc_id) != 'boolean') {
-        	$this->data_result = new DataResult($this->rsrc_id, $this->data_src);
+        	$this->data_result = new DataResult($this->rsrc_id, $this->ds_obj);
         }
 
 		//----------------------------------------------
@@ -332,7 +332,7 @@ class dt_mysqli extends dt_structure
 				$this->rsrc_id = $this->stmt->get_result();
 				if (gettype($this->rsrc_id) != 'boolean') {
 					$opts = array('stmt' => $this->stmt, 'prepared_query' => 1);
-		        	$this->data_result = new DataResult($this->rsrc_id, $this->data_src, $opts);
+		        	$this->data_result = new DataResult($this->rsrc_id, $this->ds_obj, $opts);
 		        }
 	        }
 			//---------------------------------------------------
@@ -341,7 +341,7 @@ class dt_mysqli extends dt_structure
 	        else {
 		        $this->stmt->store_result();
 	        	$opts = array('stmt' => $this->stmt, 'prepared_query' => 1);
-	        	$this->data_result = new DataResult($this->stmt, $this->data_src, $opts);
+	        	$this->data_result = new DataResult($this->stmt, $this->ds_obj, $opts);
 	        }
 		}
 

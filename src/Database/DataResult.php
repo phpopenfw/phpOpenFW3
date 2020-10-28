@@ -27,11 +27,6 @@ class DataResult
 	// Class variables
 	//************************************************************************
 	/**
-	* @var string Data source index as specified in the configuration
-	**/
-	private $data_src;
-
-	/**
 	* @var string Data source type (mysql, mysqli, pgsql, oracle, mssql, db2, sqlsrv, sqlite)
 	**/
 	private $data_type;
@@ -54,23 +49,16 @@ class DataResult
 	public function __construct($resource, $data_src='', $opts=false)
 	{
         //=====================================================================
-        // Data Source
+        // Get Data Source
         //=====================================================================
-        if (\phpOpenFW\Core\DataSources::IsDataSource($data_src)) {
-            $ds_obj = $data_src;
-            $this->data_src = '';
-        }
-        else {
-            $ds_obj = \phpOpenFW\Core\DataSources::GetOneOrDefault($data_src);
-            $this->data_src = $ds_obj->index;
-        }
+        $ds_obj = \phpOpenFW\Core\DataSources::GetOneOrDefault($data_src);
 
 		//=====================================================================
         // Create Object based on Data Source Type
 		//=====================================================================
         $this->data_type = $ds_obj->type;
         $dr_class = '\phpOpenFW\Database\Drivers\DataResult\dr_' . $this->data_type;
-        $this->data_object = new $dr_class($resource, $this->data_src, $opts);
+        $this->data_object = new $dr_class($resource, $ds_obj, $opts);
 
         //=====================================================================
         // Check if we are setting the character set
