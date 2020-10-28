@@ -77,7 +77,7 @@ class Core
                 $config_index = 'config';
             }
             define('PHPOPENFW_CONFIG_INDEX', $config_index);
-            $_SESSION[$config_index] = [];
+            $_SESSION[PHPOPENFW_CONFIG_INDEX] = new \stdClass();
         }
         $GLOBALS[PHPOPENFW_CONFIG_INDEX] =& $_SESSION[PHPOPENFW_CONFIG_INDEX];
 
@@ -171,7 +171,7 @@ class Core
         //=====================================================================
         // Load Configuration
         //=====================================================================
-        $config = new Core\AppConfig($args);
+        $config = new \phpOpenFW\Core\AppConfig($args);
         if ($config->Load($config_file, $args)) {
             return true;
         }
@@ -209,7 +209,11 @@ class Core
         // Load Data Sources?
         //=====================================================================
         if ($force_reload || !defined('PHPOPENFW_DB_CONFIG_SET')) {
-            if (\phpOpenFW\Core\DataSources::Load($args)) {
+            if (\phpOpenFW\Core\DataSources::Load($config_file, $args)) {
+                $config = new \phpOpenFW\Core\AppConfig($args);
+                if ($config->default_data_source) {
+                    \phpOpenFW\Core\DataSources::SetDefault($config->default_data_source);
+                }
                 return true;
             }
             else if ($display_errors) {

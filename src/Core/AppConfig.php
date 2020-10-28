@@ -24,7 +24,7 @@ class AppConfig
 	//*************************************************************************
     // Class Members
 	//*************************************************************************
-    protected $config = [];
+    protected $config_data = [];
     protected $display_errors = false;
 
 	//*************************************************************************
@@ -62,7 +62,7 @@ class AppConfig
         //---------------------------------------------------------------------
         // Set Config
         //---------------------------------------------------------------------
-        $this->config =& $_SESSION[PHPOPENFW_CONFIG_INDEX];
+        $this->config_data =& $_SESSION[PHPOPENFW_CONFIG_INDEX];
     }
 
 	//*************************************************************************
@@ -98,10 +98,10 @@ class AppConfig
         // Check for Configuration Data
         //---------------------------------------------------------------------
         if (isset($config) && is_array($config)) {
-            $this->config = $config;
+            $this->SetConfigValues($this->config_data, $config);
         }
         else if (isset($config_arr) && is_array($config_arr)) {
-            $this->config = $config_arr;
+            $this->SetConfigValues($this->config_data, $config_arr);
         }
         else {
             if ($display_errors) {
@@ -111,21 +111,66 @@ class AppConfig
         }
 
         //---------------------------------------------------------------------
-        // Set Config in Session
-        //---------------------------------------------------------------------
-        if (!isset($_SESSION[PHPOPENFW_CONFIG_INDEX])) {
-            $_SESSION[PHPOPENFW_CONFIG_INDEX] = $config->Export();
-        }
-        else {
-            $_SESSION[PHPOPENFW_CONFIG_INDEX] = array_merge($_SESSION[PHPOPENFW_CONFIG_INDEX], $config->Export());
-        }
-        $GLOBALS[PHPOPENFW_CONFIG_INDEX] =& $_SESSION[PHPOPENFW_CONFIG_INDEX];
-
-        //---------------------------------------------------------------------
         // Configuration Loaded Successfully
         //---------------------------------------------------------------------
         return true;
     }
+
+	//*************************************************************************
+	//*************************************************************************
+	// Export Configuration
+	//*************************************************************************
+    // Formats: array (default), json, raw
+	//*************************************************************************
+	//*************************************************************************
+	public function Export($format='')
+	{
+        if ($format == 'raw') {
+            return $this->config_data;
+        }
+        else if ($format == 'json') {
+            return json_encode($this->config_data);
+        }
+        else {
+            return (array)$this->config_data;
+        }
+    }
+
+    //%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+    //%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+    // Internal Methods
+    //%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+    //%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+	//*************************************************************************
+	//*************************************************************************
+    // Set Config Values
+	//*************************************************************************
+	//*************************************************************************
+    protected function SetConfigValues(&$config, $values)
+    {
+        if (!is_iterable($values)) {
+            return false;
+        }
+
+        foreach ($values as $index => $value) {
+            if (is_iterable($value)) {
+                $config->$index = new \stdClass();
+                $this->SetConfigValues($config->$index, $value);
+            }
+            else {
+                $config->$index = $value;
+            }
+        }
+
+        return true;
+    }
+
+    //%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+    //%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+    // Magic Methods
+    //%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+    //%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 	//*************************************************************************
 	//*************************************************************************
@@ -135,7 +180,7 @@ class AppConfig
     public function __set($index, $value)
     {
         if (is_scalar($index) && $index != '') {
-            $this->config->$index = $value;
+            $this->config_data->$index = $value;
         }
         else {
             throw new \Exception('Invalid index used to set value.');
@@ -150,8 +195,8 @@ class AppConfig
     public function &__get($index)
     {
         if (is_scalar($index) && $index != '') {
-            if (isset($this->config->$index)) {
-                return $this->config->$index;
+            if (isset($this->config_data->$index)) {
+                return $this->config_data->$index;
             }
             return null;
         }
@@ -168,7 +213,7 @@ class AppConfig
     public function __isset($index)
     {
         if (is_scalar($index) && $index != '') {
-            return isset($this->config->$index);
+            return isset($this->config_data->$index);
         }
         return null;
     }
@@ -181,7 +226,7 @@ class AppConfig
     public function __unset($index)
     {
         if (is_scalar($index) && $index != '') {
-            unset($this->config->$index);
+            unset($this->config_data->$index);
         }
     }
 }

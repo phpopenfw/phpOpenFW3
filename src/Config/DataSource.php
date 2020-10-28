@@ -88,7 +88,7 @@ class DataSource
     // Register 
     //*************************************************************************
     //*************************************************************************
-    public function Register($key)
+    public function Register($key, $overwrite=false)
     {
         //---------------------------------------------------------------------
         // Existing data source?
@@ -114,8 +114,8 @@ class DataSource
         //---------------------------------------------------------------------
         // Check if data source already exists
         //---------------------------------------------------------------------
-        if (array_key_exists($key, $this->data_sources)) {
-            throw new \Exception("A data source is already registered under the index '{$index}'.");
+        if (array_key_exists($key, $this->data_sources) && !$overwrite) {
+            return $this;
         }
 
         //---------------------------------------------------------------------
@@ -172,7 +172,7 @@ class DataSource
             $_SESSION['PHPOPENFW_DEFAULT_DATA_SOURCE'] = $this->ds_index;
         }
         else {
-            throw new \Exception("Data source not registered. Only registered data sources can be set as default.");
+            throw new \Exception('Data source not registered. Only registered data sources can be set as default.');
         }
 
         //---------------------------------------------------------------------
@@ -212,19 +212,20 @@ class DataSource
         //---------------------------------------------------------------------
         // Count Valid Parameters 
         //---------------------------------------------------------------------
+        $param_count = 0;
         $new_data_source = [];
         foreach ($known_params as $index) {
             if (array_key_exists($index, $params)) {
                 $new_data_source[$index] = $params[$index];
-                $param_count--;
+                $param_count++;
             }
         }
 
         //---------------------------------------------------------------------
         // Validate that there are valid parameters set
         //---------------------------------------------------------------------
-        if (count($new_data_source) > 0) {
-            throw new \Exception("No valid data source parameters passed.");
+        if (count($new_data_source) == 0) {
+            throw new \Exception('No valid data source parameters passed.');
         }
 
         //---------------------------------------------------------------------
@@ -246,6 +247,20 @@ class DataSource
     //*************************************************************************
     protected function Load($key)
     {
+        //---------------------------------------------------------------------
+        // Does data source exist?
+        //---------------------------------------------------------------------
+        if (!isset($this->data_sources[$key])) {
+            throw new \Exception("Data source '{$key}' does not exist.");
+        }
+
+        //---------------------------------------------------------------------
+        // Load data source
+        //---------------------------------------------------------------------
+        $this->params = $this->data_sources[$key];
+        $this->registered = true;
+        $this->is_existing = true;
+        $this->ds_index = $key;
 
         //---------------------------------------------------------------------
         // Return true for success
@@ -270,7 +285,7 @@ class DataSource
             $this->params[$index] = $value;
         }
         else {
-            throw new \Exception('Invalid index used to set value.');
+            throw new \Exception('Invalid index used to set data source value.');
         }
     }
 
@@ -288,7 +303,7 @@ class DataSource
             return null;
         }
         else {
-            throw new \Exception('Invalid index used to get data source param value.');
+            throw new \Exception('Invalid index used to get data source value.');
         }
     }
 

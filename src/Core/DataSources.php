@@ -30,7 +30,7 @@ class DataSources
      */
     //*************************************************************************
     //*************************************************************************
-    public static function Load($config_file)
+    public static function Load($config_file, Array $args=[])
     {
         //---------------------------------------------------------------------
         // Check that phpOpenFW has been bootstrapped
@@ -192,6 +192,18 @@ class DataSources
         // Return DataSource Object Instance
         //---------------------------------------------------------------------
         return \phpOpenFW\Config\DataSource::Instance($index);
+    }
+
+    //*************************************************************************
+    //*************************************************************************
+    /**
+     * Data Source Exists Function
+     */
+    //*************************************************************************
+    //*************************************************************************
+    public static function Exists($index)
+    {
+        return (isset($_SESSION['PHPOPENFW_DATA_SOURCES'][$index]));
     }
 
 }

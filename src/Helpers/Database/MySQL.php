@@ -261,7 +261,7 @@ class MySQL extends \phpOpenFW\Cores\StaticCore
 				and a.table_name = b.table_name
 		";
 
-		return \phpOpenFW\Database\QDB::qdb_exec($ds, $strsql, array('ss', $db, $field), 'table_name:table_name');
+		return \phpOpenFW\Database\QDB::qdb_exec($ds, $strsql, ['ss', $db, $field], 'table_name:table_name');
 	}
 
 	//*************************************************************************

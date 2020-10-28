@@ -141,7 +141,6 @@ class HTTP
     		}
     	}
     	else {
-    		$_SESSION['html_path'] = $path;
     		$self = $_SERVER['PHP_SELF'];
     		$self_arr = explode('/', $self);
     		foreach ($self_arr as $item) {

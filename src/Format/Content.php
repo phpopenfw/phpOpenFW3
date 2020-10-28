@@ -103,8 +103,9 @@ class Content
 	//=========================================================================
 	public static function get_saveable_password($pass, $aps=false)
 	{
-		if (!$aps && isset($_SESSION['auth_pass_security'])) {
-			$aps = $_SESSION['auth_pass_security'];
+    	$config = new \phpOpenFW\Core\AppConfig();
+		if (!$aps && isset($config->auth_pass_security)) {
+			$aps = $config->auth_pass_security;
 		}
 		$aps = strtolower($aps);
 	
