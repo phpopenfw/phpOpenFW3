@@ -4,10 +4,10 @@
 /**
  * MongoDB Class
  *
- * @package        phpOpenFW
- * @author         Christian J. Clark
- * @copyright    Copyright (c) Christian J. Clark
- * @license        https://mit-license.org
+ * @package         phpOpenFW
+ * @author          Christian J. Clark
+ * @copyright       Copyright (c) Christian J. Clark
+ * @license         https://mit-license.org
  */
 //*****************************************************************************
 //*****************************************************************************
@@ -24,6 +24,7 @@ class MongoDB {
     //*************************************************************************
     // Class Members
     //*************************************************************************
+    protected $pofw_mongo_conns;
     protected $data_src;
     protected $mongo_client;
     protected $mongo_client_db;
@@ -39,25 +40,30 @@ class MongoDB {
         //=====================================================================
         // Data Source
         //=====================================================================
-        $ds_obj = self::GetDataSource($data_src);
-        $this->data_src = $data_src;
+        $ds_obj = \phpOpenFW\Core\DataSources::GetOneOrDefault($data_src);
+        $this->data_src = $ds_obj->index;
+
+        //=====================================================================
+        // Set phpOpenFW MongoDB Connections Pool
+        //=====================================================================
+        $this->pofw_mongo_conns =& $GLOBALS['PHPOPENFW_MONGODB_CONNECTIONS'];
 
         //=====================================================================
         // Connect
         //=====================================================================
-        if (!isset($GLOBALS[$this->data_src])) {
-            $GLOBALS[$this->data_src] = [];
+        if (!isset($this->pofw_mongo_conns[$this->data_src])) {
+            $this->pofw_mongo_conns[$this->data_src] = [];
             $this->mongo_client = self::Connect($this->data_src);
-            $GLOBALS[$this->data_src]['mongo_client'] =& $this->mongo_client;
+            $this->pofw_mongo_conns[$this->data_src]['mongo_client'] =& $this->mongo_client;
             $this->mongo_client_db = $this->mongo_client->{$ds_obj->source};
-            $GLOBALS[$this->data_src]['mongo_client_db'] =& $this->mongo_client_db;
+            $this->pofw_mongo_conns[$this->data_src]['mongo_client_db'] =& $this->mongo_client_db;
             $this->mongo_client_db_gridfs = $this->mongo_client_db->selectGridFSBucket();
-            $GLOBALS[$this->data_src]['mongo_client_db_gridfs'] =& $this->mongo_client_db_gridfs;
+            $this->pofw_mongo_conns[$this->data_src]['mongo_client_db_gridfs'] =& $this->mongo_client_db_gridfs;
         }
         else {
-            $this->mongo_client =& $GLOBALS[$this->data_src]['mongo_client'];
-            $this->mongo_client_db =& $GLOBALS[$this->data_src]['mongo_client_db'];
-            $this->mongo_client_db_gridfs =& $GLOBALS[$this->data_src]['mongo_client_db_gridfs'];
+            $this->mongo_client =& $this->pofw_mongo_conns[$this->data_src]['mongo_client'];
+            $this->mongo_client_db =& $this->pofw_mongo_conns[$this->data_src]['mongo_client_db'];
+            $this->mongo_client_db_gridfs =& $this->pofw_mongo_conns[$this->data_src]['mongo_client_db_gridfs'];
         }
     }
 
@@ -448,30 +454,6 @@ class MongoDB {
         }
 
         return false;
-    }
-
-    //%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-    //%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-    //%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-    // Internal Methods
-    //%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-    //%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-    //%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-
-    //*************************************************************************
-    //*************************************************************************
-    // Get Data Source
-    //*************************************************************************
-    //*************************************************************************
-    protected static function GetDataSource($data_source)
-    {
-        if ($data_source == '') {
-            $data_source = \phpOpenFW\Core\DataSources::GetDefault();
-            if (!$data_source) {
-                throw new \Exception('Data source not given and default data source is not set.');
-            }
-        }
-        return \phpOpenFW\Config\DataSource::Instance($data_source);
     }
 
 }

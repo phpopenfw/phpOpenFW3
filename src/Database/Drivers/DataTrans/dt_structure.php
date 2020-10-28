@@ -34,6 +34,11 @@ abstract class dt_structure
     protected $data_src;
 
     /**
+     * @var string Data source object
+     **/
+    protected $ds_obj;
+
+    /**
      * @var string Data source type (mysql, mysqli, pgsql, oracle, mssql, db2, sqlsrv, sqlite)
      **/
     protected $data_type;
@@ -114,11 +119,6 @@ abstract class dt_structure
     protected $last_id;
     
     /**
-     * @var bool User is bound to data source for this transaction (true or false) 
-     **/
-    protected $bound;
-
-    /**
      * @var bool Connection Open (true or false) 
      **/
     protected $conn_open;
@@ -189,6 +189,11 @@ abstract class dt_structure
     protected $charset;
 
     /**
+     * @var Array Global data source parameters (does not live in session)
+     **/
+    protected $global_ds_params;
+
+    /**
      * Constructor function
      *
      * Initializes data transaction, setting all necessary variables from specified data source
@@ -200,43 +205,47 @@ abstract class dt_structure
     //*************************************************************************
     public function __construct($data_src)
     {
-        if (!array_key_exists($data_src, $_SESSION)) {
-            trigger_error('Invalid data source!!');
-            return false;
+        if (\phpOpenFW\Core\DataSources::IsDataSource($data_src)) {
+            $this->ds_obj = $data_src;
+            $this->data_src = $ds_obj->index;
+        }
+        else {
+            $this->ds_obj = \phpOpenFW\Core\DataSources::GetOne($data_src);
+            $this->data_src = $data_src;
         }
 
         //----------------------------------------------------------
         // Stored Data Source Specific Parameters
         // First Use
         //----------------------------------------------------------
-        if (!isset($GLOBALS['data_source_params'][$data_src])) {
-            $GLOBALS['data_source_params'][$data_src] = array();
+        if (!isset($GLOBALS['PHPOPENFW_DATASOURCE_PARAMS'][$data_src])) {
+            $GLOBALS['PHPOPENFW_DATASOURCE_PARAMS'][$data_src] = [];
+            $global_ds_params =& $GLOBALS['PHPOPENFW_DATASOURCE_PARAMS'][$data_src];
             $this->first_use = true;
         }
-        else { $this->first_use = false; }
+        else {
+            $this->first_use = false;
+        }
 
         //----------------------------------------------------------
         // Set Data Source Variables
         //----------------------------------------------------------
-        $this->data_src = $data_src;
-        $this->data_type = (isset($_SESSION[$data_src]['type'])) ? (strtolower($_SESSION[$data_src]['type'])) : (false);
-        $this->server = (isset($_SESSION[$data_src]['server'])) ? ($_SESSION[$data_src]['server']) : (false);
-        $this->port = (isset($_SESSION[$data_src]['port'])) ? ($_SESSION[$data_src]['port']) : (false);
-        $this->instance = (isset($_SESSION[$data_src]['instance'])) ? ($_SESSION[$data_src]['instance']) : (false);
-        $this->source = (isset($_SESSION[$data_src]['source'])) ? ($_SESSION[$data_src]['source']) : (false);
-        $this->user = (isset($_SESSION[$data_src]['user'])) ? ($_SESSION[$data_src]['user']) : (false);
-        $this->pass = (isset($_SESSION[$data_src]['pass'])) ? ($_SESSION[$data_src]['pass']) : (false);
-        $this->conn_str = (isset($_SESSION[$data_src]['conn_str'])) ? ($_SESSION[$data_src]['conn_str']) : (false);
-        $this->options = (isset($_SESSION[$data_src]['options'])) ? ($_SESSION[$data_src]['options']) : (false);
-        $this->charset = (isset($_SESSION[$data_src]['charset'])) ? ($_SESSION[$data_src]['charset']) : (false);
+        $this->data_type = $this->ds_obj->type;
+        $this->server = $this->ds_obj->server;
+        $this->port = $this->ds_obj->port;
+        $this->instance = $this->ds_obj->instance;
+        $this->source = $this->ds_obj->source;
+        $this->user = $this->ds_obj->user;
+        $this->pass = $this->ds_obj->pass;
+        $this->conn_str = $this->ds_obj->conn_str;
+        $this->options = $this->ds_obj->options;
+        $this->charset = $this->ds_obj->charset;
         $this->handle = false;
         $this->result = array();
         $this->results_set = false;
         $this->num_rows = false;
         $this->num_fields = false;
         $this->affected_rows = false;
-        $this->print_query = false;
-        $this->bound = false;
         $this->last_id = NULL;
         $this->conn_open = false;
         $this->disp_dt = '[' . strtoupper('dt_' . $this->data_type) . ']';
@@ -249,8 +258,8 @@ abstract class dt_structure
         //----------------------------------------------------------
         // Connection Persistent?
         //----------------------------------------------------------
-        if (isset($_SESSION[$data_src]['persistent'])) {
-            $p = $_SESSION[$data_src]['persistent'];
+        if (isset($this->ds_obj->persistent)) {
+            $p = $this->ds_obj->persistent;
             $this->persistent = (empty($p) || strtolower($p) == 'no') ? (false) : (true);
         }
         else { $this->persistent = false; }
@@ -261,48 +270,51 @@ abstract class dt_structure
         if (in_array($this->data_type, array('db2', 'oracle', 'sqlsrv'))) {
             $this->reuse_connection = true;
         }
-        else if (isset($_SESSION[$data_src]['reuse_connection'])) {
-            $p = $_SESSION[$data_src]['reuse_connection'];
+        else if (isset($this->ds_obj->reuse_connection)) {
+            $p = $this->ds_obj->reuse_connection;
             $this->reuse_connection = (empty($p) || strtolower($p) == 'no') ? (false) : (true);
         }
         else if (in_array($this->data_type, array('pgsql', 'mssql', 'mysql', 'mysqli', 'sqlite'))) {
             $this->reuse_connection = true;
         }
-        else { $this->reuse_connection = false; }
+        else {
+            $this->reuse_connection = false;
+        }
 
         //----------------------------------------------------------
         // Database Handle
         //----------------------------------------------------------
         if ($this->reuse_connection) {
-            if (empty($GLOBALS['data_source_params'][$data_src]['handle'])) {
-                $GLOBALS['data_source_params'][$data_src]['handle'] = false;
+            if (empty($global_ds_params['handle'])) {
+                $global_ds_params['handle'] = false;
             }
-            $this->handle =& $GLOBALS['data_source_params'][$data_src]['handle'];
+            $this->handle =& $global_ds_params['handle'];
         }
 
         //----------------------------------------------------------
         // Auto Commit
         //----------------------------------------------------------
         if ($this->reuse_connection) {
-            if ($this->first_use) { $GLOBALS['data_source_params'][$data_src]['auto_commit'] = true; }
-            $this->auto_commit =& $GLOBALS['data_source_params'][$data_src]['auto_commit'];
+            if ($this->first_use) {
+                $global_ds_params['auto_commit'] = true;
+            }
+            $this->auto_commit =& $global_ds_params['auto_commit'];
         }
-        else { $this->auto_commit = true; }
+        else {
+            $this->auto_commit = true;
+        }
 
         //----------------------------------------------------------
         // Transaction Started?
         //----------------------------------------------------------
         if ($this->reuse_connection) {
-            if ($this->first_use) { $GLOBALS['data_source_params'][$data_src]['trans_started'] = false; }
-            $this->trans_started =& $GLOBALS['data_source_params'][$data_src]['trans_started'];
+            if ($this->first_use) {
+                $global_ds_params['trans_started'] = false;
+            }
+            $this->trans_started =& $global_ds_params['trans_started'];
         }
-        else { $this->trans_started = false; }
-
-        //----------------------------------------------------------
-        // Set Debug Level
-        //----------------------------------------------------------
-        if (isset($_SESSION['data_debug']) && $_SESSION['data_debug']) {
-            $this->print_query = true;
+        else {
+            $this->trans_started = false;
         }
 
         //----------------------------------------------------------
@@ -393,14 +405,6 @@ abstract class dt_structure
      **/
     //*************************************************************************
     public function clear_last_insert_id() { $this->last_id = NULL; }
-
-    //*************************************************************************
-    /**
-     * Return whether the current user is bound to the current data source
-     * @return Whether the current user is bound to the current data source
-     **/
-    //*************************************************************************
-    public function is_bound() { return $this->bound; }
 
     //*************************************************************************
     /**
@@ -547,36 +551,6 @@ abstract class dt_structure
 
         $this->results_set = true;
         return 0;
-    }
-
-    //*************************************************************************
-    /**
-     * Bind to a Data Source (Used for Authentication Primarily)
-     * @param string userid of the user trying to bind to data source
-     * @param string password of the user trying to bind to data source
-     **/
-    //*************************************************************************
-    // Bind to a data source as a specified user
-    // *** Used for Authentication
-    //*************************************************************************
-    public function bind($user, $pass)
-    {
-        $ret_val = false;
-
-        //---------------------------------------------------
-        // Cache Record Results
-        //---------------------------------------------------
-        $this->cache_results();
-
-        //---------------------------------------------------
-        // Check Password
-        //---------------------------------------------------
-        if (isset($this->result[0][$_SESSION['auth_pass_field']]) && $this->result[0][$_SESSION['auth_pass_field']] == $pass) {
-            $ret_val = true;
-            $this->bound = true;
-        }
-
-        return $ret_val;
     }
 
     /**
@@ -804,16 +778,23 @@ abstract class dt_structure
     //*************************************************************************
     protected function increment_counters()
     {
+        //---------------------------------------------------------------------
         // Total connections for a data source type
-        $tmp_index = "{$this->data_type}_conns";
-        if (!isset($GLOBALS[$tmp_index])) { $GLOBALS[$tmp_index] = 0; }
+        //---------------------------------------------------------------------
+        $type = strtoupper($this->data_type);
+        $tmp_index = "PHPOPENFW_{$type}_CONNS";
+        if (!isset($GLOBALS[$tmp_index])) {
+            $GLOBALS[$tmp_index] = 0;
+        }
         $GLOBALS[$tmp_index]++;
 
+        //---------------------------------------------------------------------
         // Data source specific connection count
-        if (!isset($GLOBALS['data_source_params'][$this->data_src]['connections'])) {
-            $GLOBALS['data_source_params'][$this->data_src]['connections'] = 0;
+        //---------------------------------------------------------------------
+        if (!isset($global_ds_params['connections'])) {
+            $global_ds_params['connections'] = 0;
         }
-        $GLOBALS['data_source_params'][$this->data_src]['connections']++;
+        $global_ds_params['connections']++;
     }
 
 }

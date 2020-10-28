@@ -166,7 +166,7 @@ class DataSources
      */
     //*************************************************************************
     //*************************************************************************
-    public static function GetDefault()
+    public static function GetDefault($return_object=false)
     {
         //---------------------------------------------------------------------
         // Check that phpOpenFW has been bootstrapped
@@ -176,7 +176,16 @@ class DataSources
         //---------------------------------------------------------------------
         // Return Default Data Source
         //---------------------------------------------------------------------
-        return $_SESSION['PHPOPENFW_DEFAULT_DATA_SOURCE'];
+        if (!$return_object) {
+            return $_SESSION['PHPOPENFW_DEFAULT_DATA_SOURCE'];
+        }
+        else {
+            if ($_SESSION['PHPOPENFW_DEFAULT_DATA_SOURCE']) {
+                return \phpOpenFW\Config\DataSource::Instance($_SESSION['PHPOPENFW_DEFAULT_DATA_SOURCE']);
+            }
+        }
+
+        return false;
     }
 
     //*************************************************************************
@@ -197,6 +206,32 @@ class DataSources
     //*************************************************************************
     //*************************************************************************
     /**
+     * Get a Registered Data Source Function or the Default Data Source
+     */
+    //*************************************************************************
+    //*************************************************************************
+    public static function GetOneOrDefault($index)
+    {
+        //---------------------------------------------------------------------
+        // Return DataSource Object Instance
+        //---------------------------------------------------------------------
+        if ($index != '') {
+            return \phpOpenFW\Config\DataSource::Instance($index);
+        }
+        //---------------------------------------------------------------------
+        // Return Default DataSource Object Instance
+        //---------------------------------------------------------------------
+        else {
+            $ds_obj = self::GetDefault(true);
+            if (!$ds_obj) {
+                throw new \Exception('Data source not given and default data source is not set.');
+            }
+        }
+    }
+
+    //*************************************************************************
+    //*************************************************************************
+    /**
      * Data Source Exists Function
      */
     //*************************************************************************
@@ -204,6 +239,21 @@ class DataSources
     public static function Exists($index)
     {
         return (isset($_SESSION['PHPOPENFW_DATA_SOURCES'][$index]));
+    }
+
+    //*************************************************************************
+    //*************************************************************************
+    /**
+     * Is Object a Data Source
+     */
+    //*************************************************************************
+    //*************************************************************************
+    public static function IsDataSource($obj)
+    {
+        if (gettype($obj) == 'object' && get_class($obj) == 'phpOpenFW\Config\DataSource') {
+            return true;
+        }
+        return false;
     }
 
 }

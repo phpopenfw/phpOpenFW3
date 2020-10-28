@@ -25,7 +25,7 @@ class DataSource
     // Class Members
     //*************************************************************************
     protected $data_sources;
-    protected $params;
+    protected $params = [];
     protected $registered = false;
     protected $is_existing = false;
     protected $ds_index = false;
@@ -122,6 +122,7 @@ class DataSource
         // Register data aource in atorage
         //---------------------------------------------------------------------
         $this->data_sources[$key] = $this->params;
+        $this->params['index'] = $key;
         $this->ds_index = $key;
 
         //---------------------------------------------------------------------
@@ -148,9 +149,10 @@ class DataSource
         // Register data aource in atorage
         //---------------------------------------------------------------------
         unset($this->data_sources[$key]);
-        $this->ds_index = false;
         $this->is_existing = false;
         $this->registered = false;
+        $this->params['index'] = false;
+        $this->ds_index = false;
 
         //---------------------------------------------------------------------
         // Return object for chaining
@@ -257,10 +259,11 @@ class DataSource
         //---------------------------------------------------------------------
         // Load data source
         //---------------------------------------------------------------------
+        $this->ds_index = $key;
+        $this->params['index'] = $key;
         $this->params = $this->data_sources[$key];
         $this->registered = true;
         $this->is_existing = true;
-        $this->ds_index = $key;
 
         //---------------------------------------------------------------------
         // Return true for success
