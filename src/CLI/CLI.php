@@ -316,29 +316,29 @@ class CLI
 
     //*************************************************************************
     //*************************************************************************
-	// Colored Message
+    // Colored Message
     //*************************************************************************
     //*************************************************************************
-	protected static function ColoredMessage($msg, $fg_color=null, $bg_color=null)
-	{
-		$fg_colors = [
-		    'black'         => '0;30',
-		    'dark_gray'     => '1;30',
-		    'blue'          => '0;34',
-		    'light_blue'    => '1;34',
-		    'green'         => '0;32',
-		    'light_green'   => '1;32',
-		    'cyan'          => '0;36',
-		    'light_cyan'    => '1;36',
-		    'red'           => '0;31',
-		    'light_red'     => '1;31',
-		    'purple'        => '0;35',
-		    'light_purple'  => '1;35',
-		    'brown'         => '0;33',
-		    'yellow'        => '1;33',
-		    'light_gray'    => '0;37',
-		    'white'         => '1;37',
-		];    
+    protected static function ColoredMessage($msg, $fg_color=null, $bg_color=null)
+    {
+        $fg_colors = [
+            'black'         => '0;30',
+            'dark_gray'     => '1;30',
+            'blue'          => '0;34',
+            'light_blue'    => '1;34',
+            'green'         => '0;32',
+            'light_green'   => '1;32',
+            'cyan'          => '0;36',
+            'light_cyan'    => '1;36',
+            'red'           => '0;31',
+            'light_red'     => '1;31',
+            'purple'        => '0;35',
+            'light_purple'  => '1;35',
+            'brown'         => '0;33',
+            'yellow'        => '1;33',
+            'light_gray'    => '0;37',
+            'white'         => '1;37',
+        ];    
         $bg_colors = [
             'black'         => '40',
             'red'           => '41',
@@ -350,19 +350,19 @@ class CLI
             'light_gray'    => '47'
         ];
 
-		$colors = '';
-		if (isset($fg_colors[$fg_color])) {
-			$colors .= "\033[" . $fg_colors[$fg_color] . "m";
-		}
-		if (isset($bg_colors[$bg_color])) {
-			$colors .= "\033[" . $bg_colors[$bg_color] . "m";
-		}
-
-		if ($colors) {
-    		return "{$colors}{$msg}\033[0m";
+        $colors = '';
+        if (isset($fg_colors[$fg_color])) {
+            $colors .= "\033[" . $fg_colors[$fg_color] . "m";
+        }
+        if (isset($bg_colors[$bg_color])) {
+            $colors .= "\033[" . $bg_colors[$bg_color] . "m";
         }
 
-		return $msg;
-	}
+        if ($colors) {
+            return "{$colors}{$msg}\033[0m";
+        }
+
+        return $msg;
+    }
 
 }
