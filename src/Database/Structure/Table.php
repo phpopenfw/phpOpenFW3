@@ -38,9 +38,7 @@ class Table
         //=====================================================================
         // Validate Data Source
         //=====================================================================
-        if (!\phpOpenFW\Core\DataSources::Exists($data_source)) {
-            throw new \Exception('Invalid data source.');
-        }
+        $ds_obj = \phpOpenFW\Core\DataSources::GetOneOrDefault($data_source);
 
         //=====================================================================
         // Get Table Structure Based on Database Type
