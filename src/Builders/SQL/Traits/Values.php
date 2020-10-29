@@ -4,10 +4,10 @@
 /**
  * SQL Values Trait
  *
- * @package		phpOpenFW
- * @author 		Christian J. Clark
- * @copyright	Copyright (c) Christian J. Clark
- * @license		https://mit-license.org
+ * @package         phpOpenFW
+ * @author          Christian J. Clark
+ * @copyright       Copyright (c) Christian J. Clark
+ * @license         https://mit-license.org
  **/
 //**************************************************************************************
 //**************************************************************************************
@@ -22,17 +22,17 @@ namespace phpOpenFW\Builders\SQL\Traits;
 trait Values
 {
     //=========================================================================
-	// Trait Memebers
+    // Trait Memebers
     //=========================================================================
-	protected $set_fields = [];
+    protected $set_fields = [];
 
     //=========================================================================
     //=========================================================================
-	// Values Method
+    // Values Method
     //=========================================================================
     //=========================================================================
-	public function Values(Array $values)
-	{
+    public function Values(Array $values)
+    {
         foreach ($values as $key => $value) {
             if (!is_numeric($key)) {
                 if (is_array($value)) {
@@ -42,25 +42,25 @@ trait Values
                     $value = [$key, $value];
                 }
             }
-        	if (!isset($value[0]) || !array_key_exists(1, $value)) {
-            	throw new \Exception('Invalid value specified while setting values. (1)');
-        	}
-        	$val1 = $value[0];
-        	$val2 = $value[1];
-        	$val3 = (!empty($value[2])) ? ($value[2]) : (false);
-        	$this->Value($val1, $val2, $val3);
+            if (!isset($value[0]) || !array_key_exists(1, $value)) {
+                throw new \Exception('Invalid value specified while setting values. (1)');
+            }
+            $val1 = $value[0];
+            $val2 = $value[1];
+            $val3 = (!empty($value[2])) ? ($value[2]) : (false);
+            $this->Value($val1, $val2, $val3);
         }
 
         return $this;
-	}
+    }
 
     //=========================================================================
     //=========================================================================
-	// Values Method
+    // Values Method
     //=========================================================================
     //=========================================================================
-	public function Value($field, $value, $type='s')
-	{
+    public function Value($field, $value, $type='s')
+    {
         if (!is_scalar($field) || is_numeric($field)) {
             throw new \Exception('Invalid field name specified while setting value.');
         }
@@ -70,7 +70,7 @@ trait Values
         if (!$type) { $type = 's'; }
         $this->set_fields[] = [$field, $value, $type];
         return $this;
-	}
+    }
 
     //##################################################################################
     //##################################################################################
@@ -138,6 +138,6 @@ trait Values
         // Everything Else, False.
         //-------------------------------------------------------
         return false;
-	}
+    }
 
 }

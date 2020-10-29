@@ -4,10 +4,10 @@
 /**
  * SQL Nested Conditions Class
  *
- * @package		phpOpenFW
- * @author 		Christian J. Clark
- * @copyright	Copyright (c) Christian J. Clark
- * @license		https://mit-license.org
+ * @package         phpOpenFW
+ * @author          Christian J. Clark
+ * @copyright       Copyright (c) Christian J. Clark
+ * @license         https://mit-license.org
  **/
 //*****************************************************************************
 //*****************************************************************************
@@ -27,9 +27,9 @@ class Nested extends \phpOpenFW\Builders\SQL\Core
     use \phpOpenFW\Builders\SQL\Traits\Where;
 
     //=========================================================================
-	// Class Memebers
+    // Class Memebers
     //=========================================================================
-	protected $parent_query;
+    protected $parent_query;
 
     //=========================================================================
     //=========================================================================
@@ -54,7 +54,7 @@ class Nested extends \phpOpenFW\Builders\SQL\Core
     //=========================================================================
     public function __toString()
     {
-		return $this->FormatConditions($this->wheres);
-	}
+        return $this->FormatConditions($this->wheres);
+    }
 
 }

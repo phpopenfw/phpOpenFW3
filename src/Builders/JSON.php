@@ -4,10 +4,10 @@
 /**
  * JSON Builder Class
  *
- * @package		phpOpenFW
- * @author 		Christian J. Clark
- * @copyright		Copyright (c) Christian J. Clark
- * @license		https://mit-license.org
+ * @package         phpOpenFW
+ * @author          Christian J. Clark
+ * @copyright       Copyright (c) Christian J. Clark
+ * @license         https://mit-license.org
  **/
 //*****************************************************************************
 //*****************************************************************************
@@ -83,7 +83,7 @@ class JSON
     //=========================================================================
     public function Get($path)
     {
-	return $this->en_arr->Get($path);
+        return $this->en_arr->Get($path);
     }
 
     //=========================================================================
@@ -93,7 +93,7 @@ class JSON
     //=========================================================================
     public function Set($path, $value, $set_root=false)
     {
-	return $this->en_arr->Set($path, $value, $this->arr, $set_root);
+        return $this->en_arr->Set($path, $value, $this->arr, $set_root);
     }
 
 }

@@ -4,10 +4,10 @@
 /**
  * SQL Limit Trait
  *
- * @package		phpOpenFW
- * @author 		Christian J. Clark
- * @copyright	Copyright (c) Christian J. Clark
- * @license		https://mit-license.org
+ * @package         phpOpenFW
+ * @author          Christian J. Clark
+ * @copyright       Copyright (c) Christian J. Clark
+ * @license         https://mit-license.org
  **/
 //*****************************************************************************
 //*****************************************************************************
@@ -22,32 +22,32 @@ namespace phpOpenFW\Builders\SQL\Traits;
 trait Limit
 {
     //=========================================================================
-	// Trait Memebers
+    // Trait Memebers
     //=========================================================================
-	protected $limit = false;
-	protected $offset = false;
+    protected $limit = false;
+    protected $offset = false;
 
     //=========================================================================
     //=========================================================================
-	// Limit Clause Method
+    // Limit Clause Method
     //=========================================================================
     //=========================================================================
-	public function Limit($limit, $offset=false)
-	{
-		if (is_null($limit)) {
-			$this->limit = false;
-		}
-		else if ($limit != '' && (int)$limit) {
-    		$this->limit = (int)$limit;
-		}
-		if (is_null($offset)) {
-			$this->offset = false;
-		}
-		else if ($offset != '' && (int)$offset) {
-    		$this->offset = (int)$offset;
-		}
-		return $this;
-	}
+    public function Limit($limit, $offset=false)
+    {
+        if (is_null($limit)) {
+            $this->limit = false;
+        }
+        else if ($limit != '' && (int)$limit) {
+            $this->limit = (int)$limit;
+        }
+        if (is_null($offset)) {
+            $this->offset = false;
+        }
+        else if ($offset != '' && (int)$offset) {
+            $this->offset = (int)$offset;
+        }
+        return $this;
+    }
 
     //#########################################################################
     //#########################################################################
@@ -59,34 +59,34 @@ trait Limit
 
     //=========================================================================
     //=========================================================================
-	// Format Limit Clause Method
+    // Format Limit Clause Method
     //=========================================================================
     //=========================================================================
-	protected function FormatLimit()
-	{
-    	$ret_val = '';
+    protected function FormatLimit()
+    {
+        $ret_val = '';
 
         //---------------------------------------------------------------------
         // MySQL Limit / Offset
         //---------------------------------------------------------------------
-    	if ($this->db_type == 'mysql' || $this->db_type == 'pgsql') {
-    		if ($this->limit) {
-    			$ret_val = 'LIMIT ' . $this->limit;
-    		}
-    		if ($this->offset) {
-    			$ret_val .= ' OFFSET ' . $this->offset;
-    		}
+        if ($this->db_type == 'mysql' || $this->db_type == 'pgsql') {
+            if ($this->limit) {
+                $ret_val = 'LIMIT ' . $this->limit;
+            }
+            if ($this->offset) {
+                $ret_val .= ' OFFSET ' . $this->offset;
+            }
         }
         //---------------------------------------------------------------------
         // Oracle
         //---------------------------------------------------------------------
         else if ($this->db_type == 'oracle') {
-    		if ($this->offset) {
-    			$ret_val = "OFFSET {$this->offset} ROWS";
-    		}
-    		if ($this->limit) {
-    			$ret_val .= " FETCH NEXT {$this->limit} ROWS ONLY";
-    		}            
+            if ($this->offset) {
+                $ret_val = "OFFSET {$this->offset} ROWS";
+            }
+            if ($this->limit) {
+                $ret_val .= " FETCH NEXT {$this->limit} ROWS ONLY";
+            }            
         }
         //---------------------------------------------------------------------
         // SQL Server
@@ -95,7 +95,7 @@ trait Limit
             $ret_val = 'SELECT TOP ' . $this->limit;
         }
 
-		return $ret_val;
-	}
+        return $ret_val;
+    }
 
 }

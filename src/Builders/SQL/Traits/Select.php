@@ -4,10 +4,10 @@
 /**
  * SQL Select Trait
  *
- * @package		phpOpenFW
- * @author 		Christian J. Clark
- * @copyright	Copyright (c) Christian J. Clark
- * @license		https://mit-license.org
+ * @package         phpOpenFW
+ * @author          Christian J. Clark
+ * @copyright       Copyright (c) Christian J. Clark
+ * @license         https://mit-license.org
  **/
 //**************************************************************************************
 //**************************************************************************************
@@ -27,31 +27,31 @@ trait Select
     use CSC;
 
     //==================================================================================
-	// Trait Memebers
+    // Trait Memebers
     //==================================================================================
-	protected $fields = [];
+    protected $fields = [];
 
     //==================================================================================
     //==================================================================================
-	// Select Clause Method
+    // Select Clause Method
     //==================================================================================
     //==================================================================================
-	public function Select($field)
-	{
-    	self::AddItemCSC($this->fields, $field);
-    	return $this;
-	}
+    public function Select($field)
+    {
+        self::AddItemCSC($this->fields, $field);
+        return $this;
+    }
 
     //==================================================================================
     //==================================================================================
-	// Raw Select Clause Method
+    // Raw Select Clause Method
     //==================================================================================
     //==================================================================================
-	public function SelectRaw($field)
-	{
-    	self::AddItem($this->fields, $field);
-    	return $this;
-	}
+    public function SelectRaw($field)
+    {
+        self::AddItem($this->fields, $field);
+        return $this;
+    }
 
     //##################################################################################
     //##################################################################################

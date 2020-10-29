@@ -4,10 +4,10 @@
 /**
  * Class Options Trait
  *
- * @package		phpOpenFW
- * @author 		Christian J. Clark
- * @copyright	Copyright (c) Christian J. Clark
- * @license		https://mit-license.org
+ * @package         phpOpenFW
+ * @author          Christian J. Clark
+ * @copyright       Copyright (c) Christian J. Clark
+ * @license         https://mit-license.org
  **/
 //*****************************************************************************
 //*****************************************************************************
@@ -22,9 +22,9 @@ namespace phpOpenFW\Traits;
 trait Opts
 {
     //=========================================================================
-	// Trait Memebers
+    // Trait Memebers
     //=========================================================================
-	protected $opts = [];
+    protected $opts = [];
 
     //=========================================================================
     //=========================================================================
@@ -33,9 +33,9 @@ trait Opts
     //=========================================================================
     public function SetOpt($key, $val)
     {
-	    if ($key == '') { return false; }
-	    $this->opts[$key] = $val;
-	    return $this;
+        if ($key == '') { return false; }
+        $this->opts[$key] = $val;
+        return $this;
     }
 
     //=========================================================================
@@ -45,10 +45,10 @@ trait Opts
     //=========================================================================
     public function GetOpt($key)
     {
-	    if ($key == '') { return false; }
-	    if (isset($this->opts[$key])) {
-		    return $this->opts[$key];
-	    }
-	    return false;
+        if ($key == '') { return false; }
+        if (isset($this->opts[$key])) {
+            return $this->opts[$key];
+        }
+        return false;
     }
 }

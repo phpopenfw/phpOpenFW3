@@ -4,10 +4,10 @@
 /**
  * SQL Group By Trait
  *
- * @package		phpOpenFW
- * @author 		Christian J. Clark
- * @copyright	Copyright (c) Christian J. Clark
- * @license		https://mit-license.org
+ * @package         phpOpenFW
+ * @author          Christian J. Clark
+ * @copyright       Copyright (c) Christian J. Clark
+ * @license         https://mit-license.org
  **/
 //*****************************************************************************
 //*****************************************************************************
@@ -22,31 +22,31 @@ namespace phpOpenFW\Builders\SQL\Traits;
 trait GroupBy
 {
     //=========================================================================
-	// Trait Memebers
+    // Trait Memebers
     //=========================================================================
-	protected $group_by = [];
+    protected $group_by = [];
 
     //=========================================================================
     //=========================================================================
-	// Add Group By Method
+    // Add Group By Method
     //=========================================================================
     //=========================================================================
-	public function GroupBy($group_by)
-	{
-    	self::AddItemCSC($this->group_by, $group_by);
-    	return $this;
-	}
+    public function GroupBy($group_by)
+    {
+        self::AddItemCSC($this->group_by, $group_by);
+        return $this;
+    }
 
     //=========================================================================
     //=========================================================================
-	// Raw Group By Clause Method
+    // Raw Group By Clause Method
     //=========================================================================
     //=========================================================================
-	public function GroupByRaw($group_by)
-	{
+    public function GroupByRaw($group_by)
+    {
         self::AddItem($this->group_by, $group_by);
-    	return $this;
-	}
+        return $this;
+    }
 
     //#########################################################################
     //#########################################################################

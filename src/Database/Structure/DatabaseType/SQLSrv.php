@@ -4,10 +4,10 @@
 /**
  * MS SQL Server Database Structure Class
  *
- * @package		phpOpenFW
- * @author 		Christian J. Clark
- * @copyright	Copyright (c) Christian J. Clark
- * @license		https://mit-license.org
+ * @package         phpOpenFW
+ * @author          Christian J. Clark
+ * @copyright       Copyright (c) Christian J. Clark
+ * @license         https://mit-license.org
  */
 //*****************************************************************************
 //*****************************************************************************
@@ -22,23 +22,23 @@ use phpOpenFW\Database\DataTrans;
 //*****************************************************************************
 class SQLSrv
 {
-	//*************************************************************************
+    //*************************************************************************
     // Traits
-	//*************************************************************************
+    //*************************************************************************
     use Core;
 
-	//*************************************************************************
-	/**
-	 * Get the structure for a given database table
-	 *
-	 * @param string Data source handle
-	 * @param string Table name
-	 * @param string Schema name
-	 * @return array Table Structure
-	 */
-	//*************************************************************************
-	public static function TableStructure($data_source, $table, $schema=false)
-	{
+    //*************************************************************************
+    /**
+     * Get the structure for a given database table
+     *
+     * @param string Data source handle
+     * @param string Table name
+     * @param string Schema name
+     * @return array Table Structure
+     */
+    //*************************************************************************
+    public static function TableStructure($data_source, $table, $schema=false)
+    {
         //=====================================================================
         // Get Data Source
         // Validate Table Name
@@ -52,7 +52,7 @@ class SQLSrv
         //=====================================================================
         // Start Table Info
         //=====================================================================
-    	$table_info = [];
+        $table_info = [];
 
         //=====================================================================
         // Determine Table and Schema
@@ -65,21 +65,21 @@ class SQLSrv
         //=====================================================================
         // Build SQL Query to Pull Table Structure Data
         //=====================================================================
-		$strsql = "
-		    select * from 
-		        information_schema.columns 
+        $strsql = "
+            select * from 
+                information_schema.columns 
             where 
                 table_name = '{$table}'
         ";
-		if (!empty($schema)) {
-    		$strsql .= " and table_schema = '{$schema}'";
+        if (!empty($schema)) {
+            $strsql .= " and table_schema = '{$schema}'";
         }
 
         //=====================================================================
         // Pull Table Data
         //=====================================================================
         $data1 = new DataTrans($data_source);
-		$data1->data_query($strsql);
+        $data1->data_query($strsql);
         $meta_data = $data1->data_assoc_result();
 
         //=====================================================================
@@ -103,30 +103,30 @@ class SQLSrv
         return $table_info;
     }
 
-	//*************************************************************************
-	/**
-	 * Return the column data types that require quotes for this database type
-	 *
-	 * @return array An array of column types that require quotes (non-bind parameters)
-	 */
-	//*************************************************************************
-	public static function QuotedTypes()
-	{
+    //*************************************************************************
+    /**
+     * Return the column data types that require quotes for this database type
+     *
+     * @return array An array of column types that require quotes (non-bind parameters)
+     */
+    //*************************************************************************
+    public static function QuotedTypes()
+    {
         return [
-        	'char' => 'char',
-        	'varchar' => 'varchar',
-        	'text' => 'text',
-        	'nchar' => 'nchar',
-        	'nvarchar' => 'nvarchar',
-        	'ntext' => 'ntext',
-        	'date' => 'date',
-        	'datetimeoffset' => 'datetimeoffset',
-        	'datetime' => 'datetime',
-        	'datetime2' => 'datetime2',
-        	'smalldatetime' => 'smalldatetime',
-        	'time' => 'time',
-        	'xml' => 'xml'
-		];
+            'char' => 'char',
+            'varchar' => 'varchar',
+            'text' => 'text',
+            'nchar' => 'nchar',
+            'nvarchar' => 'nvarchar',
+            'ntext' => 'ntext',
+            'date' => 'date',
+            'datetimeoffset' => 'datetimeoffset',
+            'datetime' => 'datetime',
+            'datetime2' => 'datetime2',
+            'smalldatetime' => 'smalldatetime',
+            'time' => 'time',
+            'xml' => 'xml'
+        ];
     }
 
 }

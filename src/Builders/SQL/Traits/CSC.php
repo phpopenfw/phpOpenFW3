@@ -4,10 +4,10 @@
 /**
  * SQL Comma Separated Clause Trait
  *
- * @package		phpOpenFW
- * @author 		Christian J. Clark
- * @copyright	Copyright (c) Christian J. Clark
- * @license		https://mit-license.org
+ * @package         phpOpenFW
+ * @author          Christian J. Clark
+ * @copyright       Copyright (c) Christian J. Clark
+ * @license         https://mit-license.org
  **/
 //*****************************************************************************
 //*****************************************************************************
@@ -23,39 +23,39 @@ trait CSC
 {
     //=========================================================================
     //=========================================================================
-	// Add Item Raw Method
+    // Add Item Raw Method
     //=========================================================================
     //=========================================================================
-	protected static function AddItem(&$var, $val)
-	{
-		if ($val) {
-			if (is_array($val)) {
-				$var = array_merge($var, $val);
-			}
-			else {
-				$var[] = $val;
-			}
-		}
-	}
+    protected static function AddItem(&$var, $val)
+    {
+        if ($val) {
+            if (is_array($val)) {
+                $var = array_merge($var, $val);
+            }
+            else {
+                $var[] = $val;
+            }
+        }
+    }
 
     //=========================================================================
     //=========================================================================
-	// Add Item CSC Method
+    // Add Item CSC Method
     //=========================================================================
-	// Detects comma separated items and pulls them apart
-	// and adds them individually
+    // Detects comma separated items and pulls them apart
+    // and adds them individually
     //=========================================================================
     //=========================================================================
-	protected static function AddItemCSC(&$var, $value)
-	{
-    	if ($value) {
-        	$values = [];
+    protected static function AddItemCSC(&$var, $value)
+    {
+        if ($value) {
+            $values = [];
 
             //-----------------------------------------------------------------
             // Scalar Value
             //-----------------------------------------------------------------
-        	if (is_scalar($value)) {
-            	$values = explode(',', $value);
+            if (is_scalar($value)) {
+                $values = explode(',', $value);
             }
             //-----------------------------------------------------------------
             // Array of Values
@@ -64,7 +64,7 @@ trait CSC
                 foreach ($value as $tmp_value) {
                     $tmp_value = trim($tmp_value);
                     if ($tmp_value) {
-                    	self::AddItemCSC($var, $tmp_value);
+                        self::AddItemCSC($var, $tmp_value);
                     }
                 }
                 return true;
@@ -77,14 +77,14 @@ trait CSC
                 foreach ($values as $tmp_value) {
                     $tmp_value = trim($tmp_value);
                     if ($tmp_value) {
-                    	self::AddItem($var, $tmp_value);
+                        self::AddItem($var, $tmp_value);
                     }
                 }
             }
         }
 
         return true;
-	}
+    }
 
     //=========================================================================
     //=========================================================================
@@ -94,7 +94,7 @@ trait CSC
     protected static function FormatCSC($clause, $values)
     {
         if ($values) {
-    		return "{$clause}\n  " . implode(",\n  ", $values);
+            return "{$clause}\n  " . implode(",\n  ", $values);
         }
 
         return false;

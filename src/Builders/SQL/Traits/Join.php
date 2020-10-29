@@ -4,10 +4,10 @@
 /**
  * SQL Join Trait
  *
- * @package		phpOpenFW
- * @author 		Christian J. Clark
- * @copyright	Copyright (c) Christian J. Clark
- * @license		https://mit-license.org
+ * @package         phpOpenFW
+ * @author          Christian J. Clark
+ * @copyright       Copyright (c) Christian J. Clark
+ * @license         https://mit-license.org
  **/
 //*****************************************************************************
 //*****************************************************************************
@@ -24,74 +24,74 @@ use \phpOpenFW\Builders\SQL\Conditions\Condition;
 trait Join
 {
     //=========================================================================
-	// Trait Memebers
+    // Trait Memebers
     //=========================================================================
 
     //=========================================================================
     //=========================================================================
-	// Join Method
+    // Join Method
     //=========================================================================
     //=========================================================================
-	public function Join(String $table, $field1, String $op='', String $field2='')
-	{
-    	$this->AddJoin('join', $table, $field1, $op, $field2);
+    public function Join(String $table, $field1, String $op='', String $field2='')
+    {
+        $this->AddJoin('join', $table, $field1, $op, $field2);
         return $this;
-	}
+    }
 
     //=========================================================================
     //=========================================================================
-	// Inner Join
+    // Inner Join
     //=========================================================================
     //=========================================================================
-	public function InnerJoin(String $table, $field1, String $op='', $field2='')
-	{
-    	$this->AddJoin('inner', $table, $field1, $op, $field2);
+    public function InnerJoin(String $table, $field1, String $op='', $field2='')
+    {
+        $this->AddJoin('inner', $table, $field1, $op, $field2);
         return $this;
-	}
+    }
 
     //=========================================================================
     //=========================================================================
-	// Outer Join
+    // Outer Join
     //=========================================================================
     //=========================================================================
-	public function OuterJoin(String $table, $field1, String $op='', String $field2='')
-	{
-    	$this->AddJoin('outer', $table, $field1, $op, $field2);
+    public function OuterJoin(String $table, $field1, String $op='', String $field2='')
+    {
+        $this->AddJoin('outer', $table, $field1, $op, $field2);
         return $this;
-	}
+    }
 
     //=========================================================================
     //=========================================================================
-	// Cross Join
+    // Cross Join
     //=========================================================================
     //=========================================================================
-	public function CrossJoin(String $table)
-	{
-    	$this->AddJoin('cross', $table, '');
+    public function CrossJoin(String $table)
+    {
+        $this->AddJoin('cross', $table, '');
         return $this;
-	}
+    }
 
     //=========================================================================
     //=========================================================================
-	// Left Join
+    // Left Join
     //=========================================================================
     //=========================================================================
-	public function LeftJoin(String $table, $field1, String $op='', String $field2='')
-	{
-    	$this->AddJoin('left', $table, $field1, $op, $field2);
+    public function LeftJoin(String $table, $field1, String $op='', String $field2='')
+    {
+        $this->AddJoin('left', $table, $field1, $op, $field2);
         return $this;
-	}
+    }
 
     //=========================================================================
     //=========================================================================
-	// Right Join
+    // Right Join
     //=========================================================================
     //=========================================================================
-	public function RightJoin(String $table, $field1, String $op='', String $field2='')
-	{
-    	$this->AddJoin('right', $table, $field1, $op, $field2);
+    public function RightJoin(String $table, $field1, String $op='', String $field2='')
+    {
+        $this->AddJoin('right', $table, $field1, $op, $field2);
         return $this;
-	}
+    }
 
     //#########################################################################
     //#########################################################################
@@ -103,11 +103,11 @@ trait Join
 
     //=========================================================================
     //=========================================================================
-	// Add Join Clause
+    // Add Join Clause
     //=========================================================================
     //=========================================================================
-	protected function AddJoin(String $join_type, String $table, $field1, String $op='', String $field2='')
-	{
+    protected function AddJoin(String $join_type, String $table, $field1, String $op='', String $field2='')
+    {
         //---------------------------------------------------------------------
         // Validate Parameters
         //---------------------------------------------------------------------
@@ -127,22 +127,22 @@ trait Join
         //---------------------------------------------------------------------
         // Advanced Join Clause
         //---------------------------------------------------------------------
-    	if ($field1 instanceof Closure) {
-        	$this->from[] = [
-        	    'join', 
-        	    $join_phrase,
-        	    $table,
-        	    Condition::Instance($this, $this->depth, $field1, false, false, false)
+        if ($field1 instanceof Closure) {
+            $this->from[] = [
+                'join', 
+                $join_phrase,
+                $table,
+                Condition::Instance($this, $this->depth, $field1, false, false, false)
             ];
-        	return true;
+            return true;
         }
         //---------------------------------------------------------------------
         // Single Condition Join
         //---------------------------------------------------------------------
         else if (is_scalar($field1) && is_string($field1)) {
             $this->from[] = [
-        	    'join', 
-        	    "{$join_phrase} {$table} ON {$field1} {$op} {$field2}"
+                'join', 
+                "{$join_phrase} {$table} ON {$field1} {$op} {$field2}"
             ];
             return true;
         }
@@ -151,15 +151,15 @@ trait Join
         // Invalid Join Parameters
         //---------------------------------------------------------------------
         throw new \Exception('Invalid join parameters given.');
-	}
+    }
 
     //=========================================================================
     //=========================================================================
-	// Get Join Phrase
+    // Get Join Phrase
     //=========================================================================
     //=========================================================================
-	protected function GetJoinPhrase(String $join_type)
-	{
+    protected function GetJoinPhrase(String $join_type)
+    {
         switch (strtolower($join_type)) {
             case 'join':
                 return 'JOIN';

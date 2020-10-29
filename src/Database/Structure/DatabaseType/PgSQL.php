@@ -4,10 +4,10 @@
 /**
  * PostgreSQL Database Structure Class
  *
- * @package		phpOpenFW
- * @author 		Christian J. Clark
- * @copyright	Copyright (c) Christian J. Clark
- * @license		https://mit-license.org
+ * @package         phpOpenFW
+ * @author          Christian J. Clark
+ * @copyright       Copyright (c) Christian J. Clark
+ * @license         https://mit-license.org
  */
 //*****************************************************************************
 //*****************************************************************************
@@ -22,23 +22,23 @@ use phpOpenFW\Database\DataTrans;
 //*****************************************************************************
 class PgSQL
 {
-	//*************************************************************************
+    //*************************************************************************
     // Traits
-	//*************************************************************************
+    //*************************************************************************
     use Core;
 
-	//*************************************************************************
-	/**
-	 * Get the structure for a given database table
-	 *
-	 * @param string Data source handle
-	 * @param string Table name
-	 * @param string Schema name
-	 * @return array Table Structure
-	 */
-	//*************************************************************************
-	public static function TableStructure($data_source, $table, $schema=false)
-	{
+    //*************************************************************************
+    /**
+     * Get the structure for a given database table
+     *
+     * @param string Data source handle
+     * @param string Table name
+     * @param string Schema name
+     * @return array Table Structure
+     */
+    //*************************************************************************
+    public static function TableStructure($data_source, $table, $schema=false)
+    {
         //=====================================================================
         // Get Data Source
         // Validate Table Name
@@ -52,7 +52,7 @@ class PgSQL
         //=====================================================================
         // Start Table Info
         //=====================================================================
-    	$table_info = [];
+        $table_info = [];
 
         //=====================================================================
         // Determine Table and Schema
@@ -104,23 +104,23 @@ class PgSQL
         return $table_info;
     }
 
-	//*************************************************************************
-	/**
-	 * Return the column data types that require quotes for this database type
-	 *
-	 * @return array An array of column types that require quotes (non-bind parameters)
-	 */
-	//*************************************************************************
-	public static function QuotedTypes()
-	{
+    //*************************************************************************
+    /**
+     * Return the column data types that require quotes for this database type
+     *
+     * @return array An array of column types that require quotes (non-bind parameters)
+     */
+    //*************************************************************************
+    public static function QuotedTypes()
+    {
         return [
-        	'char' => 'char',
-        	'date' => 'date',
-        	'text' => 'text',
-        	'varchar' => 'varchar',
-        	'time' => 'time',
-        	'timestamp' => 'timestamp',
-        	'xml' => 'xml'
+            'char' => 'char',
+            'date' => 'date',
+            'text' => 'text',
+            'varchar' => 'varchar',
+            'time' => 'time',
+            'timestamp' => 'timestamp',
+            'xml' => 'xml'
         ];
     }
 

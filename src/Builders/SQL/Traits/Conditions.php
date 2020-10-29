@@ -4,10 +4,10 @@
 /**
  * SQL Conditions Trait
  *
- * @package		phpOpenFW
- * @author 		Christian J. Clark
- * @copyright	Copyright (c) Christian J. Clark
- * @license		https://mit-license.org
+ * @package         phpOpenFW
+ * @author          Christian J. Clark
+ * @copyright       Copyright (c) Christian J. Clark
+ * @license         https://mit-license.org
  **/
 //*****************************************************************************
 //*****************************************************************************
@@ -25,15 +25,15 @@ trait Conditions
 {
     //=========================================================================
     //=========================================================================
-	// Add Condition Method
+    // Add Condition Method
     //=========================================================================
     //=========================================================================
-	protected function AddCondition(&$conditions, $field, $op, $val, $type='s', $andor='and')
-	{
+    protected function AddCondition(&$conditions, $field, $op, $val, $type='s', $andor='and')
+    {
         //---------------------------------------------------------------------
         // Get Lowercase Operator
         //---------------------------------------------------------------------
-    	$lower_op = trim(strtolower($op));
+        $lower_op = trim(strtolower($op));
 
         //---------------------------------------------------------------------
         // Validate Parameters
@@ -68,15 +68,15 @@ trait Conditions
         else {
             $conditions[] = [$andor, Condition::Instance($this, $this->depth, $field, $op, $val, $type)];
         }
-	}
+    }
 
     //=========================================================================
     //=========================================================================
-	// Format Conditions Method
+    // Format Conditions Method
     //=========================================================================
     //=========================================================================
-	protected function FormatConditions($conditions)
-	{
+    protected function FormatConditions($conditions)
+    {
         $clause = '';
         $front_pad = str_repeat(' ', ($this->depth * 2) + 2);
         foreach ($conditions as $condition) {
@@ -99,6 +99,6 @@ trait Conditions
             }
         }
         return $clause;
-	}
+    }
 
 }

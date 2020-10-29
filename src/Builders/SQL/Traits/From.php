@@ -4,10 +4,10 @@
 /**
  * SQL From Trait
  *
- * @package		phpOpenFW
- * @author 		Christian J. Clark
- * @copyright	Copyright (c) Christian J. Clark
- * @license		https://mit-license.org
+ * @package         phpOpenFW
+ * @author          Christian J. Clark
+ * @copyright       Copyright (c) Christian J. Clark
+ * @license         https://mit-license.org
  **/
 //*****************************************************************************
 //*****************************************************************************
@@ -22,31 +22,31 @@ namespace phpOpenFW\Builders\SQL\Traits;
 trait From
 {
     //=========================================================================
-	// Trait Memebers
+    // Trait Memebers
     //=========================================================================
-	protected $from = [];
+    protected $from = [];
 
     //=========================================================================
     //=========================================================================
-	// From Clause Method
+    // From Clause Method
     //=========================================================================
     //=========================================================================
-	public function From($from)
-	{
+    public function From($from)
+    {
         self::AddItemCSC($this->from, $from);
-    	return $this;
-	}
+        return $this;
+    }
 
     //=========================================================================
     //=========================================================================
-	// Raw From Clause Method
+    // Raw From Clause Method
     //=========================================================================
     //=========================================================================
-	public function FromRaw($from)
-	{
+    public function FromRaw($from)
+    {
         self::AddItem($this->from, $from);
-    	return $this;
-	}
+        return $this;
+    }
 
     //#########################################################################
     //#########################################################################
@@ -69,9 +69,9 @@ trait From
                 if ($from[0] == 'join') {
                     if (count($from) > 2) {
                         $str_condition = (string)$from[3];
-                    	if ($str_condition) {
-                        	$rear_pad = str_repeat(' ', $this->depth * 2);
-                        	$clause .= "\n  {$from[1]} {$from[2]} ON {$str_condition}{$rear_pad}";
+                        if ($str_condition) {
+                            $rear_pad = str_repeat(' ', $this->depth * 2);
+                            $clause .= "\n  {$from[1]} {$from[2]} ON {$str_condition}{$rear_pad}";
                         }
                     }
                     else {

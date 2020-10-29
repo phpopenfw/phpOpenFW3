@@ -4,10 +4,10 @@
 /**
  * SQL Order By Trait
  *
- * @package		phpOpenFW
- * @author 		Christian J. Clark
- * @copyright	Copyright (c) Christian J. Clark
- * @license		https://mit-license.org
+ * @package         phpOpenFW
+ * @author          Christian J. Clark
+ * @copyright       Copyright (c) Christian J. Clark
+ * @license         https://mit-license.org
  **/
 //**************************************************************************************
 //**************************************************************************************
@@ -22,31 +22,31 @@ namespace phpOpenFW\Builders\SQL\Traits;
 trait OrderBy
 {
     //=========================================================================
-	// Trait Memebers
+    // Trait Memebers
     //=========================================================================
-	protected $order_by = [];
+    protected $order_by = [];
 
     //=========================================================================
     //=========================================================================
-	// Add Order By Method
+    // Add Order By Method
     //=========================================================================
     //=========================================================================
-	public function OrderBy($order_by)
-	{
-    	self::AddItemCSC($this->order_by, $order_by);
-    	return $this;
-	}
+    public function OrderBy($order_by)
+    {
+        self::AddItemCSC($this->order_by, $order_by);
+        return $this;
+    }
 
     //=========================================================================
     //=========================================================================
-	// Raw Order By Clause Method
+    // Raw Order By Clause Method
     //=========================================================================
     //=========================================================================
-	public function OrderByRaw($order_by)
-	{
+    public function OrderByRaw($order_by)
+    {
         self::AddItem($this->order_by, $order_by);
-    	return $this;
-	}
+        return $this;
+    }
 
     //##################################################################################
     //##################################################################################
@@ -64,6 +64,6 @@ trait OrderBy
     protected function FormatOrderBy()
     {
         return self::FormatCSC('ORDER BY', $this->order_by);
-	}
+    }
 
 }

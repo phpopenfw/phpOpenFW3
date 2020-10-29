@@ -4,10 +4,10 @@
 /**
  * SQL Union Trait
  *
- * @package		phpOpenFW
- * @author 		Christian J. Clark
- * @copyright	Copyright (c) Christian J. Clark
- * @license		https://mit-license.org
+ * @package         phpOpenFW
+ * @author          Christian J. Clark
+ * @copyright       Copyright (c) Christian J. Clark
+ * @license         https://mit-license.org
  **/
 //**************************************************************************************
 //**************************************************************************************
@@ -22,37 +22,37 @@ namespace phpOpenFW\Builders\SQL\Traits;
 trait Union
 {
     //==================================================================================
-	// Trait Memebers
+    // Trait Memebers
     //==================================================================================
-	protected $unions = [];
+    protected $unions = [];
 
     //==================================================================================
     //==================================================================================
-	// Union Clause Method
+    // Union Clause Method
     //==================================================================================
     //==================================================================================
-	public function Union(\phpOpenFW\Builders\SQL\Select $query)
-	{
-    	if ($this->GetDbType() != $query->GetDbType()) {
+    public function Union(\phpOpenFW\Builders\SQL\Select $query)
+    {
+        if ($this->GetDbType() != $query->GetDbType()) {
             throw new \Exception('Unions can only be performed on select statements of the same database type.');
         }
         $this->unions[] = ['union', $query];
-    	return $this;
-	}
+        return $this;
+    }
 
     //==================================================================================
     //==================================================================================
-	// Union All Clause Method
+    // Union All Clause Method
     //==================================================================================
     //==================================================================================
-	public function UnionAll(\phpOpenFW\Builders\SQL\Select $query)
-	{
-    	if ($this->GetDbType() != $query->GetDbType()) {
+    public function UnionAll(\phpOpenFW\Builders\SQL\Select $query)
+    {
+        if ($this->GetDbType() != $query->GetDbType()) {
             throw new \Exception('Unions can only be performed on select statements of the same database type.');
         }
         $this->unions[] = ['union all', $query];
-    	return $this;
-	}
+        return $this;
+    }
 
     //##################################################################################
     //##################################################################################
