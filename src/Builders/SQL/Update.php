@@ -4,10 +4,10 @@
 /**
  * SQL Update Statement Class
  *
- * @package		phpOpenFW
- * @author 		Christian J. Clark
- * @copyright	Copyright (c) Christian J. Clark
- * @license		https://mit-license.org
+ * @package         phpOpenFW
+ * @author          Christian J. Clark
+ * @copyright       Copyright (c) Christian J. Clark
+ * @license         https://mit-license.org
  **/
 //*****************************************************************************
 //*****************************************************************************
@@ -28,7 +28,7 @@ class Update extends Statement
     use Traits\Values;
 
     //=========================================================================
-	// Class Memebers
+    // Class Memebers
     //=========================================================================
     protected $sql_type = 'update';
 
@@ -39,34 +39,34 @@ class Update extends Statement
     //=========================================================================
     public function GetSQL()
     {
-		//---------------------------------------------------------------------
+        //---------------------------------------------------------------------
         // Get Formatted Where Clause
-		//---------------------------------------------------------------------
+        //---------------------------------------------------------------------
         // Require a where clause to prevent updating all table rows
-		//---------------------------------------------------------------------
+        //---------------------------------------------------------------------
         $where = $this->FormatWhere();
-		if (!$where) {
+        if (!$where) {
             trigger_error("SQL Update statement must have at least one qualifying condition.");
             return '';
         }
 
-		//---------------------------------------------------------------------
+        //---------------------------------------------------------------------
         // Format Values
-		//---------------------------------------------------------------------
+        //---------------------------------------------------------------------
         $set = $this->FormatValues();
 
         //---------------------------------------------------------------------
         // Are there values?
         //---------------------------------------------------------------------
         if (empty($set)) {
-	    	trigger_error("No update values could be found.");
-	    	return '';
-	    }
+            trigger_error("No update values could be found.");
+            return '';
+        }
 
-		//---------------------------------------------------------------------
+        //---------------------------------------------------------------------
         // Start SQL Update Statement
-		//---------------------------------------------------------------------
-		return "UPDATE {$this->table} SET {$set} \n{$where}";
-	}
+        //---------------------------------------------------------------------
+        return "UPDATE {$this->table} SET {$set} \n{$where}";
+    }
 
 }

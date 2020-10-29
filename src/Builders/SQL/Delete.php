@@ -4,10 +4,10 @@
 /**
  * SQL Delete Statement Class
  *
- * @package		phpOpenFW
- * @author 		Christian J. Clark
- * @copyright	Copyright (c) Christian J. Clark
- * @license		https://mit-license.org
+ * @package         phpOpenFW
+ * @author          Christian J. Clark
+ * @copyright       Copyright (c) Christian J. Clark
+ * @license         https://mit-license.org
  **/
 //*****************************************************************************
 //*****************************************************************************
@@ -27,7 +27,7 @@ class Delete extends Statement
     use Traits\Where;
 
     //=========================================================================
-	// Class Memebers
+    // Class Memebers
     //=========================================================================
     protected $sql_type = 'delete';
 
@@ -38,18 +38,18 @@ class Delete extends Statement
     //=========================================================================
     public function GetSQL()
     {
-		//---------------------------------------------------------------------
+        //---------------------------------------------------------------------
         // Get Formatted Where Clause
-		//---------------------------------------------------------------------
+        //---------------------------------------------------------------------
         // Require a where clause to prevent deleting all table rows
-		//---------------------------------------------------------------------
-		$where = $this->FormatWhere();
-		if (!$where) {
+        //---------------------------------------------------------------------
+        $where = $this->FormatWhere();
+        if (!$where) {
             trigger_error("SQL Delete statement must have at least one qualifying condition.");
             return '';
         }
 
         return "DELETE FROM {$this->table} \n{$where}";
-	}
+    }
 
 }

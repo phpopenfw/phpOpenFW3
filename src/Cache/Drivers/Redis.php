@@ -4,10 +4,10 @@
 /**
  * Redis Cache Driver Object
  *
- * @package		phpOpenFW
- * @author 		Christian J. Clark
- * @copyright	Copyright (c) Christian J. Clark
- * @license		https://mit-license.org
+ * @package         phpOpenFW
+ * @author          Christian J. Clark
+ * @copyright       Copyright (c) Christian J. Clark
+ * @license         https://mit-license.org
  */
 //*****************************************************************************
 //*****************************************************************************
@@ -21,15 +21,15 @@ namespace phpOpenFW\Cache\Drivers;
 //*****************************************************************************
 class Redis
 {
-	//=========================================================================
-	// Class Members
-	//=========================================================================
-	protected $cache_type = 'redis';
-	protected $port = 6379;
+    //=========================================================================
+    // Class Members
+    //=========================================================================
+    protected $cache_type = 'redis';
+    protected $port = 6379;
 
-	//=========================================================================
-	// Constructor Method
-	//=========================================================================
+    //=========================================================================
+    // Constructor Method
+    //=========================================================================
     public function __construct($params)
     {
         parent::__construct($params);

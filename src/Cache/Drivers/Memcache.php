@@ -4,10 +4,10 @@
 /**
  * Memcache Cache Driver Object
  *
- * @package		phpOpenFW
- * @author 		Christian J. Clark
- * @copyright	Copyright (c) Christian J. Clark
- * @license		https://mit-license.org
+ * @package         phpOpenFW
+ * @author          Christian J. Clark
+ * @copyright       Copyright (c) Christian J. Clark
+ * @license         https://mit-license.org
  */
 //*****************************************************************************
 //*****************************************************************************
@@ -21,15 +21,15 @@ namespace phpOpenFW\Cache\Drivers;
 //*****************************************************************************
 class Memcache extends Core
 {
-	//=========================================================================
-	// Class Members
-	//=========================================================================
-	protected $cache_type = 'memcache';
-	protected $port = 11211;
+    //=========================================================================
+    // Class Members
+    //=========================================================================
+    protected $cache_type = 'memcache';
+    protected $port = 11211;
 
-	//=========================================================================
-	// Constructor Method
-	//=========================================================================
+    //=========================================================================
+    // Constructor Method
+    //=========================================================================
     public function __construct($params)
     {
         parent::__construct($params);
@@ -51,19 +51,19 @@ class Memcache extends Core
         $this->cache_obj->setOption(\Memcached::OPT_PREFIX_KEY, $this->_namespace);
     }
 
-	//=========================================================================
-	// Set Options Method
-	//=========================================================================
-	public function setOptions(Array $opts)
-	{
+    //=========================================================================
+    // Set Options Method
+    //=========================================================================
+    public function setOptions(Array $opts)
+    {
         return $this->cache_obj->setOptions($opts);
-	}
+    }
 
-	//=========================================================================
-	// Get Options Method
-	//=========================================================================
-	public function getOptions(Array $keys)
-	{
+    //=========================================================================
+    // Get Options Method
+    //=========================================================================
+    public function getOptions(Array $keys)
+    {
         return $this->cache_obj->getOptions($keys);
-	}
+    }
 }

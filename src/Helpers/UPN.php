@@ -4,10 +4,10 @@
 /**
  * Universal Path Notation (UPN) Plugin
  *
- * @package		phpOpenFW
- * @author 		Christian J. Clark
- * @copyright	Copyright (c) Christian J. Clark
- * @license		https://mit-license.org
+ * @package         phpOpenFW
+ * @author          Christian J. Clark
+ * @copyright       Copyright (c) Christian J. Clark
+ * @license         https://mit-license.org
  **/
 //*****************************************************************************
 //*****************************************************************************
@@ -28,7 +28,7 @@ class UPN
     //=========================================================================
     public static function Get($full_path, $in_subject=null)
     {
-		//---------------------------------------------------------------------
+        //---------------------------------------------------------------------
         // Trim Path
         //---------------------------------------------------------------------
         $full_path = trim($full_path);
@@ -65,12 +65,12 @@ class UPN
                         return null;
                     }
                 }
-	            if (isset($tmp_subject[$pp])) {
-		            $tmp_subject = $tmp_subject[$pp];
-	            }
-	            else {
-		            return null;
-	            }
+                if (isset($tmp_subject[$pp])) {
+                    $tmp_subject = $tmp_subject[$pp];
+                }
+                else {
+                    return null;
+                }
             }
             return $tmp_subject;
         }
@@ -291,7 +291,7 @@ class UPN
         if ($path_parts) {
             $last_pos = count($path_parts) - 1;
             if ($path_parts[$last_pos] == '') {
-    	        array_pop($path_parts);
+                array_pop($path_parts);
             }
         }
 
@@ -320,8 +320,8 @@ class UPN
                 }
                 return self::_Set($subject[$pp], $path_parts, $value);
             }
-		}
-		return false;
+        }
+        return false;
     }
 
     //=========================================================================

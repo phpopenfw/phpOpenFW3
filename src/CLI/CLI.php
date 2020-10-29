@@ -85,16 +85,14 @@ class CLI
         // Initialize phpOpenFW
         //=====================================================================
         \phpOpenFW\Core::Bootstrap($app_path, [
+            'load_config' => true,
             'load_data_sources' => true
         ]);
 
         //=====================================================================
         // Load Configuration
         //=====================================================================
-        $config = \phpOpenFW\Core::LoadConfiguration();
-        if ($config && $config->IsValid()) {
-            $this->config = $config->Export();
-        }
+        $this->config = new \phpOpenFW\Core\AppConfig();
     }
 
     //*************************************************************************
@@ -239,12 +237,15 @@ class CLI
     // Print Output Header
     //*************************************************************************
     //*************************************************************************
-    protected static function PrintOutputHeader()
+    protected static function PrintOutputHeader($text='', $fg_color=null, $bg_color=null)
     {
-        $text = 'Job Output';
-        print "\n**********************************************************************";
-        print "\n*** {$text}";
-        print "\n**********************************************************************\n";
+        if (!$text) {
+            $text = 'Job Output';
+        }
+        $msg = "\n**********************************************************************";
+        $msg .= "\n*** {$text}";
+        $msg .= "\n**********************************************************************\n";
+        print self::ColoredMessage($msg, $fg_color, $bg_color);
     }
 
     //*************************************************************************
@@ -252,9 +253,9 @@ class CLI
     // Print Confirmation
     //*************************************************************************
     //*************************************************************************
-    protected static function PrintConfirmation($msg, $depth=0)
+    protected static function PrintConfirmation($msg, $depth=0, $fg_color='green', $bg_color=null)
     {
-        self::PrintMessage($msg, $depth, '[ok]');
+        self::PrintMessage($msg, $depth, '[ok]', $fg_color, $bg_color);
     }
 
     //*************************************************************************
@@ -262,9 +263,9 @@ class CLI
     // Print Warning
     //*************************************************************************
     //*************************************************************************
-    protected static function PrintWarning($msg, $depth=0)
+    protected static function PrintWarning($msg, $depth=0, $fg_color='yellow', $bg_color=null)
     {
-        self::PrintMessage($msg, $depth, '[!!]');
+        self::PrintMessage($msg, $depth, '[!!]', $fg_color, $bg_color);
     }
 
     //*************************************************************************
@@ -272,9 +273,9 @@ class CLI
     // Print Error
     //*************************************************************************
     //*************************************************************************
-    protected static function PrintError($msg, $depth=0)
+    protected static function PrintError($msg, $depth=0, $fg_color='red', $bg_color=null)
     {
-        self::PrintMessage($msg, $depth, "\n** [ERROR] ** :");
+        self::PrintMessage($msg, $depth, "\n** [ERROR] ** :", $fg_color, $bg_color);
     }
 
     //*************************************************************************
@@ -282,15 +283,19 @@ class CLI
     // Print Message
     //*************************************************************************
     //*************************************************************************
-    protected static function PrintMessage($msg, $depth=0, $prefix='')
+    protected static function PrintMessage($msg, $depth=0, $prefix='', $fg_color=null, $bg_color=null)
     {
         $tabs = '';
         if ($depth) {
             $tabs = str_pad('', $depth, "\t", STR_PAD_LEFT);
         }
-        if ($tabs) { print $tabs; }
-        if ($prefix) { print "{$prefix} "; }
-        print "{$msg}\n";
+        if ($tabs) {
+            $msg = $tabs . $msg;
+        }
+        if ($prefix) {
+            $msg = $prefix . ' ' . $msg;
+        }
+        print self::ColoredMessage($msg, $fg_color, $bg_color) . "\n";
     }
 
     //*************************************************************************
@@ -298,13 +303,66 @@ class CLI
     // Print Error and Exit
     //*************************************************************************
     //*************************************************************************
-    protected static function PrintErrorExit($msg)
+    protected static function PrintErrorExit($msg, $fg_color='red', $bg_color=null)
     {
-        print "\n** [ERROR] ** : {$msg}\n";
-        print "\n**********************************************************************";
-        print "\n*** Exited with Error";
-        print "\n**********************************************************************\n\n";
+        self::PrintError($msg, 0, $fg_color, $bg_color);
+
+        $msg = "\n**********************************************************************";
+        $msg .= "\n*** Exited with Error";
+        $msg .= "\n**********************************************************************\n\n";
+        print self::ColoredMessage($msg, $fg_color, $bg_color);
         exit;
     }
+
+    //*************************************************************************
+    //*************************************************************************
+	// Colored Message
+    //*************************************************************************
+    //*************************************************************************
+	protected static function ColoredMessage($msg, $fg_color=null, $bg_color=null)
+	{
+		$fg_colors = [
+		    'black'         => '0;30',
+		    'dark_gray'     => '1;30',
+		    'blue'          => '0;34',
+		    'light_blue'    => '1;34',
+		    'green'         => '0;32',
+		    'light_green'   => '1;32',
+		    'cyan'          => '0;36',
+		    'light_cyan'    => '1;36',
+		    'red'           => '0;31',
+		    'light_red'     => '1;31',
+		    'purple'        => '0;35',
+		    'light_purple'  => '1;35',
+		    'brown'         => '0;33',
+		    'yellow'        => '1;33',
+		    'light_gray'    => '0;37',
+		    'white'         => '1;37',
+		];    
+        $bg_colors = [
+            'black'         => '40',
+            'red'           => '41',
+            'green'         => '42',
+            'yellow'        => '43',
+            'blue'          => '44',
+            'magenta'       => '45',
+            'cyan'          => '46',
+            'light_gray'    => '47'
+        ];
+
+		$colors = '';
+		if (isset($fg_colors[$fg_color])) {
+			$colors .= "\033[" . $fg_colors[$fg_color] . "m";
+		}
+		if (isset($bg_colors[$bg_color])) {
+			$colors .= "\033[" . $bg_colors[$bg_color] . "m";
+		}
+
+		if ($colors) {
+    		return "{$colors}{$msg}\033[0m";
+        }
+
+		return $msg;
+	}
 
 }

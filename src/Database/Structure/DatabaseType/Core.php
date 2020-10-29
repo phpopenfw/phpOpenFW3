@@ -4,10 +4,10 @@
 /**
  * Core Database Type Trait
  *
- * @package		phpOpenFW
- * @author 		Christian J. Clark
- * @copyright	Copyright (c) Christian J. Clark
- * @license		https://mit-license.org
+ * @package         phpOpenFW
+ * @author          Christian J. Clark
+ * @copyright       Copyright (c) Christian J. Clark
+ * @license         https://mit-license.org
  **/
 //*****************************************************************************
 //*****************************************************************************
@@ -21,42 +21,27 @@ namespace phpOpenFW\Database\Structure\DatabaseType;
 //*****************************************************************************
 trait Core
 {
-	//*************************************************************************
-	//*************************************************************************
-    // Validate Data Source
-	//*************************************************************************
-	//*************************************************************************
-    protected static function ValidateDataSource($data_source)
+    //*************************************************************************
+    //*************************************************************************
+    // Get Data Source
+    //*************************************************************************
+    //*************************************************************************
+    protected static function GetDataSource($data_source)
     {
-        //=====================================================================
-        // Validate Data Source and Table
-        //=====================================================================
-        if ($data_source == '') {
-            trigger_error('Invalid data source handle');
-            return false;
-        }
-        $ds_data = \phpOpenFW\Core\DataSources::GetOne($data_source);
-        if (!$ds_data) {
-            trigger_error('Invalid data source.');
-            return false;
-        }
-
-        return $ds_data;
+        return \phpOpenFW\Core\DataSources::GetOneOrDefault($data_source);
     }
 
-	//*************************************************************************
-	//*************************************************************************
+    //*************************************************************************
+    //*************************************************************************
     // Determine Schema from a Table
-	//*************************************************************************
-	//*************************************************************************
+    //*************************************************************************
+    //*************************************************************************
     public static function DetermineSchema($data_source, $table, $default=false, $separator=false)
-	{
+    {
         //=====================================================================
-        // Validate Data Source and Table
+        // Get Data Source
         //=====================================================================
-        if (!$ds_data = self::ValidateDataSource($data_source)) {
-            return false;
-        }
+        $ds_obj = self::GetDataSource($data_source);
 
         //=====================================================================
         // Check for separator
@@ -68,7 +53,7 @@ trait Core
         //=====================================================================
         // Set Default Schema
         //=====================================================================
-    	$schema = (isset($ds_data['schema'])) ? ($ds_data['schema']) : (false);
+        $schema = (isset($ds_obj->schema)) ? ($ds_obj->schema) : (false);
 
         //=====================================================================
         // Determine Schema

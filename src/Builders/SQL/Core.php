@@ -4,10 +4,10 @@
 /**
  * Statement Core Class
  *
- * @package		phpOpenFW
- * @author 		Christian J. Clark
- * @copyright	Copyright (c) Christian J. Clark
- * @license		https://mit-license.org
+ * @package         phpOpenFW
+ * @author          Christian J. Clark
+ * @copyright       Copyright (c) Christian J. Clark
+ * @license         https://mit-license.org
  **/
 //*****************************************************************************
 //*****************************************************************************
@@ -28,12 +28,12 @@ abstract class Core
     use Traits\Conditions;
 
     //=========================================================================
-	// Class Memebers
+    // Class Memebers
     //=========================================================================
-	protected $db_type = 'mysql';
-	protected $bind_params = [];
-	protected $depth = 0;
-	protected $parent_query = false;
+    protected $db_type = 'mysql';
+    protected $bind_params = [];
+    protected $depth = 0;
+    protected $parent_query = false;
 
     //=========================================================================
     //=========================================================================
@@ -69,8 +69,8 @@ abstract class Core
     //=========================================================================
     public function &GetBindParams()
     {
-		return $this->bind_params;
-	}
+        return $this->bind_params;
+    }
 
     //=========================================================================
     //=========================================================================
@@ -79,8 +79,8 @@ abstract class Core
     //=========================================================================
     public function SetDepth(Int $depth)
     {
-		$this->depth = $depth;
-	}
+        $this->depth = $depth;
+    }
 
     //=========================================================================
     //=========================================================================
@@ -100,8 +100,8 @@ abstract class Core
                 return true;
             }
         }
-		throw new \Exception('Invalid Parent Type.');
-	}
+        throw new \Exception('Invalid Parent Type.');
+    }
 
     //=========================================================================
     //=========================================================================
@@ -121,38 +121,38 @@ abstract class Core
         //---------------------------------------------------------------------
         // MySQL
         //---------------------------------------------------------------------
-		if ($this->db_type == 'mysql') {
-    		if ($new_params <= 1) {
-        		return false;
-    		}
-    		if ($start_index == 0) {
-        		$this->bind_params[] = '';
-    		}
-    		foreach ($new_params as $np_index => $new_param) {
-        		if ($np_index == 0) { continue; }
-        		$np_index--;
-        		$tmp_type = substr($new_params[0], $np_index, 1);
-        		$this->bind_params[0] .= $tmp_type;
-        		$this->bind_params[] = $new_param;
+        if ($this->db_type == 'mysql') {
+            if ($new_params <= 1) {
+                return false;
             }
-		}
+            if ($start_index == 0) {
+                $this->bind_params[] = '';
+            }
+            foreach ($new_params as $np_index => $new_param) {
+                if ($np_index == 0) { continue; }
+                $np_index--;
+                $tmp_type = substr($new_params[0], $np_index, 1);
+                $this->bind_params[0] .= $tmp_type;
+                $this->bind_params[] = $new_param;
+            }
+        }
         //---------------------------------------------------------------------
         // Oracle
         //---------------------------------------------------------------------
-		else if ($this->db_type == 'oracle') {
-    		foreach ($new_params as $new_param) {
-        		$new_index = 'p' . $start_index;
-        		$this->bind_params[$new_index] = $new_param;
-        		$start_index++;
-    		}
-		}
+        else if ($this->db_type == 'oracle') {
+            foreach ($new_params as $new_param) {
+                $new_index = 'p' . $start_index;
+                $this->bind_params[$new_index] = $new_param;
+                $start_index++;
+            }
+        }
         //---------------------------------------------------------------------
         // Everything else. (PostgreSQL, SQL Server, etc.)
         //---------------------------------------------------------------------
-		else {
-    		$this->bind_params = array_merge($this->bind_params, $new_params);
-		}
-	}
+        else {
+            $this->bind_params = array_merge($this->bind_params, $new_params);
+        }
+    }
 
     //=========================================================================
     //=========================================================================

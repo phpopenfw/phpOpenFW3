@@ -4,10 +4,10 @@
 /**
  * SQL Condition Class
  *
- * @package		phpOpenFW
- * @author 		Christian J. Clark
- * @copyright	Copyright (c) Christian J. Clark
- * @license		https://mit-license.org
+ * @package         phpOpenFW
+ * @author          Christian J. Clark
+ * @copyright       Copyright (c) Christian J. Clark
+ * @license         https://mit-license.org
  **/
 //*****************************************************************************
 //*****************************************************************************
@@ -23,13 +23,13 @@ use \Closure;
 class Condition extends \phpOpenFW\Builders\SQL\Core
 {
     //=========================================================================
-	// Class Memebers
+    // Class Memebers
     //=========================================================================
-	protected $parent_query;
-	protected $field = false;
-	protected $op = false;
-	protected $val = false;
-	protected $type = 's';
+    protected $parent_query;
+    protected $field = false;
+    protected $op = false;
+    protected $val = false;
+    protected $type = 's';
 
     //=========================================================================
     //=========================================================================
@@ -85,8 +85,8 @@ class Condition extends \phpOpenFW\Builders\SQL\Core
     //=========================================================================
     public function __toString()
     {
-		return $this->GetSQL();
-	}
+        return $this->GetSQL();
+    }
 
     //=========================================================================
     //=========================================================================
@@ -99,12 +99,12 @@ class Condition extends \phpOpenFW\Builders\SQL\Core
         // Nested Conditions
         //---------------------------------------------------------------------
         if ($this->field instanceof Closure) {
-        	$nested = new Nested($this, $this->depth - 1);
-        	($this->field)($nested);
-        	$rear_pad = str_repeat(' ', $this->depth * 2);
-        	$nested = (string)$nested;
-        	if ($nested) {
-            	return "({$nested}\n{$rear_pad})";
+            $nested = new Nested($this, $this->depth - 1);
+            ($this->field)($nested);
+            $rear_pad = str_repeat(' ', $this->depth * 2);
+            $nested = (string)$nested;
+            if ($nested) {
+                return "({$nested}\n{$rear_pad})";
             }
             return '';
         }

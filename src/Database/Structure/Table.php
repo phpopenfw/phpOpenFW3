@@ -4,10 +4,10 @@
 /**
  * Database Table Structure Class
  *
- * @package		phpOpenFW
- * @author 		Christian J. Clark
- * @copyright	Copyright (c) Christian J. Clark
- * @license		https://mit-license.org
+ * @package         phpOpenFW
+ * @author          Christian J. Clark
+ * @copyright       Copyright (c) Christian J. Clark
+ * @license         https://mit-license.org
  */
 //*****************************************************************************
 //*****************************************************************************
@@ -23,31 +23,27 @@ use phpOpenFW\Database\DataTrans;
 class Table
 {
 
-	//*************************************************************************
-	/**
-	 * Get the structural information for a given database table
-	 *
-	 * @param string Data source handle
-	 * @param string Table name
-	 * @param string Schema name
-	 * @return array Table Structure
-	 */
-	//*************************************************************************
-	public static function TableStructure($data_source, $table, $schema=false)
-	{
+    //*************************************************************************
+    /**
+     * Get the structural information for a given database table
+     *
+     * @param string Data source handle
+     * @param string Table name
+     * @param string Schema name
+     * @return array Table Structure
+     */
+    //*************************************************************************
+    public static function TableStructure($data_source, $table, $schema=false)
+    {
         //=====================================================================
         // Validate Data Source
         //=====================================================================
-        $ds_data = \phpOpenFW\Core\DataSources::GetOne($data_source);
-        if (!$ds_data) {
-            trigger_error('Invalid data source.');
-            return false;
-        }
+        $ds_obj = \phpOpenFW\Core\DataSources::GetOneOrDefault($data_source);
 
         //=====================================================================
         // Get Table Structure Based on Database Type
         //=====================================================================
-        switch ($ds_data['type']) {
+        switch ($ds_obj->type) {
             case 'mysql':
             case 'mysqli':
                 return DatabaseType\MySQL::TableStructure($data_source, $table, $schema);
@@ -57,52 +53,48 @@ class Table
                 return DatabaseType\PgSQL::TableStructure($data_source, $table, $schema);
                 break;
 
-			case 'oracle':
+            case 'oracle':
                 return DatabaseType\Oracle::TableStructure($data_source, $table, $schema);
-				break;
+                break;
 
-			case 'sqlsrv':
-			case 'mssql':
+            case 'sqlsrv':
+            case 'mssql':
                 return DatabaseType\SQLSrv::TableStructure($data_source, $table, $schema);
-				break;
+                break;
 
-			case 'sqlite':
-			    return DatabaseType\SQLite::TableStructure($data_source, $table, $schema);
-				break;
+            case 'sqlite':
+                return DatabaseType\SQLite::TableStructure($data_source, $table, $schema);
+                break;
 
-			case 'db2':
+            case 'db2':
                 return DatabaseType\DB2::TableStructure($data_source, $table, $schema);
-				break;
+                break;
 
         }
 
         return false;
     }
 
-	//*************************************************************************
-	/**
-	 * Determine a schema from a table name
-	 *
-	 * @param string Data Source Handle
-	 * @param string Table Name
-	 * @return array An Array containing the table name and schema found.
-	 */
-	//*************************************************************************
-	public static function DetermineSchema($data_source, $table)
-	{
+    //*************************************************************************
+    /**
+     * Determine a schema from a table name
+     *
+     * @param string Data Source Handle
+     * @param string Table Name
+     * @return array An Array containing the table name and schema found.
+     */
+    //*************************************************************************
+    public static function DetermineSchema($data_source, $table)
+    {
         //=====================================================================
-        // Validate Data Source
+        // Get Data Source
         //=====================================================================
-        $ds_data = \phpOpenFW\Core\DataSources::GetOne($data_source);
-        if (!$ds_data) {
-            trigger_error('Invalid data source.');
-            return false;
-        }
+        $ds_obj = \phpOpenFW\Core\DataSources::GetOneOrDefault($data_source);
 
         //=====================================================================
         // Get Table and Schema Based on Database Type
         //=====================================================================
-        switch ($ds_data['type']) {
+        switch ($ds_obj->type) {
             case 'mysql':
             case 'mysqli':
                 return DatabaseType\MySQL::DetermineSchema($data_source, $table);
@@ -112,39 +104,39 @@ class Table
                 return DatabaseType\PgSQL::DetermineSchema($data_source, $table);
                 break;
 
-			case 'oracle':
+            case 'oracle':
                 return DatabaseType\Oracle::DetermineSchema($data_source, $table);
-				break;
+                break;
 
-			case 'sqlsrv':
-			case 'mssql':
+            case 'sqlsrv':
+            case 'mssql':
                 return DatabaseType\SQLSrv::DetermineSchema($data_source, $table);
-				break;
+                break;
 
-			case 'sqlite':
-			    return DatabaseType\SQLite::DetermineSchema($data_source, $table);
-				break;
+            case 'sqlite':
+                return DatabaseType\SQLite::DetermineSchema($data_source, $table);
+                break;
 
-			case 'db2':
+            case 'db2':
                 return DatabaseType\DB2::DetermineSchema($data_source, $table);
-				break;
+                break;
 
         }
 
         return false;
     }
 
-	//*************************************************************************
-	/**
-	 * Get the column data types that require quotes for a specified database type
-	 *
-	 * @param string Database type or data source handle
-	 * @param string Strict mode (true / false). If false, check if $db_type is a data source handle
-	 * @return array An array of column types that require quotes (non-bind parameters)
-	 */
-	//*************************************************************************
-	public static function QuotedTypes($db_type, $strict=false)
-	{
+    //*************************************************************************
+    /**
+     * Get the column data types that require quotes for a specified database type
+     *
+     * @param string Database type or data source handle
+     * @param string Strict mode (true / false). If false, check if $db_type is a data source handle
+     * @return array An array of column types that require quotes (non-bind parameters)
+     */
+    //*************************************************************************
+    public static function QuotedTypes($db_type, $strict=false)
+    {
         //=====================================================================
         // Cast $db_type as string and validate
         //=====================================================================
@@ -196,21 +188,10 @@ class Table
             //-------------------------------------------------------------
             // IBM DB2
             //-------------------------------------------------------------
-        	case 'db2':
-        	    return DatabaseType\DB2::QuotedTypes();
+            case 'db2':
+                return DatabaseType\DB2::QuotedTypes();
                 break;
 
-        }
-
-        //=====================================================================
-        // Unknown Database Type
-        //=====================================================================
-        // If not strict mode, try to interpret as data source handle
-        //=====================================================================
-        if (!$strict) {
-            if ($data_source = \phpOpenFW\Core\DataSources::GetOne($db_type)) {
-                return self::QuotedTypes($data_source['type'], true);
-            }
         }
 
         return false;

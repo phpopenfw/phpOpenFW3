@@ -4,10 +4,10 @@
 /**
  * SQL Where Trait
  *
- * @package		phpOpenFW
- * @author 		Christian J. Clark
- * @copyright	Copyright (c) Christian J. Clark
- * @license		https://mit-license.org
+ * @package         phpOpenFW
+ * @author          Christian J. Clark
+ * @copyright       Copyright (c) Christian J. Clark
+ * @license         https://mit-license.org
  **/
 //**************************************************************************************
 //**************************************************************************************
@@ -26,225 +26,225 @@ trait Where
     //=========================================================================
 
     //=========================================================================
-	// Trait Memebers
+    // Trait Memebers
     //=========================================================================
-	protected $wheres = [];
+    protected $wheres = [];
 
     //=========================================================================
     //=========================================================================
-	// Where Method
+    // Where Method
     //=========================================================================
     //=========================================================================
-	public function Where($field, $op=null, $val=false, $type='s', $andor='and')
-	{
-    	if (!self::IsValidOperator($op)) {
+    public function Where($field, $op=null, $val=false, $type='s', $andor='and')
+    {
+        if (!self::IsValidOperator($op)) {
             if (self::IsValidAndOr($type)) {
-            	$andor = $type;
-        	}
-        	if (self::IsValidParamType($val)) {
-            	$type = $val;
-        	}
+                $andor = $type;
+            }
+            if (self::IsValidParamType($val)) {
+                $type = $val;
+            }
             $val = $op;
             $op = '=';
         }
         $this->AddCondition($this->wheres, $field, $op, $val, $type, $andor);
         return $this;
-	}
+    }
 
     //=========================================================================
     //=========================================================================
-	// Or Where Method
+    // Or Where Method
     //=========================================================================
     //=========================================================================
-	public function OrWhere($field, $op=null, $val=false, $type='s')
-	{
-        $this->Where($field, $op, $val, $type, 'or');    	
+    public function OrWhere($field, $op=null, $val=false, $type='s')
+    {
+        $this->Where($field, $op, $val, $type, 'or');        
         return $this;
-	}
+    }
 
     //=========================================================================
     //=========================================================================
-	// Where Between Method
+    // Where Between Method
     //=========================================================================
     //=========================================================================
-	public function WhereBetween(String $field, Array $val, $type='s')
-	{
+    public function WhereBetween(String $field, Array $val, $type='s')
+    {
         $this->AddCondition($this->wheres, $field, 'BETWEEN', $val, $type, 'and');
         return $this;
-	}
+    }
 
     //=========================================================================
     //=========================================================================
-	// Or Where Between Method
+    // Or Where Between Method
     //=========================================================================
     //=========================================================================
-	public function OrWhereBetween(String $field, Array $val, $type='s')
-	{
+    public function OrWhereBetween(String $field, Array $val, $type='s')
+    {
         $this->AddCondition($this->wheres, $field, 'BETWEEN', $val, $type, 'or');
         return $this;
-	}
+    }
 
     //=========================================================================
     //=========================================================================
-	// Where Not Between Method
+    // Where Not Between Method
     //=========================================================================
     //=========================================================================
-	public function WhereNotBetween(String $field, Array $val, $type='s')
-	{
+    public function WhereNotBetween(String $field, Array $val, $type='s')
+    {
         $this->AddCondition($this->wheres, $field, 'NOT BETWEEN', $val, $type, 'and');
         return $this;
-	}
+    }
 
     //=========================================================================
     //=========================================================================
-	// Or Where Not Between Method
+    // Or Where Not Between Method
     //=========================================================================
     //=========================================================================
-	public function OrWhereNotBetween(String $field, Array $val, $type='s')
-	{
+    public function OrWhereNotBetween(String $field, Array $val, $type='s')
+    {
         $this->AddCondition($this->wheres, $field, 'NOT BETWEEN', $val, $type, 'or');
         return $this;
-	}
+    }
 
     //=========================================================================
     //=========================================================================
-	// Where In Method
+    // Where In Method
     //=========================================================================
     //=========================================================================
-	public function WhereIn(String $field, $val, $type='s')
-	{
+    public function WhereIn(String $field, $val, $type='s')
+    {
         $this->AddCondition($this->wheres, $field, 'IN', $val, $type, 'and');
         return $this;
-	}
+    }
 
     //=========================================================================
     //=========================================================================
-	// Or Where In Method
+    // Or Where In Method
     //=========================================================================
     //=========================================================================
-	public function OrWhereIn(String $field, $val, $type='s')
-	{
+    public function OrWhereIn(String $field, $val, $type='s')
+    {
         $this->AddCondition($this->wheres, $field, 'IN', $val, $type, 'or');
         return $this;
-	}
+    }
 
     //=========================================================================
     //=========================================================================
-	// Where Not In Method
+    // Where Not In Method
     //=========================================================================
     //=========================================================================
-	public function WhereNotIn(String $field, Array $val, $type='s')
-	{
+    public function WhereNotIn(String $field, Array $val, $type='s')
+    {
         $this->AddCondition($this->wheres, $field, 'NOT IN', $val, $type, 'and');
         return $this;
-	}
+    }
 
     //=========================================================================
     //=========================================================================
-	// Or Where Not In Method
+    // Or Where Not In Method
     //=========================================================================
     //=========================================================================
-	public function OrWhereNotIn(String $field, Array $val, $type='s')
-	{
+    public function OrWhereNotIn(String $field, Array $val, $type='s')
+    {
         $this->AddCondition($this->wheres, $field, 'NOT IN', $val, $type, 'or');
         return $this;
-	}
+    }
 
     //=========================================================================
     //=========================================================================
-	// Where Like Method
+    // Where Like Method
     //=========================================================================
     //=========================================================================
-	public function WhereLike(String $field, $val, $type='s')
-	{
+    public function WhereLike(String $field, $val, $type='s')
+    {
         $this->AddCondition($this->wheres, $field, 'LIKE', $val, $type, 'and');
         return $this;
-	}
+    }
 
     //=========================================================================
     //=========================================================================
-	// Or Where Like Method
+    // Or Where Like Method
     //=========================================================================
     //=========================================================================
-	public function OrWhereLike(String $field, $val, $type='s')
-	{
+    public function OrWhereLike(String $field, $val, $type='s')
+    {
         $this->AddCondition($this->wheres, $field, 'LIKE', $val, $type, 'or');
         return $this;
-	}
+    }
 
     //=========================================================================
     //=========================================================================
-	// Where Not Like Method
+    // Where Not Like Method
     //=========================================================================
     //=========================================================================
-	public function WhereNotLike(String $field, $val, $type='s')
-	{
+    public function WhereNotLike(String $field, $val, $type='s')
+    {
         $this->AddCondition($this->wheres, $field, 'NOT LIKE', $val, $type, 'and');
         return $this;
-	}
+    }
 
     //=========================================================================
     //=========================================================================
-	// Or Where Not Like Method
+    // Or Where Not Like Method
     //=========================================================================
     //=========================================================================
-	public function OrWhereNotLike(String $field, $val, $type='s')
-	{
+    public function OrWhereNotLike(String $field, $val, $type='s')
+    {
         $this->AddCondition($this->wheres, $field, 'NOT LIKE', $val, $type, 'or');
         return $this;
-	}
+    }
 
     //=========================================================================
     //=========================================================================
-	// Where Is Null Method
+    // Where Is Null Method
     //=========================================================================
     //=========================================================================
-	public function WhereNull(String $field)
-	{
+    public function WhereNull(String $field)
+    {
         $this->AddCondition($this->wheres, $field, 'IS NULL', null, '', 'and');
         return $this;
-	}
+    }
 
     //=========================================================================
     //=========================================================================
-	// Or Where Is Null Method
+    // Or Where Is Null Method
     //=========================================================================
     //=========================================================================
-	public function OrWhereNull(String $field)
-	{
+    public function OrWhereNull(String $field)
+    {
         $this->AddCondition($this->wheres, $field, 'IS NULL', null, '', 'or');
         return $this;
-	}
+    }
 
     //=========================================================================
     //=========================================================================
-	// Where Is Not Null Method
+    // Where Is Not Null Method
     //=========================================================================
     //=========================================================================
-	public function WhereNotNull(String $field)
-	{
+    public function WhereNotNull(String $field)
+    {
         $this->AddCondition($this->wheres, $field, 'IS NOT NULL', null, '', 'and');
         return $this;
-	}
+    }
 
     //=========================================================================
     //=========================================================================
-	// Or Where Is Null Method
+    // Or Where Is Null Method
     //=========================================================================
     //=========================================================================
-	public function OrWhereNotNull(String $field)
-	{
+    public function OrWhereNotNull(String $field)
+    {
         $this->AddCondition($this->wheres, $field, 'IS NOT NULL', null, '', 'or');
         return $this;
-	}
+    }
 
     //=========================================================================
     //=========================================================================
-	// Where Column Method
+    // Where Column Method
     //=========================================================================
     //=========================================================================
-	public function WhereColumn(String $field1, String $op, String $field2='', $andor='and')
-	{
+    public function WhereColumn(String $field1, String $op, String $field2='', $andor='and')
+    {
         //-----------------------------------------------------------------
         // Validate Parameters
         //-----------------------------------------------------------------
@@ -262,36 +262,14 @@ trait Where
 
         $this->wheres[] = [$andor, "{$field1} {$op} {$field2}"];
         return $this;
-	}
-
-    //=========================================================================
-    //=========================================================================
-	// Or Where Column Method
-    //=========================================================================
-    //=========================================================================
-	public function OrWhereColumn(String $field1, String $op, String $field2='')
-	{
-    	$this->WhereColumn($field1, $op, $field2, 'or');
-        return $this;
     }
 
     //=========================================================================
     //=========================================================================
-	// On Method (Alias of WhereColumn)
+    // Or Where Column Method
     //=========================================================================
     //=========================================================================
-	public function On(String $field1, String $op, String $field2='')
-    {
-        $this->WhereColumn($field1, $op, $field2);
-        return $this;
-    }
-
-    //=========================================================================
-    //=========================================================================
-	// Or On Method (Alias of WhereColumn w/ Or)
-    //=========================================================================
-    //=========================================================================
-	public function OrOn(String $field1, String $op, String $field2='')
+    public function OrWhereColumn(String $field1, String $op, String $field2='')
     {
         $this->WhereColumn($field1, $op, $field2, 'or');
         return $this;
@@ -299,24 +277,46 @@ trait Where
 
     //=========================================================================
     //=========================================================================
-	// Where Raw Method
+    // On Method (Alias of WhereColumn)
     //=========================================================================
     //=========================================================================
-	public function WhereRaw(String $where_raw)
-	{
+    public function On(String $field1, String $op, String $field2='')
+    {
+        $this->WhereColumn($field1, $op, $field2);
+        return $this;
+    }
+
+    //=========================================================================
+    //=========================================================================
+    // Or On Method (Alias of WhereColumn w/ Or)
+    //=========================================================================
+    //=========================================================================
+    public function OrOn(String $field1, String $op, String $field2='')
+    {
+        $this->WhereColumn($field1, $op, $field2, 'or');
+        return $this;
+    }
+
+    //=========================================================================
+    //=========================================================================
+    // Where Raw Method
+    //=========================================================================
+    //=========================================================================
+    public function WhereRaw(String $where_raw)
+    {
         if ($where_raw) {
             $this->wheres[] = ['and', $where_raw];
         }
         return $this;
-	}
+    }
 
     //=========================================================================
     //=========================================================================
-	// Or Where Raw Method
+    // Or Where Raw Method
     //=========================================================================
     //=========================================================================
-	public function OrWhereRaw(String $where_raw)
-	{
+    public function OrWhereRaw(String $where_raw)
+    {
         if ($where_raw) {
             $this->wheres[] = ['or', $where_raw];
         }
@@ -325,45 +325,45 @@ trait Where
 
     //=========================================================================
     //=========================================================================
-	// Where Exists Method
+    // Where Exists Method
     //=========================================================================
     //=========================================================================
-	public function WhereExists($query)
-	{
-    	$this->AddCondition($this->wheres, '', 'EXISTS', $query, '', 'and');
+    public function WhereExists($query)
+    {
+        $this->AddCondition($this->wheres, '', 'EXISTS', $query, '', 'and');
         return $this;
     }
 
     //=========================================================================
     //=========================================================================
-	// Or Where Exists Method
+    // Or Where Exists Method
     //=========================================================================
     //=========================================================================
-	public function OrWhereExists($query)
-	{
-    	$this->AddCondition($this->wheres, '', 'EXISTS', $query, '', 'or');
+    public function OrWhereExists($query)
+    {
+        $this->AddCondition($this->wheres, '', 'EXISTS', $query, '', 'or');
         return $this;
     }
 
     //=========================================================================
     //=========================================================================
-	// Where Exists Method
+    // Where Exists Method
     //=========================================================================
     //=========================================================================
-	public function WhereNotExists($query)
-	{
-    	$this->AddCondition($this->wheres, '', 'NOT EXISTS', $query, 'and');
+    public function WhereNotExists($query)
+    {
+        $this->AddCondition($this->wheres, '', 'NOT EXISTS', $query, 'and');
         return $this;
     }
 
     //=========================================================================
     //=========================================================================
-	// Or Where Exists Method
+    // Or Where Exists Method
     //=========================================================================
     //=========================================================================
-	public function OrWhereNotExists($query)
-	{
-    	$this->AddCondition($this->wheres, '', 'NOT EXISTS', $query, 'or');
+    public function OrWhereNotExists($query)
+    {
+        $this->AddCondition($this->wheres, '', 'NOT EXISTS', $query, 'or');
         return $this;
     }
 
@@ -377,16 +377,16 @@ trait Where
 
     //=========================================================================
     //=========================================================================
-	// Format Where Clause Method
+    // Format Where Clause Method
     //=========================================================================
     //=========================================================================
-	protected function FormatWhere()
-	{
-    	$clause = $this->FormatConditions($this->wheres);
-    	if ($clause) {
-        	$clause = "WHERE " . $clause;
-    	}
-    	return $clause;
-	}
+    protected function FormatWhere()
+    {
+        $clause = $this->FormatConditions($this->wheres);
+        if ($clause) {
+            $clause = "WHERE " . $clause;
+        }
+        return $clause;
+    }
 
 }

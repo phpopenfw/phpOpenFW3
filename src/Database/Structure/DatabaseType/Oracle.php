@@ -4,10 +4,10 @@
 /**
  * Oracle Database Structure Class
  *
- * @package		phpOpenFW
- * @author 		Christian J. Clark
- * @copyright	Copyright (c) Christian J. Clark
- * @license		https://mit-license.org
+ * @package         phpOpenFW
+ * @author          Christian J. Clark
+ * @copyright       Copyright (c) Christian J. Clark
+ * @license         https://mit-license.org
  */
 //*****************************************************************************
 //*****************************************************************************
@@ -22,29 +22,26 @@ use phpOpenFW\Database\DataTrans;
 //*****************************************************************************
 class Oracle
 {
-	//*************************************************************************
+    //*************************************************************************
     // Traits
-	//*************************************************************************
+    //*************************************************************************
     use Core;
 
-	//*************************************************************************
-	/**
-	 * Get the structure for a given database table
-	 *
-	 * @param string Data source handle
-	 * @param string Table name
-	 * @param string Schema name
-	 * @return array Table Structure
-	 */
-	//*************************************************************************
-	public static function TableStructure($data_source, $table, $schema=false)
-	{
+    //*************************************************************************
+    /**
+     * Get the structure for a given database table
+     *
+     * @param string Data source handle
+     * @param string Table name
+     * @param string Schema name
+     * @return array Table Structure
+     */
+    //*************************************************************************
+    public static function TableStructure($data_source, $table, $schema=false)
+    {
         //=====================================================================
-        // Validate Data Source and Table
+        // Validate Table Name
         //=====================================================================
-        if (!$ds_data = self::ValidateDataSource($data_source)) {
-            return false;
-        }
         if ($table == '') {
             trigger_error('Invalid table name.');
             return false;
@@ -53,15 +50,15 @@ class Oracle
         //=====================================================================
         // Start Table Info
         //=====================================================================
-    	$table_info = [];
+        $table_info = [];
 
         //=====================================================================
         // Build SQL Query to Pull Table Structure Data
         //=====================================================================
-		$tmp_tbl = strtoupper($table);
-		$strsql = "
-		    select * from 
-		        ALL_TAB_COLUMNS 
+        $tmp_tbl = strtoupper($table);
+        $strsql = "
+            select * from 
+                ALL_TAB_COLUMNS 
             where 
                 table_name = '{$tmp_tbl}'
         ";
@@ -70,7 +67,7 @@ class Oracle
         // Pull Table Data
         //=====================================================================
         $data1 = new DataTrans($data_source);
-		$data1->data_query($strsql);
+        $data1->data_query($strsql);
         $meta_data = $data1->data_assoc_result();
 
         //=====================================================================
@@ -94,24 +91,24 @@ class Oracle
         return $table_info;
     }
 
-	//*************************************************************************
-	/**
-	 * Return the column data types that require quotes for this database type
-	 *
-	 * @return array An array of column types that require quotes (non-bind parameters)
-	 */
-	//*************************************************************************
-	public static function QuotedTypes()
-	{
+    //*************************************************************************
+    /**
+     * Return the column data types that require quotes for this database type
+     *
+     * @return array An array of column types that require quotes (non-bind parameters)
+     */
+    //*************************************************************************
+    public static function QuotedTypes()
+    {
         return [
-        	'CHAR' => 'CHAR',
-        	'NCHAR' => 'NCHAR',
-        	'VARCHAR' => 'VARCHAR',
-        	'VARCHAR2' => 'VARCHAR2',
-        	'DATE' => 'DATE',
-        	'TIMESTAMP' => 'TIMESTAMP',
-        	'CLOB' => 'CLOB',
-        	'NCLOB' => 'NCLOB'
+            'CHAR' => 'CHAR',
+            'NCHAR' => 'NCHAR',
+            'VARCHAR' => 'VARCHAR',
+            'VARCHAR2' => 'VARCHAR2',
+            'DATE' => 'DATE',
+            'TIMESTAMP' => 'TIMESTAMP',
+            'CLOB' => 'CLOB',
+            'NCLOB' => 'NCLOB'
         ];
     }
 

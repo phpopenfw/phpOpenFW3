@@ -4,10 +4,10 @@
 /**
  * SQL Insert Statement Class
  *
- * @package		phpOpenFW
- * @author 		Christian J. Clark
- * @copyright	Copyright (c) Christian J. Clark
- * @license		https://mit-license.org
+ * @package         phpOpenFW
+ * @author          Christian J. Clark
+ * @copyright       Copyright (c) Christian J. Clark
+ * @license         https://mit-license.org
  **/
 //*****************************************************************************
 //*****************************************************************************
@@ -27,7 +27,7 @@ class Insert extends Statement
     use Traits\Values;
 
     //=========================================================================
-	// Class Memebers
+    // Class Memebers
     //=========================================================================
     protected $sql_type = 'insert';
 
@@ -42,27 +42,27 @@ class Insert extends Statement
         // Are there values?
         //---------------------------------------------------------------------
         if (!$this->set_fields) {
-	    	trigger_error("No insert values have been specified.");
-	    	return '';
-	    }
+            trigger_error("No insert values have been specified.");
+            return '';
+        }
 
-		//---------------------------------------------------------------------
+        //---------------------------------------------------------------------
         // Format Values
-		//---------------------------------------------------------------------
+        //---------------------------------------------------------------------
         list($fields, $place_holders) = $this->FormatValues();
 
         //---------------------------------------------------------------------
         // Are there values?
         //---------------------------------------------------------------------
         if (empty($fields) || empty($place_holders)) {
-	    	trigger_error("No insert values could be found.");
-	    	return '';
-	    }
+            trigger_error("No insert values could be found.");
+            return '';
+        }
 
-		//---------------------------------------------------------------------
+        //---------------------------------------------------------------------
         // Build Final SQL
-		//---------------------------------------------------------------------
+        //---------------------------------------------------------------------
         return "INSERT INTO {$this->table} ({$fields}\n)\nVALUES ({$place_holders}\n)";        
-	}
+    }
 
 }

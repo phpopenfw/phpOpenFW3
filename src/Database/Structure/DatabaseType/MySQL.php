@@ -4,10 +4,10 @@
 /**
  * MySQL Database Structure Class
  *
- * @package		phpOpenFW
- * @author 		Christian J. Clark
- * @copyright	Copyright (c) Christian J. Clark
- * @license		https://mit-license.org
+ * @package         phpOpenFW
+ * @author          Christian J. Clark
+ * @copyright       Copyright (c) Christian J. Clark
+ * @license         https://mit-license.org
  */
 //*****************************************************************************
 //*****************************************************************************
@@ -22,29 +22,26 @@ use phpOpenFW\Database\DataTrans;
 //*****************************************************************************
 class MySQL
 {
-	//*************************************************************************
+    //*************************************************************************
     // Traits
-	//*************************************************************************
+    //*************************************************************************
     use Core;
 
-	//*************************************************************************
-	/**
-	 * Get the structure for a given database table
-	 *
-	 * @param string Data source handle
-	 * @param string Table name
-	 * @param string Schema name
-	 * @return array Table Structure
-	 */
-	//*************************************************************************
-	public static function TableStructure($data_source, $table, $schema=false)
-	{
+    //*************************************************************************
+    /**
+     * Get the structure for a given database table
+     *
+     * @param string Data source handle
+     * @param string Table name
+     * @param string Schema name
+     * @return array Table Structure
+     */
+    //*************************************************************************
+    public static function TableStructure($data_source, $table, $schema=false)
+    {
         //=====================================================================
-        // Validate Data Source and Table
+        // Validate Table Name
         //=====================================================================
-        if (!$ds_data = self::ValidateDataSource($data_source)) {
-            return false;
-        }
         if ($table == '') {
             trigger_error('Invalid table name.');
             return false;
@@ -53,7 +50,7 @@ class MySQL
         //=====================================================================
         // Start Table Info
         //=====================================================================
-    	$table_info = [];
+        $table_info = [];
 
         //=====================================================================
         // Build SQL Query to Pull Table Structure Data
@@ -97,86 +94,86 @@ class MySQL
         return $table_info;
     }
 
-	//*************************************************************************
-	/**
-	 * Return the column data types that require quotes for this database type
-	 *
-	 * @return array An array of column types that require quotes (non-bind parameters)
-	 */
-	//*************************************************************************
-	public static function QuotedTypes()
-	{
+    //*************************************************************************
+    /**
+     * Return the column data types that require quotes for this database type
+     *
+     * @return array An array of column types that require quotes (non-bind parameters)
+     */
+    //*************************************************************************
+    public static function QuotedTypes()
+    {
         return [
-        	'char' => 'char',
-        	'date' => 'date',
-        	'text' => 'text',
-        	'tinytext' => 'tinytext',
-        	'mediumtext' => 'mediumtext',
-        	'longtext' => 'longtext',
-        	'varchar' => 'varchar',
-        	'enum' => 'enum',
-        	'timestamp' => 'timestamp',
-        	'datetime' => 'datetime',
-        	'time' => 'time',
-        	'year' => 'year'
+            'char' => 'char',
+            'date' => 'date',
+            'text' => 'text',
+            'tinytext' => 'tinytext',
+            'mediumtext' => 'mediumtext',
+            'longtext' => 'longtext',
+            'varchar' => 'varchar',
+            'enum' => 'enum',
+            'timestamp' => 'timestamp',
+            'datetime' => 'datetime',
+            'time' => 'time',
+            'year' => 'year'
         ];
     }
 
-	//*************************************************************************
-	/**
-	 * Return the bind types map for MySQL field types
-	 *
-	 * @return Array The field type to bind type mapping array
-	 */
-	//*************************************************************************
-	public static function BindTypes()
-	{
+    //*************************************************************************
+    /**
+     * Return the bind types map for MySQL field types
+     *
+     * @return Array The field type to bind type mapping array
+     */
+    //*************************************************************************
+    public static function BindTypes()
+    {
         return [
-        	//-------------------------------------------------
-        	// Integer
-        	//-------------------------------------------------
-        	'TINYINT' => 'i',
-        	'SMALLINT' => 'i',
-        	'MEDIUMINT' => 'i',
-        	'INT' => 'i',
-        	'BIGINT' => 'i',
+            //-------------------------------------------------
+            // Integer
+            //-------------------------------------------------
+            'TINYINT' => 'i',
+            'SMALLINT' => 'i',
+            'MEDIUMINT' => 'i',
+            'INT' => 'i',
+            'BIGINT' => 'i',
         
-        	'BIT' => 'i',
-        	'BOOL' => 'i',
-        	'SERIAL' => 'i',
+            'BIT' => 'i',
+            'BOOL' => 'i',
+            'SERIAL' => 'i',
         
-        	//-------------------------------------------------
-        	// Double
-        	//-------------------------------------------------
-        	'DECIMAL' => 'd',
-        	'FLOAT' => 'd',
-        	'DOUBLE' => 'd',
-        	'REAL' => 'd',
+            //-------------------------------------------------
+            // Double
+            //-------------------------------------------------
+            'DECIMAL' => 'd',
+            'FLOAT' => 'd',
+            'DOUBLE' => 'd',
+            'REAL' => 'd',
         
-        	//-------------------------------------------------
-        	// Blob
-        	//-------------------------------------------------
-        	'TINYBLOB' => 'b',
-        	'MEDIUMBLOB' => 'b',
-        	'BLOB' => 'b',
-        	'LONGBLOB' => 'b'
+            //-------------------------------------------------
+            // Blob
+            //-------------------------------------------------
+            'TINYBLOB' => 'b',
+            'MEDIUMBLOB' => 'b',
+            'BLOB' => 'b',
+            'LONGBLOB' => 'b'
         ];
     }
 
-	//*************************************************************************
-	/**
-	 * Return the bind type character for a given MySQL field type
-	 *
-	 * @param string The field type to get a bind character for
-	 * @return character The bind type character
-	 */
-	//*************************************************************************
-	public static function GetBindType($field_type)
-	{
-    	if (!$field_type) {
-        	return false;
+    //*************************************************************************
+    /**
+     * Return the bind type character for a given MySQL field type
+     *
+     * @param string The field type to get a bind character for
+     * @return character The bind type character
+     */
+    //*************************************************************************
+    public static function GetBindType($field_type)
+    {
+        if (!$field_type) {
+            return false;
         }
-    	$field_type = strtoupper($field_type);
+        $field_type = strtoupper($field_type);
         $bind_types = self::BindTypes();
         return (isset($bind_types[$field_type])) ? ($bind_types[$field_type]) : ('s');
     }
