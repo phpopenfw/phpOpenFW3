@@ -1,5 +1,5 @@
 {
-    "name": "phpopenfw/phpOpenFW3",
+    "name": "phpopenfw/phpopenfw3",
     "version": "3.0.0",
     "require": {
         "php": ">=7.0.0"
@@ -7,7 +7,7 @@
     "require-dev": {},
     "repositories": [],
     "dist": {
-        "url": "https://github.com/phpopenfw/phpOpenFW3.git",
+        "url": "https://github.com/phpopenfw/phpopenfw3.git",
         "type": "zip"
     },
     "autoload": {
