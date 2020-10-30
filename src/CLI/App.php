@@ -2,7 +2,7 @@
 //*****************************************************************************
 //*****************************************************************************
 /**
- * Aommand Line App Class
+ * Command Line App Class
  *
  * @package         phpOpenFW
  * @author          Christian J. Clark
@@ -33,6 +33,10 @@ class App
     // Class Members
     //*************************************************************************
     //*************************************************************************
+    protected $mod_title = false;
+    protected $job = false;
+    protected $job_dir = false;
+    protected $job_controller = false;
 
     //*************************************************************************
     //*************************************************************************
@@ -49,9 +53,59 @@ class App
         }
 
         //=====================================================================
+        // Environment
+        // Run Mode
+        // Verbose
+        //=====================================================================
+        $this->SetEnv();
+        $this->SetRunMode();
+        $this->SetVerbose();
+
+        //=====================================================================
+        // Determine Controller
+        //=====================================================================
+        if (!$this->DetermineController()) {
+            $this->RunHelp();
+        }
+        //=====================================================================
+        // Run Module
+        //=====================================================================
+        else {
+            $this->RunModule();
+        }
+
+        //=====================================================================
+        // Post-run Method
+        //=====================================================================
+        if ($this->CustomMethodExists('PostRun')) {
+            $this->PostRun();
+        }
+    }
+
+    //%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+    //%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+    // Internal Methods
+    //%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+    //%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+    //*************************************************************************
+    //*************************************************************************
+    // Run Module
+    //*************************************************************************
+    //*************************************************************************
+    protected function RunModule(Array $args=[])
+    {
+        //=====================================================================
+        // Default Options
+        //=====================================================================
+        $print_title = true;
+        $is_help = false;
+
+        //=====================================================================
         // Extract Arguments
         //=====================================================================
         extract($this->args , EXTR_PREFIX_ALL, 'arg');
+        extract($args);
 
         //=====================================================================
         // App Pre-Script File
@@ -62,54 +116,31 @@ class App
         }
 
         //=====================================================================
-        // Check Job and Command Parameters
-        //=====================================================================
-        if (empty($this->args['j']) && empty($this->args['__command'])) {
-            self::PrintErrorExit('No job (-j) or command (<script> [COMMAND]) given.');
-        }
-        if (!empty($this->args['__command'])) {
-            $command1 = $this->args['__command'];
-            $command1_dir = "{$this->app_path}/controllers/{$command1}";
-        }
-        if (!empty($this->args['j'])) {
-            $command2 = $this->args['j'];
-            $command2_dir = "{$this->app_path}/controllers/{$command2}";
-        }
-
-        //=====================================================================
-        // Set Job, Job Directory, and Job Controller
-        //=====================================================================
-        if (is_dir($command1_dir)) {
-            $job = $command1;
-        }
-        else if (is_dir($command2_dir)) {
-            $job = $command2;
-        }
-        else {
-            self::PrintErrorExit('Unknown command or job.');
-        }
-        $job_dir = "{$this->app_path}/controllers/{$job}";
-        $job_controller = "{$job_dir}/controller.php";
-
-        //=====================================================================
         // Job Controller
         //=====================================================================
-        if (!file_exists($job_controller)) {
-            self::PrintErrorExit('Unable to find command or job controller.');
+        if (!file_exists($this->job_controller)) {
+            $err_msg = 'Unable to find command or job controller.';
+            if ($is_help) {
+                self::PrintErrorExit($err_msg);
+            }
+            else {
+                self::PrintError($err_msg);
+                $this->RunHelp();
+            }
         }
 
         //=====================================================================
         // Default Title
         //=====================================================================
-        $this->mod_title = $job;
+        $this->mod_title = $this->job;
 
         //=====================================================================
         // Job local.inc.php
         //=====================================================================
-        $job_local = "{$job_dir}/local.var.php";
+        $job_local = "{$this->job_dir}/local.var.php";
         if (file_exists($job_local)) {
             include($job_local);
-            if (!empty($mod_title)) {
+            if (isset($mod_title)) {
                 $this->mod_title = $mod_title;
             }
         }
@@ -117,22 +148,15 @@ class App
         //=====================================================================
         // Job Title
         //=====================================================================
-        $this->PrintTitle($this->mod_title);
-
-        //=====================================================================
-        // Environment
-        // Run Mode
-        // Verbose
-        //=====================================================================
-        $this->SetEnv();
-        $this->SetRunMode();
-        $this->SetVerbose();
+        if ($print_title && $this->mod_title) {
+            $this->PrintTitle($this->mod_title);
+        }
 
         //=====================================================================
         // Call Controller
         //=====================================================================
-        $this->PrintOutputHeader();
-        include($job_controller);
+        //$this->PrintHeader('Job Output');
+        include($this->job_controller);
 
         //=====================================================================
         // App Post-Script File
@@ -141,12 +165,80 @@ class App
         if (file_exists($post_script)) {
             include($post_script);
         }
+    }
+
+    //*************************************************************************
+    //*************************************************************************
+    // Run Help Module
+    //*************************************************************************
+    //*************************************************************************
+    protected function RunHelp()
+    {
+        $this->job = 'help';
+        $this->job_dir = "{$this->app_path}/controllers/{$this->job}";
+        $this->job_controller = "{$this->job_dir}/controller.php";
+        if (!is_dir($this->job_dir) || !file_exists($this->job_controller)) {
+            self::PrintErrorExit('Help module is not setup.');
+        }
+        $this->RunModule([
+            'print_title' => false,
+            'is_help' => true
+        ]);
+    }
+
+    //*************************************************************************
+    //*************************************************************************
+    // Determine Controller
+    //*************************************************************************
+    //*************************************************************************
+    protected function DetermineController()
+    {
+        //=====================================================================
+        // Help Command?
+        //=====================================================================
+        if (empty($this->args['__command']) && empty($this->args['j'])) {
+            return false;
+        }
+        if (array_key_exists('h', $this->args) || array_key_exists('help', $this->args) || $this->args['__command'] == 'help') {
+            return false;
+        }
+        else {
+            //=================================================================
+            // Check Job and Command Parameters
+            //=================================================================
+            if (empty($this->args['j']) && empty($this->args['__command'])) {
+                self::PrintErrorExit('No job (-j) or command (<script> [COMMAND]) given.');
+                return false;
+            }
+            if (!empty($this->args['__command'])) {
+                $command1 = $this->args['__command'];
+                $command1_dir = "{$this->app_path}/controllers/{$command1}";
+            }
+            if (!empty($this->args['j'])) {
+                $command2 = $this->args['j'];
+                $command2_dir = "{$this->app_path}/controllers/{$command2}";
+            }
+
+            //=================================================================
+            // Set Job, Job Directory, and Job Controller
+            //=================================================================
+            if (!empty($command1_dir) && is_dir($command1_dir)) {
+                $this->job = $command1;
+            }
+            else if (!empty($command2_dir) && is_dir($command2_dir)) {
+                $this->job = $command2;
+            }
+            else {
+                $this->RunHelp();
+            }
+            $this->job_dir = "{$this->app_path}/controllers/{$job}";
+            $this->job_controller = "{$job_dir}/controller.php";
+        }
 
         //=====================================================================
-        // Post-run Method
+        // Success
         //=====================================================================
-        if ($this->CustomMethodExists('PostRun')) {
-            $this->PostRun();
-        }
+        return true;
     }
+
 }
