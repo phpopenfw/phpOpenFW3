@@ -108,7 +108,7 @@ trait CustomMethods
     public function __call($name, $arguments)
     {
         if ($this->CustomMethodExists($name)) {
-            return $this->custom_methods[$name]($arguments);
+            return call_user_func_array($this->custom_methods[$name], $arguments);
         }
         throw new \Exception('Unknown class method.');
     }
