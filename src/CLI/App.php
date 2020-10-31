@@ -118,6 +118,7 @@ class App extends Core
             else {
                 self::PrintError($err_msg);
                 $this->RunHelp();
+                return false;
             }
         }
 
@@ -215,7 +216,7 @@ class App extends Core
                 $this->job = $command2;
             }
             else {
-                $this->RunHelp();
+                return false;
             }
             $this->job_dir = "{$this->app_path}/controllers/{$this->job}";
             $this->job_controller = "{$this->job_dir}/controller.php";
