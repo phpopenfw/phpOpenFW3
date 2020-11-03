@@ -74,10 +74,10 @@ abstract class Core
         //=====================================================================
         if (is_array($app_path) && !$args) {
             $args = $app_path;
-            $app_path = getcwd();
+            $app_path = false;
         }
-        else if (!$app_path) {
-            $app_path = getcwd();
+        if (!$app_path) {
+            $app_path = realpath(__DIR__ . '/../../../../..');
         }
 
         //=====================================================================
