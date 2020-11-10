@@ -23,7 +23,7 @@ Released under the MIT License: https://mit-license.org/
 -----------------------------------------------------------------------------------------------------------
 ## Version
 -----------------------------------------------------------------------------------------------------------
-3.0.0rc4
+3.0.0rc5
 
 -----------------------------------------------------------------------------------------------------------
 ## Requirements
@@ -60,3 +60,29 @@ Below is an outline of some of the features offered by phpOpenFW:
 * RewriteBase /
 * RewriteRule ^.*favicon\.ico$ - [L]
 * RewriteRule ^.*$ index.php [L,qsa]
+
+-----------------------------------------------------------------------------------------------------------
+## phpOpenFW v2.x to v3.0 Migration
+-----------------------------------------------------------------------------------------------------------
+
+**Change:**
+
+```php
+\phpOpenFW\Framework\LiteFW::Run($base_dir);
+```
+
+**To:**
+
+```php
+\phpOpenFW\Core::Bootstrap($base_dir);
+```
+
+--------------------------------------------------------------
+
+**Change:**
+
+Anything that starts with "\phpOpenFW\Framework\Core"
+
+**To:**
+
+To start with "\phpOpenFW\Core"
