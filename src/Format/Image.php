@@ -35,17 +35,17 @@ class Image
     */
     //=========================================================================
     //=========================================================================
-    public static function img_resize_save($curr_file, $save_file, $max_width, $max_height, $out_format="jpg")
+    public static function img_resize_save($curr_file, $save_file, $max_width, $max_height, $out_format="jpg", $quality=-1)
     {
         $ret_code = 0;
         $out_format = strtolower($out_format);
-    
+
         //---------------------------------------------------------------------
         // Valid File
         //---------------------------------------------------------------------
         if (file_exists($curr_file) && !is_dir($curr_file)) {
             $img_info = getimagesize($curr_file);
-    
+
             //-----------------------------------------------------------------
             // Invalid Image
             //-----------------------------------------------------------------
@@ -60,7 +60,7 @@ class Image
                 // Image Type
                 //-------------------------------------------------------------
                 $img_type = strtolower($img_info["mime"]);
-                
+
                 //-------------------------------------------------------------
                 // Current Dimensions
                 //-------------------------------------------------------------
@@ -72,7 +72,7 @@ class Image
                 //-------------------------------------------------------------
                 $width_perc = $max_width / $curr_width;
                 $height_perc = $max_height / $curr_height;
-    
+
                 if ($width_perc < 1 || $height_perc < 1) {
                     if ($width_perc < $height_perc) {
                         $new_width = $max_width;
@@ -86,7 +86,7 @@ class Image
                         $new_width = $max_width;
                         $new_height = $max_height;
                     }
-    
+
                     //---------------------------------------------------------
                     // Load
                     //---------------------------------------------------------
@@ -96,15 +96,15 @@ class Image
                         case "image/png":
                             $source = imagecreatefrompng($curr_file);
                             break;
-    
+
                         case "image/gif":
                             $source = imagecreatefromgif($curr_file);
                             break;
-                            
+
                         case "image/jpeg":
                             $source = imagecreatefromjpeg($curr_file);
                             break;
-    
+
                         default:
                             //-------------------------------------------------
                             // Invalid Image Type
@@ -113,18 +113,18 @@ class Image
                             $save = false;
                             break;
                     }
-    
+
                     //---------------------------------------------------------
                     // Resize and Save
                     //---------------------------------------------------------
                     if ($save) {
                         if (is_dir(dirname($save_file)) && is_writeable(dirname($save_file))) {
-    
+
                             //-------------------------------------------------
                             // Resize
                             //-------------------------------------------------
                             $resize_status = imagecopyresampled($thumb, $source, 0, 0, 0, 0, $new_width, $new_height, $curr_width, $curr_height);
-    
+
                             //-------------------------------------------------
                             // Save
                             //-------------------------------------------------
@@ -132,15 +132,15 @@ class Image
                                 $save_status = false;
                                 switch ($out_format) {
                                     case "png":
-                                        $save_status = imagepng($thumb, $save_file);
+                                        $save_status = imagepng($thumb, $save_file, $quality);
                                         break;
-    
+
                                     case "gif":
                                         $save_status = imagegif($thumb, $save_file);
                                         break;
-    
+
                                     default:
-                                        $save_status = imagejpeg($thumb, $save_file);
+                                        $save_status = imagejpeg($thumb, $save_file, $quality);
                                         break;
                                 }
                                 if (!$save_status) { $ret_code = 6; }
@@ -172,7 +172,7 @@ class Image
         else {
             $ret_code = 1;
         }
-        
+
         return $ret_code;
-    }    
+    }
 }
