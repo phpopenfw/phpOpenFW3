@@ -31,8 +31,8 @@ class Image
     * @param string Desired file location
     * @param int Max Width
     * @param int Max Height
-    * @param string Output Type (Optional, default "jpg")
-    * @param int Quality (JPG: 0 - 100, PNG: 0 - 9)
+    * @param string Output Type (Optional, jpg (default), png, gif, webp)
+    * @param int Quality (jpg / webp: 0 - 100, png: 0 - 9)
     * @param mixed Rotate (auto (default), none, 90, 180, 270)
     */
     //=========================================================================
@@ -67,9 +67,9 @@ class Image
     // -> save_file : File to save new image to
     // -> max_width : Maximum image width
     // -> max_height : Maximum image height
-    // -> output_format : Output format (jpg, gif, png)
-    // -> quatiy : Image quality (-1 is default) (JPG: 0 - 100, PNG: 0 - 9)
-    // -> rotate : Rotate image (auto is default) (auto, none, 90, 180, 270)
+    // -> output_format : Output format (jpg (default), gif, png, webp)
+    // -> quatiy : Image quality (-1 is default) (jpg / webp: 0 - 100, png: 0 - 9)
+    // -> rotate : Rotate image (auto (default), none, 90, 180, 270)
     //=========================================================================
     public static function Resize(Array $args)
     {
@@ -170,6 +170,11 @@ class Image
                 $source = imagecreatefromjpeg($curr_file);
                 break;
 
+            case "image/webp":
+                $rotate = false;
+                $source = imagecreatefromwebp($curr_file);
+                break;
+
             //-----------------------------------------------------------------
             // Invalid Image Type
             //-----------------------------------------------------------------
@@ -229,6 +234,10 @@ class Image
 
             case "gif":
                 $save_status = imagegif($new_image, $save_file);
+                break;
+
+            case "webp":
+                $save_status = imagewebp($new_image, $save_file, $quality);
                 break;
 
             default:
