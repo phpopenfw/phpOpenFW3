@@ -24,7 +24,7 @@ class Config
     //*************************************************************************
     // Class Members
     //*************************************************************************
-    protected $config_data = [];
+    protected $config_data = false;
     protected $display_errors = false;
 
     //*************************************************************************
@@ -53,6 +53,7 @@ class Config
         $display_errors = false;
         extract($args);
         $this->display_errors = $display_errors;
+        $this->config_data = new \stdClass();
     }
 
     //*************************************************************************
@@ -80,7 +81,7 @@ class Config
     // Set Config Values
     //*************************************************************************
     //*************************************************************************
-    public function SetConfigValues($values)
+    public function SetConfigValues($values, $overwrite=false)
     {
         if (!is_iterable($values)) {
             return false;
@@ -88,8 +89,13 @@ class Config
 
         foreach ($values as $index => $value) {
             if (is_iterable($value)) {
-                $this->config_data->$index = new \stdClass();
-                $this->SetConfigValues($value);
+                if (!isset($this->config_data->$index)) {
+                    $this->config_data->$index = new \phpOpenFW\Config\Config();
+                }
+                else if (!is_object($this->config_data->$index) || get_class($this->config_data->$index) != 'phpOpenFW\Config\Config') {
+                    return false;
+                }
+                $this->config_data->$index->SetConfigValues($value, $overwrite);
             }
             else {
                 $this->SetConfigValue($index, $value);
@@ -144,7 +150,7 @@ class Config
     // Get
     //*************************************************************************
     //*************************************************************************
-    public function &__get($index)
+    public function __get($index)
     {
         if (is_scalar($index) && $index != '') {
             if (isset($this->config_data->$index)) {

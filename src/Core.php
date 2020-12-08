@@ -77,8 +77,8 @@ class Core
                 $config_index = 'config';
             }
             define('PHPOPENFW_CONFIG_INDEX', $config_index);
-            $_SESSION[PHPOPENFW_CONFIG_INDEX] = new \stdClass();
         }
+        $_SESSION[PHPOPENFW_CONFIG_INDEX] = new \stdClass();
         $GLOBALS[PHPOPENFW_CONFIG_INDEX] =& $_SESSION[PHPOPENFW_CONFIG_INDEX];
 
         //=====================================================================
