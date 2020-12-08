@@ -30,7 +30,7 @@ class DataSources
      */
     //*************************************************************************
     //*************************************************************************
-    public static function Load($config_file, Array $args=[])
+    public static function Load($config_file=false, Array $args=[])
     {
         //---------------------------------------------------------------------
         // Check that phpOpenFW has been bootstrapped
@@ -40,7 +40,6 @@ class DataSources
         //---------------------------------------------------------------------
         // Defaults / Extract Args
         //---------------------------------------------------------------------
-        $config_file = false;
         $force_reload = false;
         $display_errors = false;
         extract($args);
@@ -174,14 +173,32 @@ class DataSources
         \phpOpenFW\Core::CheckBootstrapped();
 
         //---------------------------------------------------------------------
-        // Return Default Data Source
+        // Default Data Source explicitly set
         //---------------------------------------------------------------------
-        if (!$return_object) {
-            return $_SESSION['PHPOPENFW_DEFAULT_DATA_SOURCE'];
+        if (!empty($_SESSION['PHPOPENFW_DEFAULT_DATA_SOURCE'])) {
+            if (!$return_object) {
+                return $_SESSION['PHPOPENFW_DEFAULT_DATA_SOURCE'];
+            }
+            else {
+                if ($_SESSION['PHPOPENFW_DEFAULT_DATA_SOURCE']) {
+                    return \phpOpenFW\Config\DataSource::Instance($_SESSION['PHPOPENFW_DEFAULT_DATA_SOURCE']);
+                }
+            }
         }
+        //---------------------------------------------------------------------
+        // Default Data Source NOT explicitly set
+        // Return first data source, if one is set
+        //---------------------------------------------------------------------
         else {
-            if ($_SESSION['PHPOPENFW_DEFAULT_DATA_SOURCE']) {
-                return \phpOpenFW\Config\DataSource::Instance($_SESSION['PHPOPENFW_DEFAULT_DATA_SOURCE']);
+            if (array_key_exists('PHPOPENFW_DATA_SOURCES', $_SESSION) && count($_SESSION['PHPOPENFW_DATA_SOURCES'])) {
+                reset($_SESSION['PHPOPENFW_DATA_SOURCES']);
+                $key = key($_SESSION['PHPOPENFW_DATA_SOURCES']);
+                if (!$return_object) {
+                    return $key;
+                }
+                else {
+                    return \phpOpenFW\Config\DataSource::Instance($key);
+                }
             }
         }
 

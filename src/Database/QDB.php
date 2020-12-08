@@ -252,6 +252,50 @@ class QDB
         }
     }
 
+    //**************************************************************************************
+    /**
+    * Execute a query and return results
+    *
+    * @param string Index of DB config
+    * @param string SQL Statement
+    * @param string Return Format to return ("", "key", "key:value")
+    * @param array Options ('debug')
+    * @return Array Record Set
+    */
+    //**************************************************************************************
+    public static function qdb_query($db_config, $strsql, $return_format='', $opts=false)
+    {
+        //------------------------------------------------------------------
+        // New Data Transaction
+        //------------------------------------------------------------------
+        $data1 = new DataTrans($db_config);
+        if (!empty($opts['debug'])) { $data1->data_debug(true); }
+
+        if (!empty($opts['charset'])) {
+            $data1->set_opt('charset', $opts['charset']);
+        }
+
+        //------------------------------------------------------------------
+        // Execute Query
+        //------------------------------------------------------------------
+        $query_result = $data1->data_query($strsql);
+
+        //------------------------------------------------------------------
+        // Return Result Set
+        //------------------------------------------------------------------
+        $rf_arr = explode(':', $return_format);
+        if (empty($rf_arr[0])) { unset($rf_arr[0]); }
+        if (count($rf_arr) < 1) {
+            return $data1->data_assoc_result();
+        }
+        else if (count($rf_arr) == 1) {
+            return $data1->data_key_assoc($rf_arr[0]);
+        }
+        else if (count($rf_arr) > 1) {
+            return $data1->data_key_val($rf_arr[0], $rf_arr[1]);
+        }
+    }
+
     //*************************************************************************
     /**
     * Quick Database Field Lookup
