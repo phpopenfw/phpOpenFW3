@@ -112,15 +112,10 @@ class Config
     //*************************************************************************
     public function SetConfigValue($index, $value, $overwrite=false)
     {
-        if (isset($this->config_data->$index)) {
-            if (!$overwrite) {
-                return false;
-            }
-            $this->config_data->$index = $value;
+        if (isset($this->config_data->$index) && !$overwrite) {
+            return false;
         }
-        else {
-            $this->config_data->$index = $value;
-        }
+        $this->config_data->$index = $value;
         return true;
     }
 
