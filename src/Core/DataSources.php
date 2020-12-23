@@ -94,6 +94,21 @@ class DataSources
     //*************************************************************************
     //*************************************************************************
     /**
+     * Data Sources Loaded?
+     */
+    //*************************************************************************
+    //*************************************************************************
+    public static function Loaded()
+    {
+        if (defined('PHPOPENFW_DB_CONFIG_SET')) {
+            return true;
+        }
+        return false;
+    }
+
+    //*************************************************************************
+    //*************************************************************************
+    /**
      * List Registered Data Sources
      */
     //*************************************************************************
@@ -109,7 +124,7 @@ class DataSources
         // Build and return a list of registered data sources
         //---------------------------------------------------------------------
         $indexes = [];
-        foreach ($_SESSION['PHPOPENFW_DATA_SOURCES'] as $index => $ds) {
+        foreach ($GLOBALS['PHPOPENFW_DATA_SOURCES'] as $index => $ds) {
             $indexes[$index] = $index;
         }
         return $indexes;
@@ -175,13 +190,13 @@ class DataSources
         //---------------------------------------------------------------------
         // Default Data Source explicitly set
         //---------------------------------------------------------------------
-        if (!empty($_SESSION['PHPOPENFW_DEFAULT_DATA_SOURCE'])) {
+        if (!empty($GLOBALS['PHPOPENFW_DEFAULT_DATA_SOURCE'])) {
             if (!$return_object) {
-                return $_SESSION['PHPOPENFW_DEFAULT_DATA_SOURCE'];
+                return $GLOBALS['PHPOPENFW_DEFAULT_DATA_SOURCE'];
             }
             else {
-                if ($_SESSION['PHPOPENFW_DEFAULT_DATA_SOURCE']) {
-                    return \phpOpenFW\Config\DataSource::Instance($_SESSION['PHPOPENFW_DEFAULT_DATA_SOURCE']);
+                if ($GLOBALS['PHPOPENFW_DEFAULT_DATA_SOURCE']) {
+                    return \phpOpenFW\Config\DataSource::Instance($GLOBALS['PHPOPENFW_DEFAULT_DATA_SOURCE']);
                 }
             }
         }
@@ -190,9 +205,9 @@ class DataSources
         // Return first data source, if one is set
         //---------------------------------------------------------------------
         else {
-            if (array_key_exists('PHPOPENFW_DATA_SOURCES', $_SESSION) && count($_SESSION['PHPOPENFW_DATA_SOURCES'])) {
-                reset($_SESSION['PHPOPENFW_DATA_SOURCES']);
-                $key = key($_SESSION['PHPOPENFW_DATA_SOURCES']);
+            if (array_key_exists('PHPOPENFW_DATA_SOURCES', $GLOBALS) && count($GLOBALS['PHPOPENFW_DATA_SOURCES'])) {
+                reset($GLOBALS['PHPOPENFW_DATA_SOURCES']);
+                $key = key($GLOBALS['PHPOPENFW_DATA_SOURCES']);
                 if (!$return_object) {
                     return $key;
                 }
@@ -279,7 +294,7 @@ class DataSources
     //*************************************************************************
     public static function Exists($index)
     {
-        return (isset($_SESSION['PHPOPENFW_DATA_SOURCES'][$index]));
+        return (isset($GLOBALS['PHPOPENFW_DATA_SOURCES'][$index]));
     }
 
     //*************************************************************************

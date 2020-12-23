@@ -58,7 +58,7 @@ class DataSource
         //---------------------------------------------------------------------
         // Set Data Sources Storage
         //---------------------------------------------------------------------
-        $this->data_sources =& $_SESSION['PHPOPENFW_DATA_SOURCES'];
+        $this->data_sources =& $GLOBALS['PHPOPENFW_DATA_SOURCES'];
 
         //---------------------------------------------------------------------
         // Load existing data source
@@ -171,7 +171,7 @@ class DataSource
         // Set Default Data Source
         //---------------------------------------------------------------------
         if ($this->registered != '') {
-            $_SESSION['PHPOPENFW_DEFAULT_DATA_SOURCE'] = $this->ds_index;
+            $GLOBALS['PHPOPENFW_DEFAULT_DATA_SOURCE'] = $this->ds_index;
         }
         else {
             throw new \Exception('Data source not registered. Only registered data sources can be set as default.');

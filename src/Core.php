@@ -22,6 +22,11 @@ namespace phpOpenFW;
 class Core
 {
     //*************************************************************************
+    // Class Members
+    //*************************************************************************
+    protected static $stateless = false;
+
+    //*************************************************************************
     //*************************************************************************
     /**
      * Bootstrap Method
@@ -38,16 +43,29 @@ class Core
         $load_data_sources = false;
         $db_config_file = false;
         $display_errors = false;
+        $stateless = false;
         $config_index = 'config';
         extract($args);
+
+        //=====================================================================
+        // Settings
+        //=====================================================================
+        self::$stateless = $stateless;
+
+        //=====================================================================
+        // Re-activate from Session?
+        //=====================================================================
+        if (!self::$stateless) {
+            //Core\Session::Reactivate();
+        }
 
         //=====================================================================
         // Define Framework Path?
         //=====================================================================
         if (!defined('PHPOPENFW_FRAME_PATH')) {
-            $frame_path = realpath(__DIR__ . '/../../');
+            $frame_path = realpath(__DIR__ . '/../');
             define('PHPOPENFW_FRAME_PATH', $frame_path);
-            $_SESSION['PHPOPENFW_FRAME_PATH'] = PHPOPENFW_FRAME_PATH;
+            $GLOBALS['PHPOPENFW_FRAME_PATH'] = PHPOPENFW_FRAME_PATH;
         }
 
         //=====================================================================
@@ -59,7 +77,7 @@ class Core
                 return false;
             }
             define('PHPOPENFW_APP_FILE_PATH', $file_path);
-            $_SESSION['PHPOPENFW_APP_FILE_PATH'] = PHPOPENFW_APP_FILE_PATH;
+            $GLOBALS['PHPOPENFW_APP_FILE_PATH'] = PHPOPENFW_APP_FILE_PATH;
         }
 
         //=====================================================================
@@ -70,7 +88,7 @@ class Core
 
         //=====================================================================
         // Configuration Storage Initialization
-        // Configuration Session / Globals Index
+        // Start Configuration
         //=====================================================================
         if (!defined('PHPOPENFW_CONFIG_INDEX')) {
             if (!$config_index) {
@@ -78,17 +96,15 @@ class Core
             }
             define('PHPOPENFW_CONFIG_INDEX', $config_index);
         }
-        $_SESSION[PHPOPENFW_CONFIG_INDEX] = new \stdClass();
-        $GLOBALS[PHPOPENFW_CONFIG_INDEX] =& $_SESSION[PHPOPENFW_CONFIG_INDEX];
+        $GLOBALS[PHPOPENFW_CONFIG_INDEX] = new \stdClass();
 
         //=====================================================================
         // Data Sources Storage Initialization
         //=====================================================================
-        if (!isset($_SESSION['PHPOPENFW_DATA_SOURCES'])) {
-            $_SESSION['PHPOPENFW_DATA_SOURCES'] = [];
+        if (!isset($GLOBALS['PHPOPENFW_DATA_SOURCES'])) {
+            $GLOBALS['PHPOPENFW_DATA_SOURCES'] = [];
         }
-        $GLOBALS['PHPOPENFW_DATA_SOURCES'] =& $_SESSION['PHPOPENFW_DATA_SOURCES'];
-        $_SESSION['PHPOPENFW_DEFAULT_DATA_SOURCE'] = false;
+        $GLOBALS['PHPOPENFW_DEFAULT_DATA_SOURCE'] = false;
 
         //=====================================================================
         // Flag phpOpenFW as Bootstrapped
@@ -113,6 +129,13 @@ class Core
                 'config_file' => $db_config_file,
                 'display_errors' => $display_errors
             ]);
+        }
+
+        //=====================================================================
+        // Activate Session?
+        //=====================================================================
+        if (!self::$stateless) {
+            Core\Session::Activate();
         }
     }
 
@@ -224,38 +247,10 @@ class Core
         return false;
     }
 
-    //*************************************************************************
-    //*************************************************************************
-    /**
-     * Kill a Session Function
-     */
-    //*************************************************************************
-    //*************************************************************************
-    public static function session_kill()
-    {
-        if (isset($_SESSION)) {
-            $_SESSION = array();
-
-            if (ini_get('session.use_cookies')) {
-                $params = session_get_cookie_params();
-                setcookie(session_name(), '', time() - 42000,
-                    $params['path'], $params['domain'],
-                    $params['secure'], $params['httponly']
-                );
-            }
-
-            session_unset();
-            session_destroy();
-            return true;
-        }
-
-        return false;
-    }
-
     //%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
     //%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
     //%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-    // Private Methods
+    // Protected Methods
     //%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
     //%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
     //%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -267,7 +262,7 @@ class Core
      */
     //*************************************************************************
     //*************************************************************************
-    private static function DetectEnv()
+    protected static function DetectEnv()
     {
         if (!defined('POPOPENFW_IS_CLI')) {
             $env = (php_sapi_name() == 'cli') ? (true) : (false);
@@ -283,13 +278,13 @@ class Core
      */
     //*************************************************************************
     //*************************************************************************
-    private static function SetVersion()
+    protected static function SetVersion()
     {
         if (defined('PHPOPENFW_VERSION')) {
             return PHPOPENFW_VERSION;
         }
-        else if (isset($_SESSION['PHPOPENFW_VERSION'])) {
-            $version = $_SESSION['PHPOPENFW_VERSION'];
+        else if (isset($GLOBALS['PHPOPENFW_VERSION'])) {
+            $version = $GLOBALS['PHPOPENFW_VERSION'];
         }
         else {
             $version = false;
@@ -297,7 +292,7 @@ class Core
             if (file_exists($ver_file)) {
                 $version = trim(file_get_contents($ver_file));
             }
-            $_SESSION['PHPOPENFW_VERSION'] = $version;
+            $GLOBALS['PHPOPENFW_VERSION'] = $version;
         }
         define('PHPOPENFW_VERSION', $version);
         return PHPOPENFW_VERSION;

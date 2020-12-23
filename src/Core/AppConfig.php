@@ -41,7 +41,7 @@ class AppConfig extends \phpOpenFW\Config\Config
         //---------------------------------------------------------------------
         // Set Config
         //---------------------------------------------------------------------
-        $this->config_data =& $_SESSION[PHPOPENFW_CONFIG_INDEX];
+        $this->config_data =& $GLOBALS[PHPOPENFW_CONFIG_INDEX];
     }
 
     //*************************************************************************
