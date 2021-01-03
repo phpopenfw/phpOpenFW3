@@ -43,7 +43,7 @@ class Core
         $load_data_sources = false;
         $db_config_file = false;
         $display_errors = false;
-        $stateless = false;
+        $stateless = !Core\Session::IsStarted();
         $config_index = 'config';
         extract($args);
 
