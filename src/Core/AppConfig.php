@@ -92,6 +92,9 @@ class AppConfig extends \phpOpenFW\Config\Config
         //---------------------------------------------------------------------
         // Configuration Loaded Successfully
         //---------------------------------------------------------------------
+        if (!defined('PHPOPENFW_CONFIG_SET')) {
+            define('PHPOPENFW_CONFIG_SET', 1);
+        }
         return true;
     }
 
