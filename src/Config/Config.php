@@ -19,7 +19,7 @@ namespace phpOpenFW\Config;
  * Config Class
  */
 //*****************************************************************************
-class Config
+class Config implements \ArrayAccess, \Countable
 {
     //*************************************************************************
     // Class Members
@@ -112,11 +112,123 @@ class Config
     //*************************************************************************
     public function SetConfigValue($index, $value, $overwrite=false)
     {
+        if (!is_scalar($index) || $index == '') {
+            throw new \Exception('Invalid index used to set value.');
+        }
+
         if (isset($this->config_data->$index) && !$overwrite) {
             return false;
         }
-        $this->config_data->$index = $value;
+
+        if (is_iterable($value)) {
+            return $this->SetConfigValues($value, $overwrite);
+        }
+        else {
+            $this->config_data->$index = $value;
+        }
+
         return true;
+    }
+
+    //*************************************************************************
+    //*************************************************************************
+    // Get Config Value
+    //*************************************************************************
+    //*************************************************************************
+    public function GetConfigValue($index, $format='')
+    {
+        if (!is_scalar($index) || $index == '') {
+            throw new \Exception('Invalid index used to get value.');
+        }
+        if (is_null($index)) {
+            $index = 'i' . $index;
+        }
+        if (isset($this->config_data->$index)) {
+            $val = $this->config_data->$index;
+            if ($format == 'array') {
+                if (is_object($val) && get_class($val) == 'phpOpenFW\Config\Config') {
+                    $val = $val->Export();
+                }
+            }
+            else if ($format == 'json') {
+                if (is_object($val) && get_class($val) == 'phpOpenFW\Config\Config') {
+                    $val = $val->Export('json');
+                }
+            }
+            return $val;
+        }
+
+        return null;
+    }
+
+    //%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+    //%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+    // Countable Interface
+    //%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+    //%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+    //*************************************************************************
+    //*************************************************************************
+    // Count
+    //*************************************************************************
+    //*************************************************************************
+    public function count()
+    {
+        return count((array)$this->config_data);
+    }
+
+    //%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+    //%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+    // Array Access Interface Methods
+    //%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+    //%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+    //*************************************************************************
+    //*************************************************************************
+    // Set
+    //*************************************************************************
+    //*************************************************************************
+    public function offsetSet($offset, $value)
+    {
+        if (is_null($offset)) {
+            $count = 0;
+            $offset = 'i' . $count;
+            while (isset($this->config_data->$index)) {
+                $count++;
+                $offset = 'i' . $count;
+            }
+        }
+        $this->config_data->$offset = $value;
+    }
+
+    //*************************************************************************
+    //*************************************************************************
+    // Isset
+    //*************************************************************************
+    //*************************************************************************
+    public function offsetExists($offset)
+    {
+        return isset($this->config_data->$offset);
+    }
+
+    //*************************************************************************
+    //*************************************************************************
+    // Unset
+    //*************************************************************************
+    //*************************************************************************
+    public function offsetUnset($offset)
+    {
+        unset($this->config_data->$offset);
+    }
+
+    //*************************************************************************
+    //*************************************************************************
+    // Get
+    //*************************************************************************
+    //*************************************************************************
+    public function offsetGet($offset)
+    {
+        return $this->GetConfigValue($offset, 'array');
     }
 
     //%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -132,12 +244,7 @@ class Config
     //*************************************************************************
     public function __set($index, $value)
     {
-        if (is_scalar($index) && $index != '') {
-            $this->config_data->$index = $value;
-        }
-        else {
-            throw new \Exception('Invalid index used to set value.');
-        }
+        return $this->SetConfigValue($index, $value);
     }
 
     //*************************************************************************
@@ -147,15 +254,7 @@ class Config
     //*************************************************************************
     public function __get($index)
     {
-        if (is_scalar($index) && $index != '') {
-            if (isset($this->config_data->$index)) {
-                return $this->config_data->$index;
-            }
-            return null;
-        }
-        else {
-            throw new \Exception('Invalid index used to get value.');
-        }
+        return $this->GetConfigValue($index);
     }
 
     //*************************************************************************
@@ -168,7 +267,7 @@ class Config
         if (is_scalar($index) && $index != '') {
             return isset($this->config_data->$index);
         }
-        return null;
+        return false;
     }
 
     //*************************************************************************
@@ -180,6 +279,8 @@ class Config
     {
         if (is_scalar($index) && $index != '') {
             unset($this->config_data->$index);
+            return true;
         }
+        return false;
     }
 }

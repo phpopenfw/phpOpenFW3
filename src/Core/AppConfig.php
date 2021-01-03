@@ -76,10 +76,10 @@ class AppConfig extends \phpOpenFW\Config\Config
         //---------------------------------------------------------------------
         // Check for Configuration Data
         //---------------------------------------------------------------------
-        if (isset($config) && is_array($config)) {
+        if (isset($config) && is_iterable($config)) {
             $this->SetConfigValues($config);
         }
-        else if (isset($config_arr) && is_array($config_arr)) {
+        else if (isset($config_arr) && is_iterable($config_arr)) {
             $this->SetConfigValues($config_arr);
         }
         else {
