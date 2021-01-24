@@ -149,7 +149,7 @@ class Cache
     //=========================================================================
     // Register Cache Method
     //=========================================================================
-    public static function RegisterCache($handle, Array $params)
+    public static function RegisterCache($handle, $params)
     {
         //---------------------------------------------------------------------
         // No Data Source Parameters?
@@ -159,9 +159,18 @@ class Cache
         }
 
         //---------------------------------------------------------------------
-        // No Data Source Parameters?
+        // Cache parameters passed as an object? Convert to an array.
         //---------------------------------------------------------------------
-        if (!$params) {
+        if (is_object($params)) {
+            if (is_callable([$params, 'Export'])) {
+                $params = $params->Export();
+            }
+        }
+
+        //---------------------------------------------------------------------
+        // Checdk that cache parameters is an array
+        //---------------------------------------------------------------------
+        if (!is_array($params) || !$params) {
             throw new \Exception('Invalid cache data source parameters.');
         }
 
