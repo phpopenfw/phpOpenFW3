@@ -2,7 +2,7 @@
 //******************************************************************************
 //******************************************************************************
 /**
- * Data Query class
+ * Database Table Class
  *
  * @package         phpOpenFW
  * @author          Christian J. Clark
@@ -12,7 +12,9 @@
 //******************************************************************************
 //******************************************************************************
 
-namespace phpOpenFW\Database;
+namespace phpOpenFW\Database\Relational;
+
+use \phpOpenFW\Builders\SQL;
 
 abstract class Table
 {
@@ -75,7 +77,7 @@ abstract class Table
         //----------------------------------------------------------------------
         // Parse & Extract Args
         //----------------------------------------------------------------------
-        $parsed_args = self::ParseArgs(__METHOD__, $args);
+        $parsed_args = static::ParseArgs(__FUNCTION__, $args);
         extract($parsed_args['build']);
 
         //----------------------------------------------------------------------
@@ -101,12 +103,12 @@ abstract class Table
         //----------------------------------------------------------------------
         // Build Select Where
         //----------------------------------------------------------------------
-        self::BuildSelectWhere($query, $wheres, $args);
+        static::BuildSelectWhere($query, $wheres, $parsed_args['build']);
 
         //----------------------------------------------------------------------
         // Execute and Return Results
         //----------------------------------------------------------------------
-        return self::Finish($query, $args['finish']);
+        return static::Finish($query, $parsed_args['finish']);
     }
 
     //==========================================================================
@@ -117,7 +119,7 @@ abstract class Table
     public static function GetSelectQuery(Array $wheres, Array $args=[])
     {
         $args['return_query'] = true;
-        return self::Select($wheres, $args);
+        return static::Select($wheres, $args);
     }
 
     //==========================================================================
@@ -127,7 +129,7 @@ abstract class Table
     //==========================================================================
     public static function SelectOne(Array $wheres, Array $args=[])
     {
-        $recs = self::Select($wheres, $args);
+        $recs = static::Select($wheres, $args);
         if ($recs) {
             if (count($recs) == 1) {
                 return current($recs);
@@ -155,7 +157,7 @@ abstract class Table
         //----------------------------------------------------------------------
         // Parse & Extract Args
         //----------------------------------------------------------------------
-        $parsed_args = self::ParseArgs(__METHOD__, $args);
+        $parsed_args = static::ParseArgs(__FUNCTION__, $args);
         extract($parsed_args['build']);
 
         //----------------------------------------------------------------------
@@ -166,12 +168,12 @@ abstract class Table
         //----------------------------------------------------------------------
         // Build Values
         //----------------------------------------------------------------------
-        self::BuildValues($query, $values, $args);
+        static::BuildValues($query, $values, $parsed_args['build']);
 
         //----------------------------------------------------------------------
         // Execute and Return Results
         //----------------------------------------------------------------------
-        return self::Finish($query, $args['finish']);
+        return static::Finish($query, $parsed_args['finish']);
     }
 
     //%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -190,7 +192,7 @@ abstract class Table
         //----------------------------------------------------------------------
         // Parse & Extract Args
         //----------------------------------------------------------------------
-        $parsed_args = self::ParseArgs(__METHOD__, $args);
+        $parsed_args = static::ParseArgs(__FUNCTION__, $args);
         extract($parsed_args['build']);
 
         //----------------------------------------------------------------------
@@ -201,17 +203,17 @@ abstract class Table
         //----------------------------------------------------------------------
         // Build Values
         //----------------------------------------------------------------------
-        self::BuildValues($query, $values, $args);
+        static::BuildValues($query, $values, $parsed_args['build']);
 
         //----------------------------------------------------------------------
         // Build Update Where
         //----------------------------------------------------------------------
-        self::BuildUpdateWhere($query, $wheres, $args);
+        static::BuildUpdateWhere($query, $wheres, $parsed_args['build']);
 
         //----------------------------------------------------------------------
         // Execute and Return Results
         //----------------------------------------------------------------------
-        return self::Finish($query, $args['finish']);
+        return static::Finish($query, $parsed_args['finish']);
     }
 
     //==========================================================================
@@ -222,7 +224,7 @@ abstract class Table
     public static function UpdateOne($wheres, Array $values, Array $args=[])
     {
         $args['limit'] = 1;
-        return self::Update($wheres, $values, $args);
+        return static::Update($wheres, $values, $args);
     }
 
     //%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -241,19 +243,18 @@ abstract class Table
         //----------------------------------------------------------------------
         // Parse & Extract Args
         //----------------------------------------------------------------------
-        $parsed_args = self::ParseArgs(__METHOD__, $args);
+        $parsed_args = static::ParseArgs(__FUNCTION__, $args);
         extract($parsed_args['build']);
-
 
         //----------------------------------------------------------------------
         // Build Delete Where
         //----------------------------------------------------------------------
-        self::BuildUpdateWhere($query, $wheres, $args);
+        static::BuildDeleteWhere($query, $wheres, $parsed_args['build']);
 
         //----------------------------------------------------------------------
         // Execute and Return Results
         //----------------------------------------------------------------------
-        return self::Finish($query, $args['finish']);
+        return static::Finish($query, $parsed_args['finish']);
     }
 
     //==========================================================================
@@ -264,7 +265,7 @@ abstract class Table
     public static function DeleteOne($wheres, Array $args=[])
     {
         $args['limit'] = 1;
-        return self::Delete($wheres, $args);
+        return static::Delete($wheres, $args);
     }
 
     //%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -280,7 +281,7 @@ abstract class Table
     //==========================================================================
     public static function Get(Array $args=[])
     {
-        return self::Select($args);
+        return static::Select($args);
     }
 
     //==========================================================================
@@ -290,7 +291,7 @@ abstract class Table
     //==========================================================================
     public static function GetOne(Array $args=[])
     {
-        return self::SelectOne($args);
+        return static::SelectOne($args);
     }
 
     //%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -306,7 +307,7 @@ abstract class Table
     //==========================================================================
     protected static function GetDataSource(Array $args=[])
     {
-        $data_source = self::$data_source;
+        $data_source = static::$data_source;
         if (!empty($args['data_source'])) {
             return $args['data_source'];
         }
@@ -321,19 +322,20 @@ abstract class Table
     protected static function GetTable($method, Array $args=[])
     {
         $method = strtolower($method);
-        $table = self::$table;
+        $table = static::$table;
         if (!empty($args['table'])) {
             $table = $args['table'];
         }
         if ($method == 'select') {
-            if (!empty(self::$select_view)) {
-                $table = self::$select_view;
+            if (!empty(static::$select_view)) {
+                $table = static::$select_view;
             }
             if (!empty($args['select_view'])) {
                 $table = $args['select_view'];
             }
         }
         if (empty($table)) {
+            //trigger_error('Unable to determine database table or view.');
             throw new \Exception('Unable to determine database table or view.');
         }
         return $table;
@@ -346,7 +348,7 @@ abstract class Table
     //==========================================================================
     protected static function GetTableStructure()
     {
-        return \phpOpenFW\Database\Structure\Table::Instance(self::$ds_obj, $table)->GetStructure();
+        return \phpOpenFW\Database\Structure\Table::Instance(static::$ds_obj, $table)->GetStructure();
     }
 
     //==========================================================================
@@ -364,20 +366,20 @@ abstract class Table
         //----------------------------------------------------------------------
         // Is this a SELECT ONLY class?
         //----------------------------------------------------------------------
-        if (self::$select_only && $method != 'select') {
+        if (static::$select_only && $method != 'select') {
             throw new \Exception('This class can only be used for select statements.');
         }
 
         //----------------------------------------------------------------------
         // Get Data Source
         //----------------------------------------------------------------------
-        $data_source = self::GetDataSource($args);
-        self::$ds_obj = \phpOpenFW\Core\DataSources::GetOneOrDefault($data_source);
+        $data_source = static::GetDataSource($args);
+        static::$ds_obj = \phpOpenFW\Core\DataSources::GetOneOrDefault($data_source);
 
         //----------------------------------------------------------------------
         // Get Table
         //----------------------------------------------------------------------
-        $table = self::GetTable($method, $args);
+        $table = static::GetTable($method, $args);
 
         //----------------------------------------------------------------------
         // Start Return Args
@@ -394,45 +396,45 @@ abstract class Table
         // Select Args
         //----------------------------------------------------------------------
         if ($method == 'select') {
-            $order_by = self::$select_order_by;
-            $limit = self::$select_limit;
-            $debug = self::$select_debug;
-            $debug_only = self::$select_debug_only;
-            $return_debug = self::$select_return_debug;
-            $return_query = self::$select_return_query;
-            $execute_args = self::$select_execute_args;
+            $order_by = static::$select_order_by;
+            $limit = static::$select_limit;
+            $debug = static::$select_debug;
+            $debug_only = static::$select_debug_only;
+            $return_debug = static::$select_return_debug;
+            $return_query = static::$select_return_query;
+            $execute_args = static::$select_execute_args;
         }
         //----------------------------------------------------------------------
         // Insert Args
         //----------------------------------------------------------------------
         else if ($method == 'insert') {
-            $debug = self::$insert_debug;
-            $debug_only = self::$insert_debug_only;
-            $return_debug = self::$insert_return_debug;
-            $return_query = self::$insert_return_query;
-            $execute_args = self::$insert_execute_args;
+            $debug = static::$insert_debug;
+            $debug_only = static::$insert_debug_only;
+            $return_debug = static::$insert_return_debug;
+            $return_query = static::$insert_return_query;
+            $execute_args = static::$insert_execute_args;
         }
         //----------------------------------------------------------------------
         // Update Args
         //----------------------------------------------------------------------
         else if ($method == 'update') {
-            $limit = self::$update_limit;
-            $debug = self::$update_debug;
-            $debug_only = self::$update_debug_only;
-            $return_debug = self::$update_return_debug;
-            $return_query = self::$update_return_query;
-            $execute_args = self::$update_execute_args;
+            $limit = static::$update_limit;
+            $debug = static::$update_debug;
+            $debug_only = static::$update_debug_only;
+            $return_debug = static::$update_return_debug;
+            $return_query = static::$update_return_query;
+            $execute_args = static::$update_execute_args;
         }
         //----------------------------------------------------------------------
         // Delete Args
         //----------------------------------------------------------------------
         else if ($method == 'delete') {
-            $limit = self::$delete_limit;
-            $debug = self::$delete_debug;
-            $debug_only = self::$delete_debug_only;
-            $return_debug = self::$delete_return_debug;
-            $return_query = self::$delete_return_query;
-            $execute_args = self::$delete_execute_args;
+            $limit = static::$delete_limit;
+            $debug = static::$delete_debug;
+            $debug_only = static::$delete_debug_only;
+            $return_debug = static::$delete_return_debug;
+            $return_query = static::$delete_return_query;
+            $execute_args = static::$delete_execute_args;
         }
 
         //----------------------------------------------------------------------
@@ -470,6 +472,10 @@ abstract class Table
     //==========================================================================
     protected static function BuildValues($query, Array $values, Array $args=[])
     {
+        //----------------------------------------------------------------------
+        // Extract Args, Wheres
+        //----------------------------------------------------------------------
+        extract($args);
         
     }
 
@@ -510,7 +516,7 @@ abstract class Table
     //=========================================================================
     protected static function BuildSelectWhere($query, Array $wheres, Array $args=[])
     {
-        self::BuildWhere($query, $wheres, $args);
+        static::BuildWhere($query, $wheres, $args);
     }
 
     //=========================================================================
@@ -520,7 +526,7 @@ abstract class Table
     //=========================================================================
     public static function BuildUpdateWhere($query, Array $wheres, Array $args=[])
     {
-        self::BuildWhere($query, $wheres, $args);
+        static::BuildWhere($query, $wheres, $args);
     }
 
     //=========================================================================
@@ -528,9 +534,9 @@ abstract class Table
     // Build Delete Where Method
     //=========================================================================
     //=========================================================================
-    public static function BuildSelectWhere($query, Array $wheres, Array $args=[])
+    public static function BuildDeleteWhere($query, Array $wheres, Array $args=[])
     {
-        self::BuildWhere($query, $wheres, $args);
+        static::BuildWhere($query, $wheres, $args);
     }
 
     //%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
