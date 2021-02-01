@@ -24,11 +24,11 @@ use \phpOpenFW\Database\DataQuery;
 //*****************************************************************************
 abstract class DIO
 {
-
     //*************************************************************************
     // Member Variables
     //*************************************************************************
     protected $data_source;
+    protected $ds_obj;
     protected $db_type;
     protected $schema;
     protected $schema_separator = '.';
@@ -394,7 +394,7 @@ abstract class DIO
                         case 'mysqli':
                             $qa['fields'][$field] = '?';
                             $this->bind_param_count++;
-                            $tmp_type = \phpOpenFW\Database\Structure\DatabaseType\MySQL::GetBindType($this->table_info[$field]['data_type']);
+                            $tmp_type = \phpOpenFW\Database\Structure\DatabaseTypes\MySQL::GetBindType($this->table_info[$field]['data_type']);
                             $this->bind_params[0] .= $tmp_type;
                             $this->bind_params[] = &$value;
                             break;
@@ -704,7 +704,7 @@ abstract class DIO
         //=====================================================================
         // Get Data Source
         //=====================================================================
-        $ds_obj = \phpOpenFW\Core\DataSources::GetOneOrDefault($data_source);
+        $this->ds_obj = \phpOpenFW\Core\DataSources::GetOneOrDefault($data_source);
 
         //=====================================================================
         // Set Class Name
@@ -727,18 +727,19 @@ abstract class DIO
         //=====================================================================
         // Set Database / Database Type
         //=====================================================================
-        $this->database = $ds_obj->source;
-        $this->db_type = $ds_obj->type;
+        $this->database = $this->ds_obj->source;
+        $this->db_type = $this->ds_obj->type;
 
         //=====================================================================
         // Set Quoted Types
         //=====================================================================
-        $this->quoted_types = Structure\Table::QuotedTypes($this->db_type, true);
+        $this->quoted_types = $this->ds_obj->GetQuotedTypes();
 
         //=====================================================================
         // Set Table and Schema
         //=====================================================================
-        $tmp = Structure\Table::DetermineSchema($this->data_source, $table);
+        $tbl_obj = Structure\Table::Instance($this->data_source, $table);
+        $tmp = $tbl_obj->DetermineSchema();
         $this->table = $tmp['table'];
         if ($tmp['schema'] != '') {
             $this->schema = $tmp['schema'];
@@ -770,7 +771,7 @@ abstract class DIO
         //=====================================================================
         // Pull Table Info
         //=====================================================================
-        $this->table_info = Structure\Table::TableStructure($this->data_source, $table);
+        $this->table_info = $tbl_obj->GetStructure();
 
         //=====================================================================
         // Initialize variables via reset() method
@@ -1203,7 +1204,7 @@ abstract class DIO
                     case 'mysqli':
                         $strsql .= " {$key} = ?";
                         $this->bind_param_count++;
-                        $tmp_type = \phpOpenFW\Database\Structure\DatabaseType\MySQL::GetBindType($this->table_info[$key]['data_type']);
+                        $tmp_type = \phpOpenFW\Database\Structure\DatabaseTypes\MySQL::GetBindType($this->table_info[$key]['data_type']);
                         $this->bind_params[0] .= $tmp_type;
                         $this->bind_params[] = &$value;
                         break;

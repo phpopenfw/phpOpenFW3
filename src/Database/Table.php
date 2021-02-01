@@ -20,6 +20,7 @@ abstract class Table
     // Class Members
     //==========================================================================
     protected static $data_source = '';
+    protected static $ds_obj = false;
     protected static $table = false;
     protected static $select_only = false;
 
@@ -345,10 +346,7 @@ abstract class Table
     //==========================================================================
     protected static function GetTableStructure()
     {
-        if (empty(self::$table_info)) {
-            self::$table_info = \phpOpenFW\Database\Structure\Table::TableStructure(self::$data_source, $table);
-        }
-        return self::$table_info;
+        return \phpOpenFW\Database\Structure\Table::Instance(self::$ds_obj, $table)->GetStructure();
     }
 
     //==========================================================================
@@ -374,6 +372,7 @@ abstract class Table
         // Get Data Source
         //----------------------------------------------------------------------
         $data_source = self::GetDataSource($args);
+        self::$ds_obj = \phpOpenFW\Core\DataSources::GetOneOrDefault($data_source);
 
         //----------------------------------------------------------------------
         // Get Table

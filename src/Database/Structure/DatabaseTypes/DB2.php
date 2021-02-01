@@ -2,7 +2,7 @@
 //*****************************************************************************
 //*****************************************************************************
 /**
- * Oracle Database Structure Class
+ * IBM DB2 Database Structure Class
  *
  * @package         phpOpenFW
  * @author          Christian J. Clark
@@ -12,15 +12,15 @@
 //*****************************************************************************
 //*****************************************************************************
 
-namespace phpOpenFW\Database\Structure\DatabaseType;
+namespace phpOpenFW\Database\Structure\DatabaseTypes;
 use phpOpenFW\Database\DataTrans;
 
 //*****************************************************************************
 /**
- * Oracle Structure Class
+ * DB2 Structure Class
  */
 //*****************************************************************************
-class Oracle
+class DB2
 {
     //*************************************************************************
     // Traits
@@ -53,14 +53,31 @@ class Oracle
         $table_info = [];
 
         //=====================================================================
+        // Determine Table and Schema
+        //=====================================================================
+        $tmp = self::DetermineSchema($data_source, $table);
+        $table = $tmp['table'];
+        $schema = (!$tmp['schema'] && $schema) ? ($schema) : ($tmp['schema']);
+
+        //=====================================================================
+        // Check for BOTH Table AND Schema
+        //=====================================================================
+        if (!$table || !$schema) {
+            trigger_error('Table and schema must be specified in the format of [SCHEMA]/[TABLE]');
+            return false;
+        }
+
+        //=====================================================================
         // Build SQL Query to Pull Table Structure Data
         //=====================================================================
-        $tmp_tbl = strtoupper($table);
         $strsql = "
-            select * from 
-                ALL_TAB_COLUMNS 
-            where 
-                table_name = '{$tmp_tbl}'
+            SELECT
+                *
+            FROM
+                QSYS2/SYSCOLUMNS
+            WHERE
+                TABLE_NAME = '{$table}'
+                and TABLE_SCHEMA = '{$schema}'
         ";
 
         //=====================================================================
@@ -68,7 +85,7 @@ class Oracle
         //=====================================================================
         $data1 = new DataTrans($data_source);
         $data1->data_query($strsql);
-        $meta_data = $data1->data_assoc_result();
+        $meta_data = rs_trim($data1->data_assoc_result(), true, true);
 
         //=====================================================================
         // Format Table Data
@@ -76,9 +93,13 @@ class Oracle
         foreach ($meta_data as $field) {
             $table_info[$field['COLUMN_NAME']] = array();
             $table_info[$field['COLUMN_NAME']]['data_type'] = $field['DATA_TYPE'];
-            $table_info[$field['COLUMN_NAME']]['length'] = $field['DATA_LENGTH'];
-            $table_info[$field['COLUMN_NAME']]['nullable'] = (strtoupper($field['NULLABLE']) == 'YES') ? (1) : (0);
-            $table_info[$field['COLUMN_NAME']]['load_default'] = $field['DATA_DEFAULT'];
+            $table_info[$field['COLUMN_NAME']]['length'] = $field['LENGTH'];
+            $table_info[$field['COLUMN_NAME']]['nullable'] = (strtoupper($field['IS_NULLABLE']) == 'Y') ? (1) : (0);
+            $table_info[$field['COLUMN_NAME']]['load_default'] = (strtoupper($field['HAS_DEFAULT']) == 'Y') ? ($field['COLUMN_DEFAULT']) : ('');
+            $load_def = &$table_info[$field['COLUMN_NAME']]['load_default'];
+            if ($load_def[0] == "'") { $load_def = substr($load_def, 1); }
+            if ($load_def[strlen($load_def) - 1] == "'") { $load_def = substr($load_def, 0, strlen($load_def) - 1); }
+            $load_def = trim($load_def);
             $table_info[$field['COLUMN_NAME']]['no_save'] = false;
             $table_info[$field['COLUMN_NAME']]['no_load'] = false;
             $table_info[$field['COLUMN_NAME']]['quotes'] = 'auto';
@@ -92,6 +113,16 @@ class Oracle
     }
 
     //*************************************************************************
+    //*************************************************************************
+    // Determine Schema from a Table
+    //*************************************************************************
+    //*************************************************************************
+    public static function DetermineSchema($data_source, $table, $default=false, $separator=false)
+    {
+        return Core::DetermineSchema($data_source, $table, $default, '/');
+    }
+
+    //*************************************************************************
     /**
      * Return the column data types that require quotes for this database type
      *
@@ -101,14 +132,11 @@ class Oracle
     public static function QuotedTypes()
     {
         return [
-            'CHAR' => 'CHAR',
-            'NCHAR' => 'NCHAR',
+            'CHARACTER' => 'CHARACTER',
             'VARCHAR' => 'VARCHAR',
-            'VARCHAR2' => 'VARCHAR2',
             'DATE' => 'DATE',
-            'TIMESTAMP' => 'TIMESTAMP',
-            'CLOB' => 'CLOB',
-            'NCLOB' => 'NCLOB'
+            'TIME' => 'TIME',
+            'TIMESTAMP' => 'TIMESTAMP'
         ];
     }
 

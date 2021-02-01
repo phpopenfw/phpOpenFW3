@@ -12,7 +12,7 @@
 //*****************************************************************************
 //*****************************************************************************
 
-namespace phpOpenFW\Database\Structure\DatabaseType;
+namespace phpOpenFW\Database\Structure\DatabaseTypes;
 use phpOpenFW\Database\DataTrans;
 
 //*****************************************************************************
@@ -58,7 +58,7 @@ class SQLSrv
         // Determine Table and Schema
         //=====================================================================
         $database = $ds_obj->source;
-        $tmp = Structure\Table::DetermineSchema($data_source, $table);
+        $tmp = self::DetermineSchema($data_source, $table);
         $table = $tmp['table'];
         $schema = (!$tmp['schema'] && $schema) ? ($schema) : ($tmp['schema']);
 

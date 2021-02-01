@@ -2,7 +2,7 @@
 //*****************************************************************************
 //*****************************************************************************
 /**
- * MySQL Database Structure Class
+ * PostgreSQL Database Structure Class
  *
  * @package         phpOpenFW
  * @author          Christian J. Clark
@@ -12,15 +12,15 @@
 //*****************************************************************************
 //*****************************************************************************
 
-namespace phpOpenFW\Database\Structure\DatabaseType;
+namespace phpOpenFW\Database\Structure\DatabaseTypes;
 use phpOpenFW\Database\DataTrans;
 
 //*****************************************************************************
 /**
- * MySQL Structure Class
+ * PgSQL Structure Class
  */
 //*****************************************************************************
-class MySQL
+class PgSQL
 {
     //*************************************************************************
     // Traits
@@ -40,8 +40,10 @@ class MySQL
     public static function TableStructure($data_source, $table, $schema=false)
     {
         //=====================================================================
+        // Get Data Source
         // Validate Table Name
         //=====================================================================
+        $ds_obj = self::GetDataSource($data_source);
         if ($table == '') {
             trigger_error('Invalid table name.');
             return false;
@@ -53,9 +55,26 @@ class MySQL
         $table_info = [];
 
         //=====================================================================
+        // Determine Table and Schema
+        //=====================================================================
+        $database = $ds_obj->source;
+        $tmp = self::DetermineSchema($data_source, $table);
+        $table = $tmp['table'];
+        $schema = (!$tmp['schema'] && $schema) ? ($schema) : ($tmp['schema']);
+
+        //=====================================================================
         // Build SQL Query to Pull Table Structure Data
         //=====================================================================
-        $strsql = "SHOW COLUMNS FROM {$table}";
+        $strsql = "
+            SELECT * FROM 
+                information_schema.columns
+            WHERE 
+                table_catalog = '{$database}'
+        ";
+        if (!empty($schema)) {
+            $strsql .= " and table_schema = '{$schema}'";
+        };
+        $strsql .= " and table_name = '{$table}' order by ordinal_position";
 
         //=====================================================================
         // Pull Table Data
@@ -68,24 +87,15 @@ class MySQL
         // Format Table Data
         //=====================================================================
         foreach ($meta_data as $field) {
-            $table_info[$field['Field']] = array();
-            $fld_type = explode('(', $field['Type']);
-            if (count($fld_type) > 1) {
-                $table_info[$field['Field']]['data_type'] = $fld_type[0];
-                if ($fld_type[0] != 'enum') {
-                    $table_info[$field['Field']]['length'] = substr($fld_type[1], 0, strlen($fld_type[1]) - 1);
-                }
-            }
-            else {
-                $table_info[$field['Field']]['data_type'] = $field['Type'];
-                $table_info[$field['Field']]['length'] = NULL;
-            }
-            $table_info[$field['Field']]['nullable'] = (strtoupper($field['Null']) == 'YES') ? (1) : (0);
-            $table_info[$field['Field']]['load_default'] = $field['Default'];
-            $table_info[$field['Field']]['no_save'] = false;
-            $table_info[$field['Field']]['no_load'] = false;
-            $table_info[$field['Field']]['quotes'] = 'auto';
-            $table_info[$field['Field']]['can_bind_param'] = true;
+            $table_info[$field['column_name']] = array();
+            $table_info[$field['column_name']]['data_type'] = $field['udt_name'];
+            $table_info[$field['column_name']]['length'] = $field['character_maximum_length'];
+            $table_info[$field['column_name']]['nullable'] = (strtoupper($field['is_nullable']) == 'YES') ? (1) : (0);
+            $table_info[$field['column_name']]['load_default'] = $field['column_default'];
+            $table_info[$field['column_name']]['no_save'] = false;
+            $table_info[$field['column_name']]['no_load'] = false;
+            $table_info[$field['column_name']]['quotes'] = 'auto';
+            $table_info[$field['column_name']]['can_bind_param'] = true;
         }
 
         //=====================================================================
@@ -107,75 +117,11 @@ class MySQL
             'char' => 'char',
             'date' => 'date',
             'text' => 'text',
-            'tinytext' => 'tinytext',
-            'mediumtext' => 'mediumtext',
-            'longtext' => 'longtext',
             'varchar' => 'varchar',
-            'enum' => 'enum',
-            'timestamp' => 'timestamp',
-            'datetime' => 'datetime',
             'time' => 'time',
-            'year' => 'year'
+            'timestamp' => 'timestamp',
+            'xml' => 'xml'
         ];
-    }
-
-    //*************************************************************************
-    /**
-     * Return the bind types map for MySQL field types
-     *
-     * @return Array The field type to bind type mapping array
-     */
-    //*************************************************************************
-    public static function BindTypes()
-    {
-        return [
-            //-------------------------------------------------
-            // Integer
-            //-------------------------------------------------
-            'TINYINT' => 'i',
-            'SMALLINT' => 'i',
-            'MEDIUMINT' => 'i',
-            'INT' => 'i',
-            'BIGINT' => 'i',
-        
-            'BIT' => 'i',
-            'BOOL' => 'i',
-            'SERIAL' => 'i',
-        
-            //-------------------------------------------------
-            // Double
-            //-------------------------------------------------
-            'DECIMAL' => 'd',
-            'FLOAT' => 'd',
-            'DOUBLE' => 'd',
-            'REAL' => 'd',
-        
-            //-------------------------------------------------
-            // Blob
-            //-------------------------------------------------
-            'TINYBLOB' => 'b',
-            'MEDIUMBLOB' => 'b',
-            'BLOB' => 'b',
-            'LONGBLOB' => 'b'
-        ];
-    }
-
-    //*************************************************************************
-    /**
-     * Return the bind type character for a given MySQL field type
-     *
-     * @param string The field type to get a bind character for
-     * @return character The bind type character
-     */
-    //*************************************************************************
-    public static function GetBindType($field_type)
-    {
-        if (!$field_type) {
-            return false;
-        }
-        $field_type = strtoupper($field_type);
-        $bind_types = self::BindTypes();
-        return (isset($bind_types[$field_type])) ? ($bind_types[$field_type]) : ('s');
     }
 
 }
