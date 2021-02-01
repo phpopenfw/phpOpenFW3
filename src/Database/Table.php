@@ -20,7 +20,8 @@ abstract class Table
     // Class Members
     //==========================================================================
     protected static $data_source = '';
-    protected static $table = false; 
+    protected static $table = false;
+    protected static $select_only = false;
 
     //--------------------------------------------------------------------------
     // Select Members
@@ -361,6 +362,13 @@ abstract class Table
         // Lowercase method name
         //----------------------------------------------------------------------
         $method = strtolower($method);
+
+        //----------------------------------------------------------------------
+        // Is this a SELECT ONLY class?
+        //----------------------------------------------------------------------
+        if (self::$select_only && $method != 'select') {
+            throw new \Exception('This class can only be used for select statements.');
+        }
 
         //----------------------------------------------------------------------
         // Get Data Source
