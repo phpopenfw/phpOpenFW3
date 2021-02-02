@@ -82,7 +82,7 @@ abstract class Record
     public function CheckIsValid($msg='')
     {
         if ($msg == '') {
-            $msg = 'Invalid accessor instance.';
+            $msg = 'Invalid record instance.';
         }
         if (!$this->is_valid) {
             throw new \Exception($msg);

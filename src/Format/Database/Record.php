@@ -2,7 +2,7 @@
 //******************************************************************************
 //******************************************************************************
 /**
- * Array Formatting Class
+ * Data Record Formatting Class
  *
  * @package         phpOpenFW
  * @author          Christian J. Clark
@@ -12,27 +12,38 @@
 //******************************************************************************
 //******************************************************************************
 
-namespace phpOpenFW\Format;
+namespace phpOpenFW\Format\Database;
 
 //******************************************************************************
 /**
- * Array Formatting Class
+ * Record Class
  */
 //******************************************************************************
-class Arrays
+class Record
 {
     //==========================================================================
     /**
-     * Get Array Reference Values
+     * Remove Record Elements
      */
     //==========================================================================
-    public static function RefValues(Array $arr)
+    public static function RemoveElements(Array &$data, Array $remove, Array $args=[])
     {
-        $refs = array();
-        foreach($arr as $key => $value) {
-            $refs[$key] = &$arr[$key];
+        if (isset($args['data'])) {
+            unset($args['data']);
         }
-        return $refs;
+        extract($args);
+
+        if (is_array($remove)) {
+            foreach ($remove as $index) {
+                if (array_key_exists($index, $data)) {
+                    unset($data[$index]);
+                    $removed++;
+                }
+            }
+            return $removed;
+        }
+
+        return false;
     }
 
 }
