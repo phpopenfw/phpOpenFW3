@@ -31,10 +31,12 @@ abstract class Record
     protected $table = false;
     protected $select_view = false;
     protected $data = [];
+    protected $debug = false;
     protected $is_valid = null;
     protected $status = null;
     protected $id_field = 'id';
     protected $record_id = false;
+    protected $wheres = false;
     protected $no_update_fields = [
         'id', 'create_person_id', 'create_dttm'
     ];
@@ -47,49 +49,14 @@ abstract class Record
     public function __construct($wheres, Array $args=[], $data_source=false)
     {
         //----------------------------------------------------------------------
-        // Check that class is configured correctly
-        //----------------------------------------------------------------------
-        if (!$this->table) {
-            $this->is_valid = false;
-            $this->Error('Database table is not set.', __FILE__, __LINE__);
-            return false;
-        }
-
-        //----------------------------------------------------------------------
-        // Set Object Args
-        //----------------------------------------------------------------------
-        $this->args = $args;
-
-        //----------------------------------------------------------------------
         // Setup
         //----------------------------------------------------------------------
-        $this->Setup($data_source);
+        $this->Setup($wheres, $args, $data_source);
 
         //----------------------------------------------------------------------
-        // Attempt to pull record
+        // Load Record
         //----------------------------------------------------------------------
-        $recs = $this->GetRecord($wheres, $args);
-
-        //----------------------------------------------------------------------
-        // Validate Record
-        //----------------------------------------------------------------------
-        if ($recs) {
-            $this->status = count($recs);
-            if ($this->status == 1) {
-                $this->is_valid = true;
-                $this->data = current($recs);
-                if (isset($this->data['id'])) {
-                    $this->record_id = $this->data['id'];
-                }
-            }
-            else {
-                $this->is_valid = false;
-            }
-        }
-        else {
-            $this->status = 0;
-            $this->is_valid = false;
-        }
+        $this->LoadRecord();
     }
 
     //==========================================================================
@@ -146,7 +113,38 @@ abstract class Record
     //==========================================================================
     public function GetData()
     {
+        //----------------------------------------------------------------------
+        // Is Object Valid?
+        //----------------------------------------------------------------------
+        if (!$this->is_valid) {
+            $error = 'This object is not valid. there is not data available.';
+            $this->Error($error, __FILE__, __LINE__);
+            return false;
+        }
+
         return $this->data;
+    }
+
+    //==========================================================================
+    //==========================================================================
+    // Refresh Data
+    //==========================================================================
+    //==========================================================================
+    protected function Refresh()
+    {
+        //----------------------------------------------------------------------
+        // Is Object Valid?
+        //----------------------------------------------------------------------
+        if (!$this->is_valid) {
+            $error = 'This object is not valid. Cannot refresh data.';
+            $this->Error($error, __FILE__, __LINE__);
+            return false;
+        }
+
+        //----------------------------------------------------------------------
+        // Refresh Data
+        //----------------------------------------------------------------------
+        return $this->LoadRecord();
     }
 
     //==========================================================================
@@ -154,8 +152,22 @@ abstract class Record
     // Update Record
     //==========================================================================
     //==========================================================================
-    protected function Update(Array $values, Array $args=[])
+    public function Update(Array $values, Array $args=[])
     {
+        //----------------------------------------------------------------------
+        // Extract Args
+        //----------------------------------------------------------------------
+        extract($args);
+
+        //----------------------------------------------------------------------
+        // Is Object Valid?
+        //----------------------------------------------------------------------
+        if (!$this->is_valid) {
+            $error = 'This object is not valid. Cannot update record.';
+            $this->Error($error, __FILE__, __LINE__);
+            return false;
+        }
+
         //----------------------------------------------------------------------
         // Is record ID set?
         //----------------------------------------------------------------------
@@ -190,6 +202,9 @@ abstract class Record
         if (isset($args['no_update_fields'])) {
             $nufs = $this->NoUpdateFields($args['no_update_fields']);
         }
+        else {
+            $nufs = $this->no_update_fields;
+        }
 
         //----------------------------------------------------------------------
         // Determine Values
@@ -217,18 +232,51 @@ abstract class Record
         ->Limit(1);
 
         //----------------------------------------------------------------------
+        // Debug?
+        //----------------------------------------------------------------------
+        if (!empty($debug) || $this->debug) {
+            print $query . "\n";
+            print_r($query->GetBindParams());
+            return false;
+        }
+
+        //----------------------------------------------------------------------
         // Execute Query
         //----------------------------------------------------------------------
-        return $query->Execute();
+        $update_status = $query->Execute();
+
+        //----------------------------------------------------------------------
+        // Refresh Object
+        //----------------------------------------------------------------------
+        $this->Refresh();
+
+        //----------------------------------------------------------------------
+        // Return Update Status
+        //----------------------------------------------------------------------
+        return $update_status;
     }
 
     //==========================================================================
     //==========================================================================
-    // Update Record
+    // Update Record?
     //==========================================================================
     //==========================================================================
-    protected function Delete()
+    public function Delete(Array $args=[])
     {
+        //----------------------------------------------------------------------
+        // Extract Args
+        //----------------------------------------------------------------------
+        extract($args);
+
+        //----------------------------------------------------------------------
+        // Is Object Valid
+        //----------------------------------------------------------------------
+        if (!$this->is_valid) {
+            $error = 'This object is not valid. Cannot delete record.';
+            $this->Error($error, __FILE__, __LINE__);
+            return false;
+        }
+
         //----------------------------------------------------------------------
         // Is record ID set?
         //----------------------------------------------------------------------
@@ -246,9 +294,23 @@ abstract class Record
         ->Limit(1);
 
         //----------------------------------------------------------------------
+        // Debug?
+        //----------------------------------------------------------------------
+        if (!empty($debug) || $this->debug) {
+            print $query . "\n";
+            print_r($query->GetBindParams());
+            return false;
+        }
+
+        //----------------------------------------------------------------------
         // Execute Query
         //----------------------------------------------------------------------
-        return $query->Execute();
+        $delete_status = $query->Execute();
+
+        //----------------------------------------------------------------------
+        // Reset Object
+        //----------------------------------------------------------------------
+        $this->Reset();
     }
 
     //%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -262,14 +324,38 @@ abstract class Record
     // Setup
     //==========================================================================
     //==========================================================================
-    public function Setup($data_source)
+    public function Setup($wheres, Array $args, $data_source)
     {
         //----------------------------------------------------------------------
-        // ID Field
+        // Check that class is configured correctly
         //----------------------------------------------------------------------
-        if (!empty($this->args['id_field'])) {
-            $this->id_field = $this->args['id_field'];
+        if (!$this->table) {
+            $this->is_valid = false;
+            $this->Error('Setup failed: Database table is not set.', __FILE__, __LINE__);
+            return false;
         }
+
+        //----------------------------------------------------------------------
+        // Set Object Args
+        //----------------------------------------------------------------------
+        $this->args = $args;
+
+        //----------------------------------------------------------------------
+        // Was an ID passed?
+        //----------------------------------------------------------------------
+        if (is_scalar($wheres) && is_numeric($wheres)) {
+            $wheres = ['id' => $wheres];
+        }
+
+        //----------------------------------------------------------------------
+        // Wheres must be an array
+        //----------------------------------------------------------------------
+        if (!is_array($wheres)) {
+            $error = 'Setup failed: Invalid arguments passed for querying database record. Record ID or array of fields / values required.';
+            $this->Error($error, __FILE__, __LINE__);
+            return false;
+        }
+        $this->wheres = $wheres;
 
         //----------------------------------------------------------------------
         // Set Data Source
@@ -281,6 +367,20 @@ abstract class Record
             $this->data_source = $this->args['data_source'];
         }
         //$this->ds_obj = \phpOpenFW\Core\DataSources::GetOneOrDefault($this->data_source);
+
+        //----------------------------------------------------------------------
+        // ID Field
+        //----------------------------------------------------------------------
+        if (!empty($this->args['id_field'])) {
+            $this->id_field = $this->args['id_field'];
+        }
+
+        //----------------------------------------------------------------------
+        // Debug
+        //----------------------------------------------------------------------
+        if (!empty($this->args['debug'])) {
+            $this->debug = $this->args['debug'];
+        }
 
         //----------------------------------------------------------------------
         // No Update Fields
@@ -316,32 +416,25 @@ abstract class Record
     {
         $method = strtolower($method);
         $tmp_table = $this->table;
-        if ($method == 'getrecord') {
-            
+        if ($method == 'loadrecord') {
+            if ($this->select_view && is_string($this->select_view)) {
+                return $this->select_view;
+            }
         }
         return $tmp_table;
     }
 
     //==========================================================================
     //==========================================================================
-    // Get Record
+    // Load Record
     //==========================================================================
     //==========================================================================
-    protected function GetRecord($wheres, Array $args)
+    protected function LoadRecord(Array $args=[])
     {
         //----------------------------------------------------------------------
-        // Was an ID passed?
+        // Extract Args
         //----------------------------------------------------------------------
-        if (is_scalar($wheres) && is_numeric($wheres)) {
-            $wheres = ['id' => $wheres];
-        }
-        //----------------------------------------------------------------------
-        // Args must be an array
-        //----------------------------------------------------------------------
-        if (!is_array($wheres)) {
-            $error = 'Invalid arguments passed for querying database record. Record ID or array of field / values required.';
-            $this->Error($error, __FILE__, __LINE__);
-        }
+        extract($args);
 
         //----------------------------------------------------------------------
         // Determine Table or View
@@ -357,14 +450,75 @@ abstract class Record
         //----------------------------------------------------------------------
         // Set where conditions from array
         //----------------------------------------------------------------------
-        foreach ($wheres as $key => $val) {
-            $query->Where($key, $val);
+        if (!empty($this->record_id) && !empty($this->id_field)) {
+            $query->Where($this->id_field, $this->record_id);
+        }
+        else {
+            foreach ($this->wheres as $key => $val) {
+                $query->Where($key, $val);
+            }
+        }
+
+        //----------------------------------------------------------------------
+        // Debug?
+        //----------------------------------------------------------------------
+        if (!empty($debug) || $this->debug) {
+            print $query . "\n";
+            print_r($query->GetBindParams());
+            return false;
         }
 
         //----------------------------------------------------------------------
         // Limit 2 / Execute
         //----------------------------------------------------------------------
         $query->Limit(2);
-        return $query->Execute();
+        $recs = $query->Execute();
+
+        //----------------------------------------------------------------------
+        // Validate Record
+        //----------------------------------------------------------------------
+        if ($recs) {
+            $this->status = count($recs);
+            if ($this->status == 1) {
+                $this->is_valid = true;
+                $this->data = current($recs);
+                if (isset($this->data['id'])) {
+                    $this->record_id = $this->data['id'];
+                }
+            }
+            else {
+                $this->is_valid = false;
+            }
+        }
+        else {
+            $this->status = 0;
+            $this->is_valid = false;
+        }
+
+        return $this->is_valid;
     }
+
+    //==========================================================================
+    //==========================================================================
+    // Destroy
+    //==========================================================================
+    //==========================================================================
+    protected function Reset()
+    {
+        $this->args = [];
+        $this->data_source = false;
+        $this->table = false;
+        $this->select_view = false;
+        $this->data = [];
+        $this->debug = false;
+        $this->is_valid = null;
+        $this->status = null;
+        $this->id_field = 'id';
+        $this->record_id = false;
+        $this->wheres = false;
+        $this->no_update_fields = [
+            'id', 'create_person_id', 'create_dttm'
+        ];
+    }
+
 }
