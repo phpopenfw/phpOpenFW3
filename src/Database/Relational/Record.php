@@ -37,9 +37,7 @@ abstract class Record
     protected $id_field = 'id';
     protected $record_id = false;
     protected $wheres = false;
-    protected $no_update_fields = [
-        'id', 'create_person_id', 'create_dttm'
-    ];
+    protected $no_update_fields = ['id'];
 
     //==========================================================================
     //==========================================================================
@@ -94,13 +92,13 @@ abstract class Record
     // Check if Instance is Valid
     //==========================================================================
     //==========================================================================
-    public function CheckIsValid($error_msg='')
+    public function CheckIsValid($file, $line, $error_msg='')
     {
         if ($error_msg == '') {
             $error_msg = 'Invalid record instance.';
         }
         if (!$this->is_valid) {
-            $this->Error($error_msg, __FILE__, __LINE__);
+            $this->Error($error_msg, $file, $line);
             return false;
         }
         return true;

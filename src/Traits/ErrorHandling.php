@@ -24,7 +24,7 @@ trait ErrorHandling
     //==========================================================================
     // Trait Memebers
     //==========================================================================
-    protected $error_handling = 'error';
+    protected $error_handling = 'exception';
     protected $error_type = E_USER_ERROR;
 
     //==========================================================================

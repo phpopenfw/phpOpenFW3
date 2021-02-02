@@ -72,13 +72,18 @@ abstract class Table
     // Select Records
     //==========================================================================
     //==========================================================================
-    public static function Select(Array $wheres, Array $args=[])
+    public static function Select(Array $params, Array $args=[])
     {
         //----------------------------------------------------------------------
         // Parse & Extract Args
         //----------------------------------------------------------------------
         $parsed_args = static::ParseArgs(__FUNCTION__, $args);
         extract($parsed_args['build']);
+
+        //----------------------------------------------------------------------
+        // Sanitize Parameters
+        //----------------------------------------------------------------------
+        static::SanitizeParams($params);
 
         //----------------------------------------------------------------------
         // Start Query
@@ -103,7 +108,7 @@ abstract class Table
         //----------------------------------------------------------------------
         // Build Select Where
         //----------------------------------------------------------------------
-        static::BuildSelectWhere($query, $wheres, $parsed_args['build']);
+        static::BuildSelectWhere($query, $params, $parsed_args['build']);
 
         //----------------------------------------------------------------------
         // Execute and Return Results
@@ -116,10 +121,10 @@ abstract class Table
     // Select Query
     //==========================================================================
     //==========================================================================
-    public static function GetSelectQuery(Array $wheres, Array $args=[])
+    public static function GetSelectQuery(Array $params, Array $args=[])
     {
         $args['return_query'] = true;
-        return static::Select($wheres, $args);
+        return static::Select($params, $args);
     }
 
     //==========================================================================
@@ -127,9 +132,9 @@ abstract class Table
     // Select One
     //==========================================================================
     //==========================================================================
-    public static function SelectOne(Array $wheres, Array $args=[])
+    public static function SelectOne(Array $params, Array $args=[])
     {
-        $recs = static::Select($wheres, $args);
+        $recs = static::Select($params, $args);
         if ($recs) {
             if (count($recs) == 1) {
                 return current($recs);
@@ -187,7 +192,7 @@ abstract class Table
     // Update
     //==========================================================================
     //==========================================================================
-    public static function Update($wheres, Array $values, Array $args=[])
+    public static function Update($params, Array $values, Array $args=[])
     {
         //----------------------------------------------------------------------
         // Parse & Extract Args
@@ -208,7 +213,7 @@ abstract class Table
         //----------------------------------------------------------------------
         // Build Update Where
         //----------------------------------------------------------------------
-        static::BuildUpdateWhere($query, $wheres, $parsed_args['build']);
+        static::BuildUpdateWhere($query, $params, $parsed_args['build']);
 
         //----------------------------------------------------------------------
         // Execute and Return Results
@@ -221,10 +226,10 @@ abstract class Table
     // Update One
     //==========================================================================
     //==========================================================================
-    public static function UpdateOne($wheres, Array $values, Array $args=[])
+    public static function UpdateOne($params, Array $values, Array $args=[])
     {
         $args['limit'] = 1;
-        return static::Update($wheres, $values, $args);
+        return static::Update($params, $values, $args);
     }
 
     //%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -238,7 +243,7 @@ abstract class Table
     // Delete
     //==========================================================================
     //==========================================================================
-    public static function Delete($wheres, Array $args=[])
+    public static function Delete($params, Array $args=[])
     {
         //----------------------------------------------------------------------
         // Parse & Extract Args
@@ -247,9 +252,14 @@ abstract class Table
         extract($parsed_args['build']);
 
         //----------------------------------------------------------------------
+        // Start Query
+        //----------------------------------------------------------------------
+        $query = SQL::Delete($table, $data_source);
+
+        //----------------------------------------------------------------------
         // Build Delete Where
         //----------------------------------------------------------------------
-        static::BuildDeleteWhere($query, $wheres, $parsed_args['build']);
+        static::BuildDeleteWhere($query, $params, $parsed_args['build']);
 
         //----------------------------------------------------------------------
         // Execute and Return Results
@@ -262,10 +272,10 @@ abstract class Table
     // Delete One
     //==========================================================================
     //==========================================================================
-    public static function DeleteOne($wheres, Array $args=[])
+    public static function DeleteOne($params, Array $args=[])
     {
         $args['limit'] = 1;
-        return static::Delete($wheres, $args);
+        return static::Delete($params, $args);
     }
 
     //%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -377,7 +387,8 @@ abstract class Table
         $return_args = [
             'build' => [
                 'data_source' => $data_source,
-                'table' => $table
+                'table' => $table,
+                'query_type' => $method
             ],
             'finish' => []
         ];
@@ -457,6 +468,27 @@ abstract class Table
 
     //==========================================================================
     //==========================================================================
+    // Sanitize Parameters
+    //==========================================================================
+    //==========================================================================
+    protected static function SanitizeParams(&$params)
+    {
+        if (isset($params['query'])) {
+            unset($params['query']);
+        }
+        if (isset($params['params'])) {
+            unset($params['params']);
+        }
+        if (isset($params['args'])) {
+            unset($params['args']);
+        }
+        if (isset($params['query_type'])) {
+            unset($params['query_type']);
+        }
+    }
+
+    //==========================================================================
+    //==========================================================================
     // Build Values
     //==========================================================================
     //==========================================================================
@@ -510,13 +542,13 @@ abstract class Table
     // Generic Build Where Method
     //=========================================================================
     //=========================================================================
-    protected static function BuildWhere($query, Array $wheres, Array $args=[])
+    protected static function BuildWhere($query, Array $params, Array $args=[])
     {
         //----------------------------------------------------------------------
         // Extract Args, Wheres
         //----------------------------------------------------------------------
         extract($args);
-        extract($wheres, EXTR_SKIP);
+        extract($params);
         
         //----------------------------------------------------------------------
         // ID(s)
@@ -534,9 +566,9 @@ abstract class Table
     // Build Select Where Method
     //=========================================================================
     //=========================================================================
-    protected static function BuildSelectWhere($query, Array $wheres, Array $args=[])
+    protected static function BuildSelectWhere($query, Array $params, Array $args=[])
     {
-        static::BuildWhere($query, $wheres, $args);
+        static::BuildWhere($query, $params, $args);
     }
 
     //=========================================================================
@@ -544,9 +576,9 @@ abstract class Table
     // Build Update Where Method
     //=========================================================================
     //=========================================================================
-    public static function BuildUpdateWhere($query, Array $wheres, Array $args=[])
+    public static function BuildUpdateWhere($query, Array $params, Array $args=[])
     {
-        static::BuildWhere($query, $wheres, $args);
+        static::BuildWhere($query, $params, $args);
     }
 
     //=========================================================================
@@ -554,9 +586,9 @@ abstract class Table
     // Build Delete Where Method
     //=========================================================================
     //=========================================================================
-    public static function BuildDeleteWhere($query, Array $wheres, Array $args=[])
+    public static function BuildDeleteWhere($query, Array $params, Array $args=[])
     {
-        static::BuildWhere($query, $wheres, $args);
+        static::BuildWhere($query, $params, $args);
     }
 
     //%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
