@@ -35,4 +35,29 @@ class Arrays
         return $refs;
     }
 
+    //==========================================================================
+    /**
+     * Remove Array Elements
+     */
+    //==========================================================================
+    public static function RemoveElements(Array &$arr, Array $remove, Array $args=[])
+    {
+        if (isset($args['arr'])) {
+            unset($args['arr']);
+        }
+        extract($args);
+
+        if (is_array($remove)) {
+            foreach ($remove as $index) {
+                if (array_key_exists($index, $arr)) {
+                    unset($arr[$index]);
+                    $removed++;
+                }
+            }
+            return $removed;
+        }
+
+        return false;
+    }
+
 }
