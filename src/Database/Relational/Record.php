@@ -19,6 +19,11 @@ use \phpOpenFW\Builders\SQL;
 abstract class Record
 {
     //==========================================================================
+    // Traits
+    //==========================================================================
+    use \phpOpenFW\Traits\ErrorHandling;
+
+    //==========================================================================
     // Class Members
     //==========================================================================
     protected $args = [];
@@ -28,7 +33,11 @@ abstract class Record
     protected $data = [];
     protected $is_valid = null;
     protected $status = null;
+    protected $id_field = 'id';
     protected $record_id = false;
+    protected $no_update_fields = [
+        'id', 'create_person_id', 'create_dttm'
+    ];
 
     //==========================================================================
     //==========================================================================
@@ -40,9 +49,9 @@ abstract class Record
         //----------------------------------------------------------------------
         // Check that class is configured correctly
         //----------------------------------------------------------------------
-        if (!static::$table) {
+        if (!$this->table) {
             $this->is_valid = false;
-            throw new \Exception('Database table is not set.');
+            $this->Error('Database table is not set.', __FILE__, __LINE__);
             return false;
         }
 
@@ -52,14 +61,14 @@ abstract class Record
         $this->args = $args;
 
         //----------------------------------------------------------------------
-        // Set Data Source
+        // Setup
         //----------------------------------------------------------------------
-        $this->SetDataSource($data_source);
+        $this->Setup($data_source);
 
         //----------------------------------------------------------------------
         // Attempt to pull record
         //----------------------------------------------------------------------
-        $recs = $this->GetRecord($wheres);
+        $recs = $this->GetRecord($wheres, $args);
 
         //----------------------------------------------------------------------
         // Validate Record
@@ -90,12 +99,7 @@ abstract class Record
     //==========================================================================
     public static function Instance($wheres, Array $args=[], $data_source=false)
     {
-        if (is_scalar($args)) {
-            $args = ['id' => $args];
-        }
-        if ($args) {
-            return new static($wheres, $args, $data_source);
-        }
+        return new static($wheres, $args, $data_source);
     }
 
     //==========================================================================
@@ -123,13 +127,14 @@ abstract class Record
     // Check if Instance is Valid
     //==========================================================================
     //==========================================================================
-    public function CheckIsValid($msg='')
+    public function CheckIsValid($error_msg='')
     {
-        if ($msg == '') {
-            $msg = 'Invalid record instance.';
+        if ($error_msg == '') {
+            $error_msg = 'Invalid record instance.';
         }
         if (!$this->is_valid) {
-            throw new \Exception($msg);
+            $this->Error($error_msg, __FILE__, __LINE__);
+            return false;
         }
         return true;
     }
@@ -144,6 +149,108 @@ abstract class Record
         return $this->data;
     }
 
+    //==========================================================================
+    //==========================================================================
+    // Update Record
+    //==========================================================================
+    //==========================================================================
+    protected function Update(Array $values, Array $args=[])
+    {
+        //----------------------------------------------------------------------
+        // Is record ID set?
+        //----------------------------------------------------------------------
+        if (!$this->record_id) {
+            $error = 'Record ID is not set. Cannot update record.';
+            $this->Error($error, __FILE__, __LINE__);
+            return false;
+        }
+
+        //----------------------------------------------------------------------
+        // No Values, No Update.
+        //----------------------------------------------------------------------
+        if (!$values) {
+            return false;
+        }
+
+        //----------------------------------------------------------------------
+        // Get Table Structure
+        //----------------------------------------------------------------------
+        $table_fields = \phpOpenFW\Database\Structure\Table::Instance($this->data_source, $this->table)->GetStructure();
+
+        //----------------------------------------------------------------------
+        // No Fields, No Update.
+        //----------------------------------------------------------------------
+        if (!$table_fields) {
+            return false;
+        }
+
+        //----------------------------------------------------------------------
+        // No Update Fields
+        //----------------------------------------------------------------------
+        if (isset($args['no_update_fields'])) {
+            $nufs = $this->NoUpdateFields($args['no_update_fields']);
+        }
+
+        //----------------------------------------------------------------------
+        // Determine Values
+        //----------------------------------------------------------------------
+        $update_values = [];
+        foreach ($table_fields as $field => $info) {
+            if (array_key_exists($field, $values) && !in_array($field, $nufs)) {
+                $update_values[$field] = $values[$field];
+            }
+        }
+
+        //----------------------------------------------------------------------
+        // No Update Values, No Update.
+        //----------------------------------------------------------------------
+        if (!$update_values) {
+            return false;
+        }
+
+        //----------------------------------------------------------------------
+        // Create Delete Query
+        //----------------------------------------------------------------------
+        $query = SQL::Update($this->table, $this->data_source)
+        ->Values($update_values)
+        ->Where($this->id_field, $this->record_id)
+        ->Limit(1);
+
+        //----------------------------------------------------------------------
+        // Execute Query
+        //----------------------------------------------------------------------
+        return $query->Execute();
+    }
+
+    //==========================================================================
+    //==========================================================================
+    // Update Record
+    //==========================================================================
+    //==========================================================================
+    protected function Delete()
+    {
+        //----------------------------------------------------------------------
+        // Is record ID set?
+        //----------------------------------------------------------------------
+        if (!$this->record_id) {
+            $error = 'Record ID is not set. Cannot delete record.';
+            $this->Error($error, __FILE__, __LINE__);
+            return false;
+        }
+
+        //----------------------------------------------------------------------
+        // Create Delete Query
+        //----------------------------------------------------------------------
+        $query = SQL::Delete($this->table, $this->data_source)
+        ->Where($this->id_field, $this->record_id)
+        ->Limit(1);
+
+        //----------------------------------------------------------------------
+        // Execute Query
+        //----------------------------------------------------------------------
+        return $query->Execute();
+    }
+
     //%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
     //%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
     // Internal Methods
@@ -152,11 +259,21 @@ abstract class Record
 
     //==========================================================================
     //==========================================================================
-    // Set Data Source
+    // Setup
     //==========================================================================
     //==========================================================================
-    protected function SetDataSource($data_source)
+    public function Setup($data_source)
     {
+        //----------------------------------------------------------------------
+        // ID Field
+        //----------------------------------------------------------------------
+        if (!empty($this->args['id_field'])) {
+            $this->id_field = $this->args['id_field'];
+        }
+
+        //----------------------------------------------------------------------
+        // Set Data Source
+        //----------------------------------------------------------------------
         if ($data_source) {
             $this->data_source = $data_source;
         }
@@ -164,6 +281,30 @@ abstract class Record
             $this->data_source = $this->args['data_source'];
         }
         //$this->ds_obj = \phpOpenFW\Core\DataSources::GetOneOrDefault($this->data_source);
+
+        //----------------------------------------------------------------------
+        // No Update Fields
+        //----------------------------------------------------------------------
+        if (isset($this->args['no_update_fields'])) {
+            $this->no_update_fields = $this->NoUpdateFields($this->args['no_update_fields']);
+        }
+    }
+
+    //==========================================================================
+    //==========================================================================
+    // No Update Fields
+    //==========================================================================
+    //==========================================================================
+    protected function NoUpdateFields($in)
+    {
+        $out = $this->no_update_fields;
+        if (is_array($in)) {
+            $out = $in;
+        }
+        else if (!$in) {
+            $out = [];
+        }
+        return $out;
     }
 
     //==========================================================================
@@ -171,9 +312,13 @@ abstract class Record
     // Determine Table
     //==========================================================================
     //==========================================================================
-    protected function DetermineTable()
+    protected function DetermineTable($method)
     {
+        $method = strtolower($method);
         $tmp_table = $this->table;
+        if ($method == 'getrecord') {
+            
+        }
         return $tmp_table;
     }
 
@@ -194,14 +339,14 @@ abstract class Record
         // Args must be an array
         //----------------------------------------------------------------------
         if (!is_array($wheres)) {
-            $msg = 'Invalid arguments passed for querying database record. Record ID or array of field / values required.';
-            throw new \Exception($msg);
+            $error = 'Invalid arguments passed for querying database record. Record ID or array of field / values required.';
+            $this->Error($error, __FILE__, __LINE__);
         }
 
         //----------------------------------------------------------------------
         // Determine Table or View
         //----------------------------------------------------------------------
-        $tmp_table = $this->DetermineTable();
+        $tmp_table = $this->DetermineTable(__FUNCTION__);
 
         //----------------------------------------------------------------------
         // Start Query
