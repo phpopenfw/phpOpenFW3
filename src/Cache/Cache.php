@@ -231,6 +231,9 @@ class Cache
     //=========================================================================
     public static function CacheIsRegistered($handle)
     {
+        if (!is_scalar($handle)) {
+            throw new \Exception('Cache handle must be a scalar value.');
+        }
         if (!self::IsValidKey($handle)) {
             throw new \Exception('Invalid cache handle.');
         }
@@ -246,6 +249,20 @@ class Cache
     public static function IsValidKey($key)
     {
         if (is_scalar($key) && (string)$key != '') {
+            return true;
+        }
+        return false;
+    }
+
+    //=========================================================================
+    // Is Valid Object Method
+    //=========================================================================
+    public static function IsValidCacheObject($in)
+    {
+        if (!$in) {
+            return false;
+        }
+        if (is_object($in) && (get_class($in) == 'phpOpenFW\Cache\Cache')) {
             return true;
         }
         return false;

@@ -1,6 +1,6 @@
 {
     "name": "phpopenfw/phpopenfw3",
-    "version": "3.0.0rc16",
+    "version": "3.0.0rc17",
     "require": {
         "php": ">=7.0.0"
     },
