@@ -28,8 +28,10 @@ class Alias
      */
     //*************************************************************************
     //*************************************************************************
-    public static function AliasClassesDir($dir, $real_ns, $alias_ns)
+    public static function AliasClassesDir($dir, $real_ns, $alias_ns, Array $args=[])
     {
+        $recursive = true;
+        extract($args);
         if (!is_dir($dir) || !$files = scandir($dir)) {
             throw new \Exception('Directory is invalid or inaccessible.');
         }
@@ -39,11 +41,12 @@ class Alias
                 continue;
             }
             $full_file = $dir . '/' . $file;
-            if (is_dir($full_file)) {
+            if (is_dir($full_file) && $recursive) {
                 $aliased += static::AliasClassesDir(
                     $full_file, 
                     $real_ns . '\\' . $file,
-                    $alias_ns . '\\' . $file
+                    $alias_ns . '\\' . $file,
+                    $args
                 );
             }
             else {
