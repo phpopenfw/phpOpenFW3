@@ -75,7 +75,6 @@ class DataTrans
         // Return newly created object
         //=====================================================================
         return $this->data_object;
-        return $this->data_object;
     }
 
     //*************************************************************************
