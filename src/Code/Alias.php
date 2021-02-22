@@ -77,7 +77,12 @@ class Alias
         if (substr($class, 0, 1) == '\\') {
             $class = substr($class, 1);
         }
-        return class_alias($real_ns . $class, $alias_ns . $class);
+        $real_class = $real_ns . $class;
+        $alias_class = $alias_ns . $class;
+        if (!class_exists($alias_class)) {
+            return class_alias($real_class, $alias_class);
+        }
+        return false;
     }
 
 }
