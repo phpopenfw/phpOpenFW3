@@ -35,6 +35,9 @@ class Alias
         }
         $aliased = 0;
         foreach ($files as $file) {
+            if (substr($file, 0, 1) == '.') {
+                continue;
+            }
             $full_file = $dir . '/' . $file;
             if (is_dir($full_file)) {
                 $aliased += static::AliasClassesDir(
