@@ -150,7 +150,7 @@ class Namespaces
      */
     //*************************************************************************
     //*************************************************************************
-    public static function RemapAliasClass($ns_map, $class)
+    public static function RemapAliasClass(Array $ns_map, $class)
     {
         foreach ($ns_map as $legacy_ns => $new_ns) {
             $ns_len = strlen($legacy_ns);
