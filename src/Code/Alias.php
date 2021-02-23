@@ -42,6 +42,8 @@ class Alias
             }
             $full_file = $dir . '/' . $file;
             if (is_dir($full_file) && $recursive) {
+                \phpOpenFW\Format\Strings::TrimSlashes($real_ns);
+                \phpOpenFW\Format\Strings::TrimSlashes($alias_ns);
                 $aliased += static::AliasClassesDir(
                     $full_file, 
                     $real_ns . '\\' . $file,
@@ -68,23 +70,74 @@ class Alias
     //*************************************************************************
     public static function AliasClass($class, $real_ns='', $alias_ns='')
     {
-        if (!is_scalar($real_ns) || !is_scalar($alias_ns)) {
+        //---------------------------------------------------------------------
+        // Does namespace cache already exist?
+        //---------------------------------------------------------------------
+        global $namespace_cache;
+        if (!$namespace_cache) {
+            $namespace_cache = new \phpOpenFW\Cache\Objects\GlobalCache('PHPOPENFW_NAMESPACE_CACHE');
+        }
+
+        //---------------------------------------------------------------------
+        // Namespaces must be strings
+        //---------------------------------------------------------------------
+        if (!is_string($real_ns) || !is_string($alias_ns)) {
             throw new \Exception('Namespaces must be passed as strings.');
         }
-        if (substr($real_ns, strlen($real_ns) - 1, 1) != '\\') {
-            $real_ns .= '\\';
+
+        //---------------------------------------------------------------------
+        // Real namespace has already been calculated
+        //---------------------------------------------------------------------
+        if ($tmp_real_ns = $namespace_cache->get($real_ns)) {
+            $real_ns = $tmp_real_ns;
         }
-        if (substr($alias_ns, strlen($alias_ns) - 1, 1) != '/\\') {
-            $alias_ns .= '\\';
+        //---------------------------------------------------------------------
+        // Real namespace has NOT been calculated
+        //---------------------------------------------------------------------
+        else {
+            $tmp_real_ns = $real_ns;
+            \phpOpenFW\Format\Strings::TrimSlashes($tmp_real_ns);
+            $namespace_cache->set($real_ns, $tmp_real_ns);
         }
-        if (substr($class, 0, 1) == '\\') {
+
+        //---------------------------------------------------------------------
+        // Alias namespace has already been calculated
+        //---------------------------------------------------------------------
+        if ($tmp_alias_ns = $namespace_cache->get($alias_ns)) {
+            $alias_ns = $tmp_alias_ns;
+        }
+        //---------------------------------------------------------------------
+        // Alias namespace has NOT been calculated
+        //---------------------------------------------------------------------
+        else {
+            $tmp_alias_ns = $alias_ns;
+            \phpOpenFW\Format\Strings::TrimSlashes($tmp_alias_ns);
+            $namespace_cache->set($alias_ns, $tmp_alias_ns);
+        }
+
+        //---------------------------------------------------------------------
+        // Strip prepending slashes from class stub
+        //---------------------------------------------------------------------
+        while (substr($class, 0, 1) == '\\') {
             $class = substr($class, 1);
         }
-        $real_class = $real_ns . $class;
-        $alias_class = $alias_ns . $class;
+
+        //---------------------------------------------------------------------
+        // Set Real and Alias classes
+        //---------------------------------------------------------------------
+        $real_class = $tmp_real_ns . '\\' . $class;
+        $alias_class = $tmp_alias_ns . '\\' . $class;
+
+        //---------------------------------------------------------------------
+        // Check for alias class conflict
+        //---------------------------------------------------------------------
         if (!class_exists($alias_class)) {
             return class_alias($real_class, $alias_class);
         }
+
+        //---------------------------------------------------------------------
+        // Alias NOT created
+        //---------------------------------------------------------------------
         return false;
     }
 

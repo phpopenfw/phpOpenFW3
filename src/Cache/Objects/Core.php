@@ -71,7 +71,7 @@ abstract class Core
     //=========================================================================
     public function get($key, $return_ref=false)
     {
-        return (isset($this->container[$key])) ? ($this->container[$key]) : (false);
+        return (isset($this->container[$key])) ? ($this->container[$key]) : (null);
     }
 
     //=========================================================================
