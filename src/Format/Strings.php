@@ -108,7 +108,7 @@ class Strings
      */
     //==========================================================================
     //==========================================================================
-    public static function AddUrlParams($url, Array $params, Array $args)
+    public static function AddUrlParams($url, Array $params, Array $args=[])
     {
         //----------------------------------------------------------------------
         // Defaults / Extact Args
