@@ -347,7 +347,7 @@ class SSV2
                 break;
 
             case 'is_empty_or_zero':
-                $vr = ($var_val1 == '' || (string)$var_val1 != '0');
+                $vr = ($var_val1 == '' || (string)$var_val1 == '0');
                 break;
 
             case 'is_numeric':
