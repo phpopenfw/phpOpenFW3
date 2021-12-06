@@ -6,10 +6,6 @@
     },
     "require-dev": {},
     "repositories": [],
-    "dist": {
-        "url": "https://github.com/phpopenfw/phpopenfw3",
-        "type": "git"
-    },
     "autoload": {
         "psr-4": {
             "phpOpenFW\\": "/src",
