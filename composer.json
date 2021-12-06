@@ -1,14 +1,14 @@
 {
     "name": "phpopenfw/phpopenfw3",
-    "version": "3.0.0rc19",
+    "version": "3.0.0rc20",
     "require": {
         "php": ">=7.0.0"
     },
     "require-dev": {},
     "repositories": [],
     "dist": {
-        "url": "https://github.com/phpopenfw/phpopenfw3.git",
-        "type": "zip"
+        "url": "https://github.com/phpopenfw/phpopenfw3",
+        "type": "git"
     },
     "autoload": {
         "psr-4": {
