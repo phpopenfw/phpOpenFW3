@@ -92,7 +92,7 @@ trait Environment
         $verbose = (isset($this->args['v'])) ? ((int)$this->args['v']) : (false);
         define('VERBOSE', $verbose);
         if ($verbose) {
-            $tmp_msg = "Verbose output is ON";
+            $tmp_msg = "Verbose output is ON (Level {$verbose}).";
             self::PrintInformation($tmp_msg, 0);
         }
     }
