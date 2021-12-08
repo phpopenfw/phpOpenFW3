@@ -89,7 +89,7 @@ trait Environment
     //*************************************************************************
     protected function SetVerbose()
     {
-        $verbose = (isset($this->args['v'])) ? (true) : (false);
+        $verbose = (isset($this->args['v'])) ? ((int)$this->args['v']) : (false);
         define('VERBOSE', $verbose);
         if ($verbose) {
             $tmp_msg = "Verbose output is ON";

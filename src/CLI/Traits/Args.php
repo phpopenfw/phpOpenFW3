@@ -63,8 +63,8 @@ trait Args
             //------------------------------------------------------
             if (substr($arg, 0, 2) == '--') {
                 $switch = substr($arg, 2);
-                $new_args[$switch] = ($arg_val) ? ($arg_val) : (true);
-                if ($arg_val) {
+                $new_args[$switch] = ($arg_val != '') ? ($arg_val) : (true);
+                if ($arg_val != '') {
                     $i++;
                 }
             }
@@ -73,8 +73,8 @@ trait Args
             //------------------------------------------------------
             else if (substr($arg, 0, 1) == '-' && strlen($arg) == 2) {
                 $switch = substr($arg, 1);
-                $new_args[$switch] = ($arg_val) ? ($arg_val) : (true);
-                if ($arg_val) {
+                $new_args[$switch] = ($arg_val != '') ? ($arg_val) : (true);
+                if ($arg_val != '') {
                     $i++;
                 }
             }
