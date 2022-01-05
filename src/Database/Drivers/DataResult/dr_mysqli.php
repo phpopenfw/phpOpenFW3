@@ -30,7 +30,7 @@ class dr_mysqli extends dr_structure
     //*************************************************************************
     protected function pre_setup()
     {
-        if (method_exists($this->stmt, 'get_result')) {
+        if (is_object($this->stmt) && method_exists($this->stmt, 'get_result')) {
             $this->set_opt('mysqlnd', 1);
         }
         
