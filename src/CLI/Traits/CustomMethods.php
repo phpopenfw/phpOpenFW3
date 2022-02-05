@@ -109,6 +109,9 @@ trait CustomMethods
     public function __call($name, $arguments)
     {
         if ($this->CustomMethodExists($name)) {
+            if (PHP_VERSION >= 8 && is_array($arguments)) {
+                $arguments = array_values($arguments);
+            }
             return call_user_func_array($this->custom_methods[$name], $arguments);
         }
         throw new \Exception('Unknown class method.');

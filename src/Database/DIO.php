@@ -197,6 +197,9 @@ abstract class DIO
             if (!is_array($pre_args)) {
                 $pre_args = array($pre_args);
             }
+            else if (PHP_VERSION >= 8) {
+                $pre_args = array_values($pre_args);
+            }
             call_user_func_array(array($this, 'pre_export'), $pre_args);
         }
 
@@ -234,6 +237,9 @@ abstract class DIO
         if (!$this->method_disabled('pre_import') && method_exists($this, 'pre_import')) {
             if (!is_array($pre_args)) {
                 $pre_args = array($pre_args);
+            }
+            else if (PHP_VERSION >= 8) {
+                $pre_args = array_values($pre_args);
             }
             call_user_func_array(array($this, 'pre_import'), $pre_args);
         }
@@ -308,6 +314,9 @@ abstract class DIO
         if (!$this->method_disabled('pre_save') && method_exists($this, 'pre_save')) {
             if (!is_array($pre_args)) {
                 $pre_args = array($pre_args);
+            }
+            else if (PHP_VERSION >= 8) {
+                $pre_args = array_values($pre_args);
             }
             call_user_func_array(array($this, 'pre_save'), $pre_args);
         }
@@ -585,6 +594,9 @@ abstract class DIO
             if (!is_array($post_args)) {
                 $post_args = array($post_args);
             }
+            else if (PHP_VERSION >= 8) {
+                $post_args = array_values($post_args);
+            }
             call_user_func_array(array($this, 'post_save'), $post_args);
         }
 
@@ -613,6 +625,9 @@ abstract class DIO
         if (!$this->method_disabled('pre_delete') && method_exists($this, 'pre_delete')) {
             if (!is_array($pre_args)) {
                 $pre_args = array($pre_args);
+            }
+            else if (PHP_VERSION >= 8) {
+                $pre_args = array_values($pre_args);
             }
             call_user_func_array(array($this, 'pre_delete'), $pre_args);
         }
@@ -688,6 +703,9 @@ abstract class DIO
         if (!$this->method_disabled('post_delete') && method_exists($this, 'post_delete')) {
             if (!is_array($post_args)) {
                 $post_args = array($post_args);
+            }
+            else if (PHP_VERSION >= 8) {
+                $post_args = array_values($post_args);
             }
             call_user_func_array(array($this, 'post_delete'), $post_args);
         }
