@@ -173,6 +173,7 @@ class Config implements \ArrayAccess, \Countable
     // Count
     //*************************************************************************
     //*************************************************************************
+    #[\ReturnTypeWillChange]
     public function count()
     {
         return count((array)$this->config_data);
@@ -189,6 +190,7 @@ class Config implements \ArrayAccess, \Countable
     // Set
     //*************************************************************************
     //*************************************************************************
+    #[\ReturnTypeWillChange]
     public function offsetSet($offset, $value)
     {
         if (is_null($offset)) {
@@ -207,6 +209,7 @@ class Config implements \ArrayAccess, \Countable
     // Isset
     //*************************************************************************
     //*************************************************************************
+    #[\ReturnTypeWillChange]
     public function offsetExists($offset)
     {
         return isset($this->config_data->$offset);
@@ -217,6 +220,7 @@ class Config implements \ArrayAccess, \Countable
     // Unset
     //*************************************************************************
     //*************************************************************************
+    #[\ReturnTypeWillChange]
     public function offsetUnset($offset)
     {
         unset($this->config_data->$offset);
@@ -227,6 +231,7 @@ class Config implements \ArrayAccess, \Countable
     // Get
     //*************************************************************************
     //*************************************************************************
+    #[\ReturnTypeWillChange]
     public function offsetGet($offset)
     {
         return $this->GetConfigValue($offset, 'array');
