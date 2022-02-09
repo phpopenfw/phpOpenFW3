@@ -5,7 +5,7 @@
  * Database Interface Object Plugin
  * An abstract class for building Database to Object programmatic bridges
  *
- * @package         phpOpenFW
+ * @package         phpopenfw/phpopenfw3
  * @author          Christian J. Clark
  * @copyright       Copyright (c) Christian J. Clark
  * @website         https://phpopenfw.org

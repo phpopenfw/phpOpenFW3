@@ -4,7 +4,7 @@
 /**
  * Cache Helper Methods Plugin
  *
- * @package         phpOpenFW
+ * @package         phpopenfw/phpopenfw3
  * @author          Christian J. Clark
  * @copyright       Copyright (c) Christian J. Clark
  * @website         https://phpopenfw.org

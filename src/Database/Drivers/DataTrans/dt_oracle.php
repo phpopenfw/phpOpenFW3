@@ -5,7 +5,7 @@
  * Data Transaction / Oracle Plugin
  * A Oracle plugin to the (DataTrans) class
  *
- * @package         phpOpenFW
+ * @package         phpopenfw/phpopenfw3
  * @author          Christian J. Clark
  * @copyright       Copyright (c) Christian J. Clark
  * @website         https://phpopenfw.org
