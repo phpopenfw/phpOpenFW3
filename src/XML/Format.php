@@ -4,7 +4,7 @@
 /**
  * Plugin for performing XML Formatting
  *
- * @package         phpopenfw/phpopenfw3/phpopenfw3
+ * @package         phpOpenFW
  * @author          Christian J. Clark
  * @copyright       Copyright (c) Christian J. Clark
  * @website         https://phpopenfw.org
