@@ -75,6 +75,13 @@ class AppConfig extends \phpOpenFW\Config\Config
         include($config_file);
 
         //---------------------------------------------------------------------
+        // Check if config object was overridden
+        //---------------------------------------------------------------------
+        if (gettype($this->config_data) != 'object') {
+            throw new \Exception('Configuration object has been overridden. Do not make $config global in configuration.');
+        }
+
+        //---------------------------------------------------------------------
         // Check for Configuration Data
         //---------------------------------------------------------------------
         if (isset($config) && is_iterable($config)) {
