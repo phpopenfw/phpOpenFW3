@@ -347,7 +347,7 @@ class MongoDB {
         //=====================================================================
         // Default Args / Extract Args
         //=====================================================================
-        $output_header = false;
+        $output_header = true;
         $content_type = false;
         extract($args);
 
@@ -360,14 +360,33 @@ class MongoDB {
         if (!$file_data['stream']) { return false; }
 
         //=====================================================================
+        // Search metadata
+        //=====================================================================
+        if (!empty($file_data['metadata'])) {
+            if (!$content_type && !empty($file_data['metadata']['mime_type'])) {
+                $content_type = $file_data['metadata']['mime_type'];
+            }
+        }
+
+        //=====================================================================
+        // Build stream arguments
+        //=====================================================================
+        $stream_args = [
+            'file_name' => $file_data['filename'],
+            'output_header' => $output_header
+        ];
+        if ($content_type) {
+            $stream_args['content_type'] = $content_type;
+        }
+
+        //=====================================================================
         // Stream
         //=====================================================================
-        \phpOpenFW\Content\CDN::OutputStream($file_data['stream'], [
-            'file_name' => $file_data['filename'],
-            'output_header' => $output_header,
-            'content_type' => $content_type
-        ]);
+        \phpOpenFW\Content\CDN::OutputStream($file_data['stream'], $stream_args);
 
+        //=====================================================================
+        // Success
+        //=====================================================================
         return true;
     }
 
@@ -406,11 +425,25 @@ class MongoDB {
         extract($args);
 
         //=====================================================================
-        // No Options?
+        // No Options but metadata defined? Add metadata to options.
         //=====================================================================
         if (!$options) {
             if (!empty($metadata)) {
                 $options['metadata'] = $metadata;
+            }
+        }
+
+        //=====================================================================
+        // Determine Filename
+        //=====================================================================
+        if (empty($file_name)) {
+            if (!empty($filename)) {
+                $file_name = $filename;
+            }
+            else if (isset($options['metadata'])) {
+                if (!empty($options['metadata']['file_name'])) {
+                    $file_name = $options['metadata']['file_name'];
+                }
             }
         }
 

@@ -14,6 +14,7 @@
 //*****************************************************************************
 
 namespace phpOpenFW\Content;
+use \phpOpenFW\Helpers\FilePath;
 
 //*****************************************************************************
 /**
@@ -27,84 +28,47 @@ class CDN
     // Output Content Type Header
     //*************************************************************************
     //*************************************************************************
-    public static function OutputContentType($file)
+    public static function OutputContentType($file, Array $args=[])
     {
-        $path_parts = pathinfo($file);
-        if (empty($path_parts['extension'])) {
-            return false;
-        }
-        $ext = strtolower($path_parts['extension']);
+        //---------------------------------------------------------------------
+        // Extract Args
+        //---------------------------------------------------------------------
+        extract($args, EXTR_SKIP);
 
-        switch ($ext) {
+        //---------------------------------------------------------------------
+        // Get Extension
+        //---------------------------------------------------------------------
+        $ext = FilePath::GetExtension($file);
 
-            //=================================================================
-            // Javascript
-            //=================================================================
-            case 'js':
-                header('Content-type: text/javascript');
-                break;
-
-            //=================================================================
-            // CSS
-            //=================================================================
-            case 'css':
-                header('Content-type: text/css');
-                break;
-
-            //=================================================================
-            // Images
-            //=================================================================
-            case 'jpg':
-            case 'jpeg':
-            case 'gif':
-            case 'png':
-                header("Content-type: image/{$ext}");
-                break;
-
-            //=================================================================
-            // Scalable Vector Graphics (SVG)
-            //=================================================================
-            case 'svg':
-            case 'svgz':
-                header("Content-type: image/svg+xml");
-                if ($ext == 'svgz') {
-                    header("Content-Encoding: gzip");    
-                }
-                break;
-
-            //=================================================================
-            // XML
-            //=================================================================
-            case 'xml':
-            case 'xsl':
-                header('Content-type: text/xml');
-                break;
-
-            //=================================================================
-            // HTML / XHTML
-            //=================================================================
-            case 'html':
-            case 'xhtml':
-                header('Content-type: text/html');
-                break;
-
-            //=================================================================
-            // Text
-            //=================================================================
-            case 'txt':
-            case 'json':
-                header('Content-type: text/plain');
-                break;
-
-            //=================================================================
-            // Default: File Not Found (i.e. 404)
-            //=================================================================
-            default:
-                return false;
-                break;
+        //---------------------------------------------------------------------
+        // Is content type set?
+        //---------------------------------------------------------------------
+        if (!empty($content_type) && empty($mime_type)) {
+            $mime_type = $content_type;
         }
 
-        return true;
+        //---------------------------------------------------------------------
+        // Get Mime Type
+        //---------------------------------------------------------------------
+        if (empty($mime_type)) {
+            $mime_type = FilePath::GetMimeType($file);
+        }
+
+        //---------------------------------------------------------------------
+        // Did we get a mime type?
+        //---------------------------------------------------------------------
+        if ($mime_type) {
+            header('Content-type: ' . $mime_type);
+            if ($ext == 'svgz') {
+                header("Content-Encoding: gzip");
+            }
+            return true;
+        }
+
+        //---------------------------------------------------------------------
+        // No content type found
+        //---------------------------------------------------------------------
+        return false;
     }
 
     //*************************************************************************
@@ -141,7 +105,7 @@ class CDN
             // Is this a Data URI Scheme Header?
             //-----------------------------------------------------------------
             $dus_data = self::ParseDataURISchemeHeader($first_chunk);
-            extract($dus_data);
+            extract($dus_data, EXTR_SKIP);
 
             //-----------------------------------------------------------------
             // Update First Chunk (header has been removed)
@@ -151,18 +115,13 @@ class CDN
             }
 
             //-----------------------------------------------------------------
-            // If Content Type is set: Output it
+            // Output Content Type Header
             //-----------------------------------------------------------------
+            $ct_args = [];
             if (!empty($content_type)) {
-                header("Content-type: {$content_type}");
+                $ct_args['content_type'] = $content_type;
             }
-            //-----------------------------------------------------------------
-            // If File Name is set:
-            // Determine Content Type from File Name
-            //-----------------------------------------------------------------
-            else if (!empty($file_name)) {
-                \phpOpenFW\Content\CDN::OutputContentType($file_name);
-            }
+            \phpOpenFW\Content\CDN::OutputContentType($file_name, $ct_args);
         }
 
         //=====================================================================

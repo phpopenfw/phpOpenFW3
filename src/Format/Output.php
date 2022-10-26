@@ -25,7 +25,7 @@ class Output
     //=========================================================================
     //=========================================================================
     /**
-    * Print a preformatted array or Simple XML Element Object (nicely viewable in HTML or CLI)
+    * Print a pre-formatted array or Simple XML Element Object (nicely viewable in HTML or CLI)
     * @param array Array to Print. Multiple Arrays can be passed.
     */
     //=========================================================================
