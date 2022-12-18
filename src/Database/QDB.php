@@ -164,28 +164,20 @@ class QDB
         }
 
         //------------------------------------------------------------------
-        // Pull Data
+        // Pull / Format Data
         //------------------------------------------------------------------
-        if (empty($data_format)) {
-            $data = $data1->data_assoc_result();
-        }
-        else {
-            $rf_arr = explode(':', $data_format);
-            if (empty($rf_arr[0])) { unset($rf_arr[0]); }
-            if (count($rf_arr) < 1) {
-                $data = $data1->data_assoc_result();
-            }
-            else if (count($rf_arr) == 1) {
-                $data = $data1->data_key_assoc($rf_arr[0]);
-            }
-            else if (count($rf_arr) > 1) {
-                $data = $data1->data_key_val($rf_arr[0], $rf_arr[1]);
-            }
-        }
-        //print_array($data);print $row_index;
+        $data = static::return_formatted_records($data1, $data_format);
 
-        if (isset($data[$row_index])) { return $data[$row_index]; }
+        //------------------------------------------------------------------
+        // Return data element if it exists
+        //------------------------------------------------------------------
+        if (array_key_exists($row_index, $data)) {
+            return $data[$row_index];
+        }
 
+        //------------------------------------------------------------------
+        // Data element does not exist
+        //------------------------------------------------------------------
         return false;
     }
 
@@ -240,17 +232,7 @@ class QDB
         //------------------------------------------------------------------
         // Return Result Set
         //------------------------------------------------------------------
-        $rf_arr = explode(':', $return_format);
-        if (empty($rf_arr[0])) { unset($rf_arr[0]); }
-        if (count($rf_arr) < 1) {
-            return $data1->data_assoc_result();
-        }
-        else if (count($rf_arr) == 1) {
-            return $data1->data_key_assoc($rf_arr[0]);
-        }
-        else if (count($rf_arr) > 1) {
-            return $data1->data_key_val($rf_arr[0], $rf_arr[1]);
-        }
+        return static::return_formatted_records($data1, $return_format);
     }
 
     //**************************************************************************************
@@ -284,17 +266,7 @@ class QDB
         //------------------------------------------------------------------
         // Return Result Set
         //------------------------------------------------------------------
-        $rf_arr = explode(':', $return_format);
-        if (empty($rf_arr[0])) { unset($rf_arr[0]); }
-        if (count($rf_arr) < 1) {
-            return $data1->data_assoc_result();
-        }
-        else if (count($rf_arr) == 1) {
-            return $data1->data_key_assoc($rf_arr[0]);
-        }
-        else if (count($rf_arr) > 1) {
-            return $data1->data_key_val($rf_arr[0], $rf_arr[1]);
-        }
+        return static::return_formatted_records($data1, $return_format);
     }
 
     //*************************************************************************
@@ -480,5 +452,47 @@ class QDB
         }
 
         return $rs;
+    }
+
+    //%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+    //%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+    // Internal / Protected Methods
+    //%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+    //%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+    //*************************************************************************
+    /**
+    * Return formatted record set
+    */
+    //*************************************************************************
+    protected static function return_formatted_records($dt_obj, $return_format)
+    {
+        if (!is_scalar($return_format)) {
+            throw new \Exception('Return format must be passed as a scalar value.');
+        }
+        if (empty($return_format)) {
+            return $dt_obj->data_assoc_result();
+        }
+        else {
+            $rf_arr = explode(':', $return_format);
+            if (count($rf_arr) > 1) {
+                if ($rf_arr[1] == '') {
+                    unset($rf_arr[1]);
+                }
+            }
+            if (count($rf_arr) == 1 && $rf_arr[0] == '') {
+                unset($rf_arr[0]);
+            }
+            if (count($rf_arr) < 1) {
+                return $dt_obj->data_assoc_result();
+            }
+            else if (count($rf_arr) == 1) {
+                return $dt_obj->data_key_assoc($rf_arr[0]);
+            }
+            else if (count($rf_arr) > 1) {
+                return $dt_obj->data_key_val($rf_arr[0], $rf_arr[1]);
+            }
+        }
+        return false;
     }
 }

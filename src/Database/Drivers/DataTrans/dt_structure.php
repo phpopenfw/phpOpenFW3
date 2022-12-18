@@ -580,14 +580,23 @@ abstract class dt_structure
         $this->cache_results();
 
         if ($this->result) {
+            $row_num = 0;
             foreach ($this->result as $row) {
-                if (array_key_exists($key, $row) && array_key_exists($value, $row)) {
+                if ($key == '') {
+                    if (!array_key_exists($value, $row)) {
+                        trigger_error("{$this->disp_dt} key_val_result() :: Index \"{$value}\" does not exist!!");
+                        return false;
+                    }
+                    $assoc_result[$row_num] = $row[$value];
+                }
+                else if (array_key_exists($key, $row) && array_key_exists($value, $row)) {
                     $assoc_result[$row[$key]] = $row[$value];
                 }
                 else {
                     trigger_error("{$this->disp_dt} key_val_result() :: Index \"{$key}\" or Index \"{$value}\" does not exist!!");
                     return false;
                 }
+                $row_num++;
             }
         }
 
