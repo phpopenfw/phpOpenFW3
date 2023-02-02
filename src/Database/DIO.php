@@ -49,6 +49,7 @@ abstract class DIO
     protected $charset;
     protected $last_query = false;
     protected $execute_queries;
+    protected $print_queries;
     protected $disabled_methods = [];
     protected $pkey_values = false;
     protected $last_insert_id = false;
@@ -325,7 +326,7 @@ abstract class DIO
         //=====================================================================
         // Variable Declarations
         //=====================================================================
-        $qa = array();
+        $qa = ['fields' => []];
         $ret_val = false;
 
         //=====================================================================
@@ -508,6 +509,14 @@ abstract class DIO
         }
 
         //=====================================================================
+        // Are there fields to save?
+        //=====================================================================
+        if (empty($qa['fields'])) {
+            $this->trigger_error(__METHOD__, 'No fields determined for save.');
+            return false;
+        }
+
+        //=====================================================================
         // Set Query Type (insert or update)
         //=====================================================================
         if (!empty($pkey_values)) {
@@ -559,6 +568,14 @@ abstract class DIO
             if ($this->use_bind_params) {
 
                 //-------------------------------------------------------------
+                // Print Query?
+                //-------------------------------------------------------------
+                if ($this->print_queries) {
+                    print $strsql . "\n";
+                    print_r($this->bind_params);
+                }
+
+                //-------------------------------------------------------------
                 // Prepare / Execute Query
                 //-------------------------------------------------------------
                 $prep_status = $data1->prepare($strsql);
@@ -573,6 +590,9 @@ abstract class DIO
             // Do NOT Use Bind Parameters
             //-----------------------------------------------------------------
             else {
+                if ($this->print_queries) {
+                    print $strsql . "\n";
+                }
                 $ret_val = $data1->data_query($strsql);
             }
 
@@ -585,6 +605,15 @@ abstract class DIO
                 if ($this->last_insert_id !== false) {
                     $ret_val = $this->last_insert_id;
                 }
+            }
+        }
+        //=====================================================================
+        // Print Query?
+        //=====================================================================
+        else if ($this->print_queries) {
+            print $strsql . "\n";
+            if ($this->use_bind_params) {
+                print_r($this->bind_params);
             }
         }
 
@@ -680,6 +709,14 @@ abstract class DIO
             if ($this->use_bind_params) {
 
                 //-------------------------------------------------------------
+                // Print Query?
+                //-------------------------------------------------------------
+                if ($this->print_queries) {
+                    print $strsql . "\n";
+                    print_r($this->bind_params);
+                }
+
+                //-------------------------------------------------------------
                 // Prepare / Execute Query
                 //-------------------------------------------------------------
                 $prep_status = $data1->prepare($strsql);
@@ -694,7 +731,19 @@ abstract class DIO
             // Do NOT Use Bind Parameters
             //-----------------------------------------------------------------
             else {
+                if ($this->print_queries) {
+                    print $strsql . "\n";
+                }
                 $ret_val = $data1->data_query($strsql);
+            }
+        }
+        //=====================================================================
+        // Print Query?
+        //=====================================================================
+        else if ($this->print_queries) {
+            print $strsql . "\n";
+            if ($this->use_bind_params) {
+                print_r($this->bind_params);
             }
         }
 
@@ -984,6 +1033,16 @@ abstract class DIO
 
     //*************************************************************************
     //*************************************************************************
+    // Output database queries (insert, update, and delete only)
+    //*************************************************************************
+    //*************************************************************************
+    public function output_queries($print=true)
+    {
+        $this->print_queries = $print;
+    }
+
+    //*************************************************************************
+    //*************************************************************************
     // Disable database queries (insert, update, and delete only)
     //*************************************************************************
     //*************************************************************************
@@ -1247,6 +1306,7 @@ abstract class DIO
         // Set default execution statuses
         //=====================================================================
         $this->execute_queries = true;
+        $this->print_queries = false;
         $this->disabled_methods = [];
 
         //=====================================================================
@@ -1602,26 +1662,26 @@ abstract class DIO
                 $this->bind_param_count++;
                 $tmp_type = \phpOpenFW\Database\Structure\DatabaseTypes\MySQL::GetBindType($this->table_info[$field]['data_type']);
                 $this->bind_params[0] .= $tmp_type;
-                $this->bind_params[] = $value;
+                $this->bind_params[] = &$value;
                 break;
 
             case 'pgsql':
                 $this->bind_param_count++;
                 $place_holder = '$' . $this->bind_param_count;
-                $this->bind_params[] = $value;
+                $this->bind_params[] = &$value;
                 break;
 
             case 'sqlite':
             case 'oracle':
                 $this->bind_param_count++;
                 $place_holder = ':p' . $this->bind_param_count;
-                $this->bind_params[$place_holder] = $value;
+                $this->bind_params[$place_holder] = &$value;
                 break;
 
             case 'db2':
             case 'sqlsrv':
                 $place_holder = '?';
-                $this->bind_params[] = $value;
+                $this->bind_params[] = &$value;
                 $this->bind_param_count++;
                 break;
 
