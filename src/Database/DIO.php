@@ -1414,7 +1414,12 @@ abstract class DIO
             // Check that field name is NOT numeric
             //-----------------------------------------------------------------
             if (is_numeric($key)) {
-                $msg = 'Unable to build SQL where clause. A primary key or index was found with an invalid name.';
+                $msg = "Invalid field name '{$key}' given in where clause.";
+                $this->trigger_error(__METHOD__, $msg);
+                return false;
+            }
+            if (!isset($this->table_info[$key])) {
+                $msg = "Unknown field '{$key}' given in where clause.";
                 $this->trigger_error(__METHOD__, $msg);
                 return false;
             }
@@ -1652,7 +1657,7 @@ abstract class DIO
     // Add Bind Parameter
     //*************************************************************************
     //*************************************************************************
-    protected function add_bind_parameter($field, &$value)
+    protected function add_bind_parameter($field, $value)
     {
         $place_holder = false;
         switch ($this->db_type) {
