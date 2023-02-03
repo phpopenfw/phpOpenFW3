@@ -36,11 +36,6 @@ class CDN
         extract($args, EXTR_SKIP);
 
         //---------------------------------------------------------------------
-        // Get Extension
-        //---------------------------------------------------------------------
-        $ext = FilePath::GetExtension($file);
-
-        //---------------------------------------------------------------------
         // Is content type set?
         //---------------------------------------------------------------------
         if (!empty($content_type) && empty($mime_type)) {
@@ -50,7 +45,7 @@ class CDN
         //---------------------------------------------------------------------
         // Get Mime Type
         //---------------------------------------------------------------------
-        if (empty($mime_type)) {
+        if (empty($mime_type) && $file) {
             $mime_type = FilePath::GetMimeType($file);
         }
 
@@ -59,8 +54,9 @@ class CDN
         //---------------------------------------------------------------------
         if ($mime_type) {
             header('Content-type: ' . $mime_type);
+            $ext = FilePath::GetExtension($file);
             if ($ext == 'svgz') {
-                header("Content-Encoding: gzip");
+                header('Content-Encoding: gzip');
             }
             return true;
         }
@@ -83,13 +79,16 @@ class CDN
         //=====================================================================
         $output_header = false;
         $is_base64 = false;
+        $file_name = false;
         extract($args);
         $header = false;
 
         //=====================================================================
         // Validate Resource is Stream...
         //=====================================================================
-        if (get_resource_type($stream) != 'stream') { return false; }
+        if (get_resource_type($stream) != 'stream') {
+            return false;
+        }
 
         //=====================================================================
         // Output Headers: Yes
@@ -122,13 +121,29 @@ class CDN
                 $ct_args['content_type'] = $content_type;
             }
             \phpOpenFW\Content\CDN::OutputContentType($file_name, $ct_args);
+
+            //-----------------------------------------------------------------
+            // Content Disposition
+            //-----------------------------------------------------------------
+            if (!empty($args['content_disposition'])) {
+                header('Content-Disposition: ' . $args['content_disposition']);
+            }
+            else if (!empty($args['force_download'])) {
+                $cont_disp = 'Content-Disposition: attachment;';
+                if ($file_name) {
+                    $cont_disp .= ' filename=' . $file_name . ';';
+                }
+                header($cont_disp);
+            }
         }
 
         //=====================================================================
         // Output Stream Contents
         //=====================================================================
         ob_start();
-        if (!empty($first_chunk)) { print $first_chunk; }
+        if (!empty($first_chunk)) {
+            print $first_chunk;
+        }
         print stream_get_contents($stream);
         if (!empty($is_base64)) {
             print base64_decode(ob_get_clean());
