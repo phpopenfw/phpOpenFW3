@@ -56,12 +56,33 @@ class DateTime
     //=========================================================================
     //=========================================================================
     // Is Valid Time Function
-    // *** Returns TRUE if $time is HH:MM:SS, none of which are 00.
+    // *** Returns TRUE if $time is HH:MM:SS (12)
     //=========================================================================
     //=========================================================================
-    public static function is_valid_time($time)
+    public static function is_valid_time($time, Array $args=[])
     {
-        $regex = '/^([0-1]?\d|2[0-3]):([0-5]?\d):([0-5]?\d)$/';
+        $format = '12hr';
+        $format_24hr = false;
+        $seconds = false;
+        extract($args);
+        if (empty($regex)) {
+            if ($format == '24hr' || $format_24hr) {
+                if ($seconds) {
+                    $regex = '/^([01][0-9]|2[0-3]):([0-5][0-9]):([0-5]?\d)$/';
+                }
+                else {
+                    $regex = '/^([01][0-9]|2[0-3]):([0-5][0-9])$/';
+                }
+            }
+            else {
+                if ($seconds) {
+                    $regex = '/^([0-1]?\d|2[0-3]):([0-5]?\d):([0-5]?\d)$/';
+                }
+                else {
+                    $regex = '/^([0-1]?\d|2[0-3]):([0-5]?\d)$/';
+                }
+            }
+        }
         return preg_match($regex, $time);
     }
 
