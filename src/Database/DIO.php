@@ -108,6 +108,7 @@ abstract class DIO
             // Create a new data transaction and execute query
             //-----------------------------------------------------------------
             $data1 = new DataTrans($this->data_source);
+            $data1->set_opt('make_bind_params_refs', 1);
 
             //-----------------------------------------------------------------
             // Use Bind Parameters
@@ -337,7 +338,7 @@ abstract class DIO
         //=====================================================================
         // Check / Set Field Values
         //=====================================================================
-        foreach ($this->data as $field => &$value) {
+        foreach ($this->data as $field => $value) {
 
             //-----------------------------------------------------------------
             // Set to Save by default
@@ -408,13 +409,13 @@ abstract class DIO
                             $this->bind_param_count++;
                             $tmp_type = \phpOpenFW\Database\Structure\DatabaseTypes\MySQL::GetBindType($this->table_info[$field]['data_type']);
                             $this->bind_params[0] .= $tmp_type;
-                            $this->bind_params[] = &$value;
+                            $this->bind_params[] = $value;
                             break;
 
                         case 'sqlsrv':
                             $this->bind_param_count++;
                             $qa['fields'][$field] = '?';
-                            $this->bind_params[] = &$value;
+                            $this->bind_params[] = $value;
                             break;
 
                         case 'pgsql':
@@ -554,6 +555,7 @@ abstract class DIO
             // Create a new data transaction and execute query
             //-----------------------------------------------------------------
             $data1 = new DataTrans($this->data_source);
+            $data1->set_opt('make_bind_params_refs', 1);
 
             //-----------------------------------------------------------------
             // Set Character set?
@@ -702,6 +704,7 @@ abstract class DIO
             // Create a new data transaction and execute query
             //-----------------------------------------------------------------
             $data1 = new DataTrans($this->data_source);
+            $data1->set_opt('make_bind_params_refs', 1);
 
             //-----------------------------------------------------------------
             // Use Bind Parameters
@@ -1382,7 +1385,7 @@ abstract class DIO
     // Build a where clause from primary keys
     //*************************************************************************
     //*************************************************************************
-    protected function build_where(&$pkey_values)
+    protected function build_where($pkey_values)
     {
         $strsql = '';
 
@@ -1408,7 +1411,7 @@ abstract class DIO
         //=====================================================================
         // Build where clause
         //=====================================================================
-        foreach ($pkey_values as $key => &$value) {
+        foreach ($pkey_values as $key => $value) {
 
             //-----------------------------------------------------------------
             // Check that field name is NOT numeric
@@ -1463,7 +1466,7 @@ abstract class DIO
     // Build a where condition
     //*************************************************************************
     //*************************************************************************
-    protected function build_where_condition($field, &$value)
+    protected function build_where_condition($field, $value)
     {
         //---------------------------------------------------------------------
         // Start SQL
@@ -1587,7 +1590,7 @@ abstract class DIO
     // Get Condition Operator / Values
     //*************************************************************************
     //*************************************************************************
-    protected function get_condition_op_and_values($field, &$value)
+    protected function get_condition_op_and_values($field, $value)
     {
         //=====================================================================
         // Valid Operators / Default Operator
@@ -1667,26 +1670,26 @@ abstract class DIO
                 $this->bind_param_count++;
                 $tmp_type = \phpOpenFW\Database\Structure\DatabaseTypes\MySQL::GetBindType($this->table_info[$field]['data_type']);
                 $this->bind_params[0] .= $tmp_type;
-                $this->bind_params[] = &$value;
+                $this->bind_params[] = $value;
                 break;
 
             case 'pgsql':
                 $this->bind_param_count++;
                 $place_holder = '$' . $this->bind_param_count;
-                $this->bind_params[] = &$value;
+                $this->bind_params[] = $value;
                 break;
 
             case 'sqlite':
             case 'oracle':
                 $this->bind_param_count++;
                 $place_holder = ':p' . $this->bind_param_count;
-                $this->bind_params[$place_holder] = &$value;
+                $this->bind_params[$place_holder] = $value;
                 break;
 
             case 'db2':
             case 'sqlsrv':
                 $place_holder = '?';
-                $this->bind_params[] = &$value;
+                $this->bind_params[] = $value;
                 $this->bind_param_count++;
                 break;
 
