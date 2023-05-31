@@ -143,10 +143,10 @@ class Image
         //---------------------------------------------------------------------
         if ($width_perc < $height_perc) {
             $new_width = $max_width;
-            $new_height = $curr_height * $width_perc;
+            $new_height = round($curr_height * $width_perc, 0);
         }
         else if ($width_perc > $height_perc) {
-            $new_width = $curr_width * $height_perc;
+            $new_width = round($curr_width * $height_perc, 0);
             $new_height = $max_height;
         }
         else {
