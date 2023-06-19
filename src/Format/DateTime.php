@@ -61,7 +61,7 @@ class DateTime
     //==========================================================================
     public static function mystamp_pretty($value, $format='n/j/Y g:i a')
     {
-        return static::format_datetime_pretty($value, $format);
+        return static::format_datetime_pretty($value, false, $format);
     }
 
     //==========================================================================
