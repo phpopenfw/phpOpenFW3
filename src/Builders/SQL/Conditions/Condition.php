@@ -224,7 +224,7 @@ class Condition extends \phpOpenFW\Builders\SQL\Core
     // Is NOT Null
     //=========================================================================
     //=========================================================================
-    protected function IsNotNullCondition(String $field)
+    protected function IsNotNullCondition()
     {
         return "{$this->field} IS NOT NULL";
     }
