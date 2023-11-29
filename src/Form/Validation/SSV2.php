@@ -336,7 +336,12 @@ class SSV2
         switch ($type) {
 
             case 'is_not_empty':
-                $vr = ($var_val1 != '');
+                if (is_array($var_val1)) {
+                    $vr = (bool)count($var_val1);
+                }
+                else {
+                    $vr = ($var_val1 != '');
+                }
                 break;
 
             case 'is_not_empty_or_zero':
