@@ -42,7 +42,7 @@ class App extends Core
         //=====================================================================
         // Pre-run Method
         //=====================================================================
-        if ($this->CustomMethodExists('PreRun')) {
+        if (is_callable([$this, 'PreRun'])) {
             $this->PreRun($this->args);
         }
 
@@ -71,7 +71,7 @@ class App extends Core
         //=====================================================================
         // Post-run Method
         //=====================================================================
-        if ($this->CustomMethodExists('PostRun')) {
+        if (is_callable([$this, 'PostRun'])) {
             $this->PostRun($this->args);
         }
     }
