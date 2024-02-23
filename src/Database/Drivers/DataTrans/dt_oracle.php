@@ -38,7 +38,7 @@ class dt_oracle extends dt_structure
 
             // Port
             if (!$this->port) { $this->port = 1521; }
-    
+
             // Connection String
             if ($this->conn_str !== false) {
                 $db_params = $this->conn_str;
@@ -47,7 +47,7 @@ class dt_oracle extends dt_structure
                 $db_params = "(DESCRIPTION =(ADDRESS = (PROTOCOL = TCP)(HOST = {$this->server})(PORT = {$this->port}))\n";
                 $db_params .= "(CONNECT_DATA = (SERVER = DEDICATED)(SERVICE_NAME = )(INSTANCE_NAME = )))";
             }
-    
+
             // Connect
             if ($this->persistent) { $this->handle = oci_pconnect($this->user, $this->pass, $db_params); }
             else { $this->handle = oci_connect($this->user, $this->pass, $db_params); }
@@ -63,7 +63,7 @@ class dt_oracle extends dt_structure
             $this->increment_counters();
         }
 
-        // Flag Connection as Open       
+        // Flag Connection as Open
         $this->conn_open = true;
 
         // Start Transaction?
@@ -71,7 +71,7 @@ class dt_oracle extends dt_structure
 
         return true;
     }
-    
+
     /**
     * Closes a connection to the specified data source based on the data source type
     **/
@@ -154,7 +154,7 @@ class dt_oracle extends dt_structure
 
         return $ret_val;
     }
-    
+
     //*************************************************************************
     /**
     * Check and Print Database Error

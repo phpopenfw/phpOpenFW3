@@ -57,7 +57,6 @@ class dt_db2 extends dt_structure
                     ) : (
                         db2_pconnect($db_params, '', '')
                     );
-                    
                 }
                 else {
                     $this->handle = (!empty($this->options)) ? (
@@ -83,7 +82,7 @@ class dt_db2 extends dt_structure
                     );
                 }
             }
-    
+
             if (db2_conn_errormsg()) {
                 $this->connection_error(db2_conn_errormsg());
                 $this->handle = false;
@@ -94,7 +93,7 @@ class dt_db2 extends dt_structure
             $this->increment_counters();
         }
 
-        // Flag Connection as Open 
+        // Flag Connection as Open
         $this->conn_open = true;
 
         // Start Transaction and Turn off Auto Commit?
@@ -102,10 +101,10 @@ class dt_db2 extends dt_structure
             db2_autocommit($this->handle, DB2_AUTOCOMMIT_OFF);
             $this->start_trans();
         }
-        
+
         return true;
     }
-    
+
     /**
     * Closes a connection to the specified data source based on the data source type
     **/
@@ -122,7 +121,7 @@ class dt_db2 extends dt_structure
         }
         return true;
     }
-    
+
     /**
     * Executes a query based on the data source type
     * @param mixed IBM DB2: SQL Statement

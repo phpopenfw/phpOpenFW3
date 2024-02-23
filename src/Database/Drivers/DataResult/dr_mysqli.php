@@ -24,6 +24,11 @@ namespace phpOpenFW\Database\Drivers\DataResult;
 //*****************************************************************************
 class dr_mysqli extends dr_structure
 {
+    //*************************************************************************
+    // Class Members
+    //*************************************************************************
+    protected $fields;
+    protected $row;
 
     //*************************************************************************
     // Constructor function
@@ -33,7 +38,7 @@ class dr_mysqli extends dr_structure
         if (is_object($this->stmt) && method_exists($this->stmt, 'get_result')) {
             $this->set_opt('mysqlnd', 1);
         }
-        
+
         if (!$this->get_opt('mysqlnd') && $this->get_opt('prepared_query')) {
             $meta_data = $this->stmt->result_metadata();
             $this->fields = array();
@@ -42,7 +47,7 @@ class dr_mysqli extends dr_structure
             while ($field = $meta_data->fetch_field()) {
                 $this->fields[$count] = &$this->row[$field->name];
                 $count++;
-            }           
+            }
             call_user_func_array(array($this->stmt, 'bind_result'), $this->fields);
         }
     }

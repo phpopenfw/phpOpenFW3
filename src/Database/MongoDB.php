@@ -134,7 +134,7 @@ class MongoDB {
     {
         $possibles = [
             'projection', 'sort', 'skip', 'limit', 'batchSize', 'collation', 'comment',
-            'cursorType', 'maxTimeMS', 'readConcern', 'readPreference', 'noCursorTimeout', 
+            'cursorType', 'maxTimeMS', 'readConcern', 'readPreference', 'noCursorTimeout',
             'allowPartialResults', 'typeMap', 'modifiers'
         ];
 
@@ -402,7 +402,7 @@ class MongoDB {
         //=====================================================================
         $file_data = $this->GetGridFSFileByID($id);
         if (!$file_data) { return false; }
-        
+
         //=====================================================================
         // Return Stream
         //=====================================================================
@@ -455,7 +455,7 @@ class MongoDB {
             if (empty($file_name)) {
                 $file_name = uniqid();
             }
-            return $this->mongo_client_db_gridfs->uploadFromStream($file_name, $file, $options);            
+            return $this->mongo_client_db_gridfs->uploadFromStream($file_name, $file, $options);
         }
         //=====================================================================
         // Scalar Passed: Does the file exist?
@@ -467,7 +467,7 @@ class MongoDB {
             }
             return $this->mongo_client_db_gridfs->uploadFromStream($file_name, $fhandle, $options);
         }
-        
+
         return false;
     }
 

@@ -73,7 +73,7 @@ class dt_mysqli extends dt_structure
 
         return true;
     }
-    
+
     /**
     * Closes a connection to the specified data source based on the data source type
     **/

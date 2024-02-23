@@ -41,7 +41,7 @@ class dt_sqlsrv extends dt_structure
             //---------------------------------------------------------------
             $host = $this->server;
             if (!empty($this->port)) { $host .= ',' . $this->port; }
-    
+
             //---------------------------------------------------------------
             // Connection Parameters
             //---------------------------------------------------------------
@@ -49,7 +49,7 @@ class dt_sqlsrv extends dt_structure
             if (!empty($this->user)) { $connectionInfo['UID'] = $this->user; }
             if (!empty($this->pass)) { $connectionInfo['PWD'] = $this->pass; }
             if (!empty($this->source)) { $connectionInfo['Database'] = $this->source; }
-    
+
             //---------------------------------------------------------------
             // Attempt Connection
             //---------------------------------------------------------------
@@ -70,7 +70,7 @@ class dt_sqlsrv extends dt_structure
         $this->increment_counters();
 
         //---------------------------------------------------------------
-        // Flag Connection as Open       
+        // Flag Connection as Open
         //---------------------------------------------------------------
         $this->conn_open = true;
 
@@ -81,7 +81,7 @@ class dt_sqlsrv extends dt_structure
 
         return true;
     }
-    
+
     /**
     * Closes a connection to the specified data source based on the data source type
     **/

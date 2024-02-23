@@ -25,7 +25,7 @@ use phpOpenFW\Database\DataResult;
 //*****************************************************************************
 class dt_pgsql extends dt_structure
 {
-    
+
     /**
     * Opens a connection to the specified data source based on the data source type
     **/
@@ -44,13 +44,13 @@ class dt_pgsql extends dt_structure
             else {
                 $this->handle = pg_connect($str_conn);
             }
-    
+
             if (!$this->handle) {
                 $this->connection_error(pg_last_error());
                 $this->handle = false;
                 return false;
             }
-    
+
             // Keep track of the number of connections we create
             $this->increment_counters();
         }
@@ -63,7 +63,7 @@ class dt_pgsql extends dt_structure
 
         return true;
     }
-    
+
     /**
     * Closes a connection to the specified data source based on the data source type
     **/
@@ -81,7 +81,7 @@ class dt_pgsql extends dt_structure
 
         return true;
     }
-    
+
     /**
     * Executes a query based on the data source type
     * @param mixed PostgreSQL: SQL Statement

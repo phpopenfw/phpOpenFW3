@@ -24,7 +24,7 @@ namespace phpOpenFW\Database;
 class DataResult
 {
 
-    //************************************************************************    
+    //************************************************************************
     // Class variables
     //************************************************************************
     /**
@@ -33,7 +33,7 @@ class DataResult
     private $data_type;
 
     /**
-    * @var Object Internal Data Object 
+    * @var Object Internal Data Object
     **/
     private $data_object;
 

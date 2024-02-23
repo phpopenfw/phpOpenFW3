@@ -600,7 +600,7 @@ abstract class DIO
             }
 
             //-----------------------------------------------------------------
-            // Last Insert ID if Insert Statement performed 
+            // Last Insert ID if Insert Statement performed
             // and a valid ID is returned
             //-----------------------------------------------------------------
             if ($qa['type'] == 'insert') {
@@ -1314,7 +1314,7 @@ abstract class DIO
         $this->disabled_methods = [];
 
         //=====================================================================
-        // Initialize No Save Empty Data Types 
+        // Initialize No Save Empty Data Types
         // and Save Default Data Types Arrays
         //=====================================================================
         $this->no_save_empty_types = array();

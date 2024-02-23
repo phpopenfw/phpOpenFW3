@@ -228,7 +228,7 @@ class QDB
         else if (!empty($opts['return_insert_id'])) {
             return $data1->last_insert_id();
         }
-        
+
         //------------------------------------------------------------------
         // Return Result Set
         //------------------------------------------------------------------
@@ -443,7 +443,7 @@ class QDB
             //--------------------------------------------------------
             // Do not Trim Row Keys
             //--------------------------------------------------------
-            // If Trim Data or Trim Column Keys, 
+            // If Trim Data or Trim Column Keys,
             // reset in recordset array
             //--------------------------------------------------------
             else if ($trim_col_keys || $trim_data) {
