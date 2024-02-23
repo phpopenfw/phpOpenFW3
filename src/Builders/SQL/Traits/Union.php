@@ -81,7 +81,6 @@ trait Union
             else {
                 $clause .= "\nUNION\n\n{$union_query}";
             }
-            
         }
         return $clause;
     }

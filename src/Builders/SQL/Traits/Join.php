@@ -130,7 +130,7 @@ trait Join
         //---------------------------------------------------------------------
         if ($field1 instanceof Closure) {
             $this->from[] = [
-                'join', 
+                'join',
                 $join_phrase,
                 $table,
                 Condition::Instance($this, $this->depth, $field1, false, false, false)
@@ -142,7 +142,7 @@ trait Join
         //---------------------------------------------------------------------
         else if (is_scalar($field1) && is_string($field1)) {
             $this->from[] = [
-                'join', 
+                'join',
                 "{$join_phrase} {$table} ON {$field1} {$op} {$field2}"
             ];
             return true;

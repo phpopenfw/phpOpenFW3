@@ -59,7 +59,7 @@ trait Where
     //=========================================================================
     public function OrWhere($field, $op=null, $val=false, $type='s')
     {
-        $this->Where($field, $op, $val, $type, 'or');        
+        $this->Where($field, $op, $val, $type, 'or');
         return $this;
     }
 

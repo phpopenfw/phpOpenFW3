@@ -87,7 +87,7 @@ trait Limit
             }
             if ($this->limit) {
                 $ret_val .= " FETCH NEXT {$this->limit} ROWS ONLY";
-            }            
+            }
         }
         //---------------------------------------------------------------------
         // SQL Server

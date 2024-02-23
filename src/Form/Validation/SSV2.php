@@ -29,7 +29,7 @@ class SSV2
      * @var array Validation Types
      **/
     private $validation_types;
-    
+
     /**
      * @var array Are validations valid?
      **/
@@ -60,7 +60,7 @@ class SSV2
     // Member Functions
     //=========================================================================
     //=========================================================================
-    
+
     //=========================================================================
     //=========================================================================
     /**
@@ -120,14 +120,14 @@ class SSV2
         else if (count($args) == 2) {
             if ($args[0] == '__fail__') {
                 $params = [
-                    'field' => false, 
+                    'field' => false,
                     'type' => 'fail',
                     'message' => $args[1]
-                ];                
+                ];
             }
             else {
                 $params = [
-                    'field' => false, 
+                    'field' => false,
                     'type' => 'custom',
                     'function' => $args[0],
                     'message' => $args[1]
@@ -158,7 +158,7 @@ class SSV2
         //---------------------------------------------------------------------
         else if (count($args) == 4 && $args[1] == 'function') {
             $params = [
-                'field' => $args[0], 
+                'field' => $args[0],
                 'type' => 'function',
                 'function' => $args[2],
                 'message' => $args[3]
@@ -278,7 +278,6 @@ class SSV2
             //-----------------------------------------------------------------
             // Result of current validation
             //-----------------------------------------------------------------
-            $this->check_status[$key] = $vr;
             if (!$vr) {
                 $this->validation_status = false;
                 $this->fail_messages[$key] = $check['message'];
@@ -288,10 +287,10 @@ class SSV2
                     'field' => $tmp_field,
                     'type' => $check['type'],
                     'message' => $check['message']
-                ]; 
+                ];
             }
         }
-        
+
         return $this->validation_status;
     }
 
@@ -381,7 +380,7 @@ class SSV2
             case 'fail':
                 $vr = false;
                 break;
-            
+
             case 'custom':
             case 'function':
                 if (is_object($function)) {
@@ -390,7 +389,7 @@ class SSV2
                     }
                     else {
                         $vr = $function($data);
-                    }                    
+                    }
                 }
                 else {
                     if ($type == 'function') {

@@ -103,7 +103,7 @@ trait Values
             $place_holders = '';
             foreach ($this->set_fields as $set_field) {
                 if ($fields) { $fields .= ','; }
-                $fields .= "\n  "; 
+                $fields .= "\n  ";
                 if ($place_holders) { $place_holders .= ','; }
                 $place_holders .= "\n  ";
                 $fields .= $set_field[0];

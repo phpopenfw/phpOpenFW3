@@ -234,7 +234,9 @@ class LDAP {
         //---------------------------------------------------------------------
         // Sort?
         //---------------------------------------------------------------------
-        if ($this->resource && isset($sort)) {
+        // !!! TO DO: ldap_sort was removed in php 8.0. Find another solution.
+        //---------------------------------------------------------------------
+        if ($this->resource && isset($sort) && function_exists('ldap_sort')) {
             foreach ($sort as $eachSortAttribute) {
                 ldap_sort($this->handle, $this->resource, $eachSortAttribute);
             }

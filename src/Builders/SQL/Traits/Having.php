@@ -45,7 +45,7 @@ trait Having
     //=========================================================================
     public function OrHaving($field, $op=null, $val=false, $type='s')
     {
-        $this->Having($field, $op, $val, $type, 'or');        
+        $this->Having($field, $op, $val, $type, 'or');
         return $this;
     }
 
