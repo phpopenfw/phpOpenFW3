@@ -53,6 +53,11 @@ abstract class dr_structure {
     protected $handle;
 
     /**
+    * @var resource Internal Statement Handle.
+    **/
+    protected $stmt;
+
+    /**
     * @var array The records returned from the result set
     **/
     protected $records;
@@ -71,6 +76,11 @@ abstract class dr_structure {
     * @var int The number of fields in the record set.
     **/
     protected $num_fields;
+
+    /**
+    * @var array Instance options
+    **/
+    protected $inst_opts;
 
     /**
     * @var int Internal Flags / Counters
@@ -130,8 +140,6 @@ abstract class dr_structure {
         $this->num_fields = false;
         $this->records = array();
         $this->records_set = false;
-        $this->afftected_rows = false;
-        $this->opts = array();
         $this->flags = array();
         $this->reset_flags();
 

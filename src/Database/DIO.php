@@ -29,6 +29,7 @@ abstract class DIO
     // Member Variables
     //*************************************************************************
     protected $data_source;
+    protected $database;
     protected $ds_obj;
     protected $db_type;
     protected $schema;

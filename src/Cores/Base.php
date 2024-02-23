@@ -30,6 +30,7 @@ abstract class Base
     protected $error;
     protected $nodata;
     protected $loaded;
+    protected $inst_opts;
 
     //========================================================================
     // Reset Statuses
