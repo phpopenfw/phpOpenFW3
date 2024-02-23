@@ -173,7 +173,7 @@ abstract class Core
     public function deleteMulti(Array $keys, Array $args=[])
     {
         $vals_deleted = 0;
-        foreach ($vals_deleted as $val_key => $val_val) {
+        foreach ($keys as $val_key => $val_val) {
             if ($this->delete($val_key)) {
                 $vals_deleted++;
             }

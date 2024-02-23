@@ -25,7 +25,7 @@ namespace phpOpenFW\Database\Drivers\DataTrans;
 abstract class dt_structure
 {
 
-    //*************************************************************************    
+    //*************************************************************************
     // Class variables
     //*************************************************************************
     /**
@@ -37,17 +37,17 @@ abstract class dt_structure
      * @var string Data source type (mysql, mysqli, pgsql, oracle, mssql, db2, sqlsrv, sqlite)
      **/
     protected $data_type;
-    
+
     /**
      * @var string Server address to use when connecting to the data source
      **/
     protected $server;
-    
+
     /**
      * @var string Server port to use when connecting to the data source
      **/
     protected $port;
-    
+
     /**
      * @var string Database or directory to use when connecting to the data source
      **/
@@ -57,12 +57,12 @@ abstract class dt_structure
      * @var string Database instance to use when connecting to the data source
      **/
     protected $instance;
-    
+
     /**
      * @var string User to use when connecting to the data source
      **/
     protected $user;
-    
+
     /**
      * @var string Password to use when connecting to the data source
      **/
@@ -82,17 +82,17 @@ abstract class dt_structure
      * @var resource Connection handle of the current data source connection
      **/
     protected $handle;
-    
+
     /**
      * @var resource Resource ID of the data source record set
      **/
     protected $rsrc_id;
-    
+
     /**
      * @var array The record set
      **/
     protected $result;
-    
+
     /**
      * @var integer Number of rows in the record set returned
      **/
@@ -107,39 +107,39 @@ abstract class dt_structure
      * @var integer Number of fields in the record set returned
      **/
     protected $num_fields;
-    
+
     /**
      * @var integer ID of the last inserted row for the current connection
      **/
     protected $last_id;
-    
+
     /**
-     * @var bool Connection Open (true or false) 
+     * @var bool Connection Open (true or false)
      **/
     protected $conn_open;
 
     /**
-     * @var bool Connection is Persistent (true or false) 
+     * @var bool Connection is Persistent (true or false)
      **/
     protected $persistent;
 
     /**
-     * @var bool Reuse one Connection (true or false) 
+     * @var bool Reuse one Connection (true or false)
      **/
     protected $reuse_connection;
 
     /**
-     * @var string Display Data Type 
+     * @var string Display Data Type
      **/
     protected $disp_dt;
 
     /**
-     * @var string Auto commit flag 
+     * @var string Auto commit flag
      **/
     protected $auto_commit;
 
     /**
-     * @var mixed A prepared SQL Statement handle or FALSE when invalid or not set. 
+     * @var mixed A prepared SQL Statement handle or FALSE when invalid or not set.
      **/
     protected $stmt;
 
@@ -345,6 +345,16 @@ abstract class dt_structure
 
     //*************************************************************************
     /**
+    * Methods required to be implemented
+    * open - opens the connection
+    * close - closes the connection and clean-up
+    **/
+    //*************************************************************************
+    abstract public function open();
+    abstract public function close();
+
+    //*************************************************************************
+    /**
      * Return the number rows in the current record set
      * @return integer The number rows in the current record set
      **/
@@ -390,7 +400,7 @@ abstract class dt_structure
         $this->affected_rows = false;
         $this->data_result = false;
     }
-    
+
     //*************************************************************************
     /**
      * Clear Last Insert ID Function
@@ -404,7 +414,7 @@ abstract class dt_structure
      **/
     //*************************************************************************
     public function get_user() { return $this->user; }
-    
+
     //*************************************************************************
     /**
      * Get Password Function
@@ -547,7 +557,7 @@ abstract class dt_structure
 
     /**
      * Return the current record set in the form of an associative array
-     * @return array current record set in the form of an associate array 
+     * @return array current record set in the form of an associate array
      **/
     //*************************************************************************
     // Extract the record set to local variables
@@ -562,7 +572,7 @@ abstract class dt_structure
      * Return an abbreviated form of the current record set in the form of an associative array
      * @param string field to be used as the "key" in the associative array
      * @param string field to be used as the "value" in the associative array
-     * @return array abbreviated form of the current record set in the form of an associative array 
+     * @return array abbreviated form of the current record set in the form of an associative array
      **/
     //*************************************************************************
     // Extract an abbreviated record set to a "key" => "value" array
@@ -601,7 +611,7 @@ abstract class dt_structure
         }
 
         //----------------------------------------------------------
-        // Return Result Array        
+        // Return Result Array
         //----------------------------------------------------------
         return $assoc_result;
     }
@@ -638,7 +648,7 @@ abstract class dt_structure
         }
 
         //----------------------------------------------------------
-        // Return Result Array        
+        // Return Result Array
         //----------------------------------------------------------
         return $assoc_result;
     }

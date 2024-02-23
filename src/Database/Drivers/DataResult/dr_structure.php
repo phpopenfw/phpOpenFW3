@@ -38,12 +38,12 @@ abstract class dr_structure {
     protected $data_type;
 
     /**
-    * @var string Display Data Type 
+    * @var string Display Data Type
     **/
     protected $disp_dt;
 
     /**
-    * @var resource Internal Result Handle or Object 
+    * @var resource Internal Result Handle or Object
     **/
     protected $resource;
 
@@ -184,6 +184,13 @@ abstract class dr_structure {
 
     //*************************************************************************
     /**
+    * Set the Number of Fields in the current result set
+    **/
+    //*************************************************************************
+    abstract protected function set_num_fields();
+
+    //*************************************************************************
+    /**
     * Get the number records in a result set. A False value means the value could not be determined.
     **/
     //*************************************************************************
@@ -265,8 +272,15 @@ abstract class dr_structure {
     public function reset_flags()
     {
         $this->flags['fetch_row'] = 0;
-        $this->flags['fetch_all_rows'] = 0;    
+        $this->flags['fetch_all_rows'] = 0;
     }
+
+    //*************************************************************************
+    /**
+    * Fetch all rows in a result
+    **/
+    //*************************************************************************
+    abstract public function fetch_row();
 
     //*************************************************************************
     /**
