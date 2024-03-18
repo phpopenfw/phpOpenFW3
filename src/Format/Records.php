@@ -32,10 +32,59 @@ class Records
         if (isset($args['data'])) {
             unset($args['data']);
         }
+        if (isset($args['remove'])) {
+            unset($args['remove']);
+        }
+        $multiple = false;
         extract($args);
 
-        foreach ($remove as $index) {
-            if (array_key_exists($index, $data)) { unset($data[$index]); }
+        if ($multiple) {
+            $tmp_args = $args;
+            $tmp_args['multiple'] = false;
+            foreach ($data as $col => $val) {
+                if (is_array($val)) {
+                    static::RemoveElements($data[$col], $remove, $tmp_args);
+                }
+            }
+        }
+        else {
+            foreach ($remove as $index) {
+                if (array_key_exists($index, $data)) {
+                    unset($data[$index]);
+                }
+            }
+        }
+    }
+
+    //=========================================================================
+    //=========================================================================
+    // Keep Data Elements
+    //=========================================================================
+    //=========================================================================
+    public static function KeepElements(Array &$data, Array $keep, Array $args=[])
+    {
+        if (isset($args['data'])) {
+            unset($args['data']);
+        }
+        if (isset($args['keep'])) {
+            unset($args['keep']);
+        }
+        $multiple = false;
+        extract($args);
+
+        foreach ($data as $col => $val) {
+            if ($multiple) {
+                $tmp_args = $args;
+                $tmp_args['multiple'] = false;
+                if (is_array($val)) {
+                    static::KeepElements($data[$col], $keep, $tmp_args);
+                }
+            }
+            else {
+                if (!in_array($col, $keep)) {
+                    unset($data[$col]);
+                }
+            }
         }
     }
 
