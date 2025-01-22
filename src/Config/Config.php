@@ -173,8 +173,7 @@ class Config implements \ArrayAccess, \Countable
     // Count
     //*************************************************************************
     //*************************************************************************
-    #[\ReturnTypeWillChange]
-    public function count()
+    public function count(): int
     {
         return count((array)$this->config_data);
     }
@@ -190,8 +189,7 @@ class Config implements \ArrayAccess, \Countable
     // Set
     //*************************************************************************
     //*************************************************************************
-    #[\ReturnTypeWillChange]
-    public function offsetSet($offset, $value)
+    public function offsetSet($offset, $value): void
     {
         if (is_null($offset)) {
             $count = 0;
@@ -209,8 +207,7 @@ class Config implements \ArrayAccess, \Countable
     // Isset
     //*************************************************************************
     //*************************************************************************
-    #[\ReturnTypeWillChange]
-    public function offsetExists($offset)
+    public function offsetExists($offset): bool
     {
         return isset($this->config_data->$offset);
     }
@@ -220,8 +217,7 @@ class Config implements \ArrayAccess, \Countable
     // Unset
     //*************************************************************************
     //*************************************************************************
-    #[\ReturnTypeWillChange]
-    public function offsetUnset($offset)
+    public function offsetUnset($offset): void
     {
         unset($this->config_data->$offset);
     }
@@ -231,8 +227,7 @@ class Config implements \ArrayAccess, \Countable
     // Get
     //*************************************************************************
     //*************************************************************************
-    #[\ReturnTypeWillChange]
-    public function offsetGet($offset)
+    public function offsetGet($offset): mixed
     {
         return $this->GetConfigValue($offset, 'array');
     }
