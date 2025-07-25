@@ -195,7 +195,7 @@ class MongoDB {
     //*************************************************************************
     public function GetGridFS()
     {
-        return $this->$this->mongo_client_db_gridfs;
+        return $this->mongo_client_db_gridfs;
     }
 
     //%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
