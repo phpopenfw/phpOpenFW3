@@ -373,7 +373,8 @@ class MongoDB {
         //=====================================================================
         $stream_args = array_merge($args, [
             'file_name' => $file_data['filename'],
-            'output_header' => $output_header
+            'file_size' => $file_data['length'],
+            'output_headers' => $output_header
         ]);
         if ($content_type) {
             $stream_args['content_type'] = $content_type;
@@ -382,7 +383,7 @@ class MongoDB {
         //=====================================================================
         // Stream
         //=====================================================================
-        \phpOpenFW\Content\CDN::OutputStream($file_data['stream'], $stream_args);
+        \phpOpenFW\Content\Stream::Instance($file_data['stream'], $stream_args)->Output();
 
         //=====================================================================
         // Success
