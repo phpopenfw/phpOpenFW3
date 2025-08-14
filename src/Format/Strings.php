@@ -168,8 +168,23 @@ class Strings
     {
         $str = strtolower($str);
         $str = str_replace(' ' , '-', $str);
-        $str = preg_replace("/[^a-zA-Z0-9_\-s]/", "", $str);
+        $str = preg_replace("/[^a-zA-Z0-9_\-s]/", '', $str);
         return $str;
     }
 
+    //==========================================================================
+    //==========================================================================
+    /**
+     * Filename Friendly String Function
+     */
+    //==========================================================================
+    //==========================================================================
+    public static function FileNameFriendly($str, Array $args=[])
+    {
+        $replace_char = '_';
+        extract($args);
+        $str = str_replace(' ' , '_', $str);
+        $str = preg_replace("/[^a-zA-Z0-9_\-\.s]/", $replace_char, $str);
+        return $str;
+    }
 }
