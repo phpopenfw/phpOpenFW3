@@ -244,7 +244,9 @@ class MongoDB {
     {
         if (!$collection) { return false; }
         extract($args);
-
+        if (isset($data[''])) {
+            unset($data['']);
+        }
         $result = $this->mongo_client_db->$collection->insertOne($data);
         return (empty($return_raw_result)) ? ($result->getInsertedId()) : ($result);
     }
@@ -261,6 +263,10 @@ class MongoDB {
 
         $doc_oid = self::CreateObjectID($id);
         if (!$doc_oid) { return false; }
+
+        if (isset($data[''])) {
+            unset($data['']);
+        }
 
         $result = $this->mongo_client_db->$collection->updateOne(
             ['_id' => $doc_oid],
