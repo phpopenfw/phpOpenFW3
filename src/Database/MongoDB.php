@@ -289,6 +289,10 @@ class MongoDB {
         $doc_oid = self::CreateObjectID($id);
         if (!$doc_oid) { return false; }
 
+        if (isset($data[''])) {
+            unset($data['']);
+        }
+
         $result = $this->mongo_client_db->$collection->updateOne(
             ['_id' => $doc_oid],
             ['$set' => $data],
