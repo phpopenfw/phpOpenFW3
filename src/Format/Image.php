@@ -203,9 +203,7 @@ class Image
         if ($rotate && $rotate != 'none') {
             $deg = 0;
             if (!is_numeric($rotate)) {
-                ob_start();
-                $exif = exif_read_data($curr_file);
-                ob_end_clean();
+                $exif = @exif_read_data($curr_file);
                 if ($exif && isset($exif['Orientation']) && $exif['Orientation'] != 1) {
                     switch ($exif['Orientation']) {
                         case 3:
